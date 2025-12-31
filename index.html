@@ -64,7 +64,6 @@
             object-fit: cover;
             transition: 0.3s;
         }
-        /* Style for active folder */
         .cat-card.active img { border-color: var(--primary-red); transform: scale(1.1); box-shadow: 0 0 15px var(--primary-red); }
         .cat-card:active img { transform: scale(0.9); }
         .cat-card p { font-size: 0.85rem; margin: 10px 0 0; font-weight: bold; color: #ccc; }
@@ -79,7 +78,6 @@
             padding-right: 15px;
         }
 
-        /* Professional Menu Grid */
         .menu-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -100,7 +98,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .item-card img { width: 100%; height: 140px; object-fit: cover; }
-        
         .item-info { padding: 12px; text-align: center; }
         .item-info h3 { font-size: 0.95rem; margin: 0; height: 45px; color: #fff; display: flex; align-items: center; justify-content: center; }
         .item-info .price { color: var(--text-gold); font-weight: bold; font-size: 1.1rem; margin: 8px 0; }
@@ -121,7 +118,6 @@
         }
         .add-btn:active { transform: scale(0.95); background: #cc0000; }
 
-        /* Cart Styles */
         #cart-section {
             background: #111;
             border-radius: 25px;
@@ -173,6 +169,9 @@
 </head>
 <body>
 
+<audio id="orderSound" src="https://www.soundjay.com/buttons/button-20.mp3" preload="auto"></audio>
+<audio id="successSound" src="https://www.soundjay.com/buttons/button-09.mp3" preload="auto"></audio>
+
 <header>
     <h1>Boom's Pizza</h1>
     <p>کوالێتی نایاب و تامێکی لەبیرنەکراو</p>
@@ -188,8 +187,7 @@
 
 <div class="container">
     <h2 id="folder-title">🍕 جۆرەکانی پیزا</h2>
-    <div class="menu-section" id="menu-display">
-        </div>
+    <div class="menu-section" id="menu-display"></div>
 
     <div id="cart-section">
         <h3>🛒 سەبەتەی داواکارییەکان</h3>
@@ -217,28 +215,16 @@
         { id: 6, name: "پیتزا مریشک large", price: 6000, category: "pizza", img: "https://i.postimg.cc/Vv7p9m1R/20251231-232937-0000.jpg" },
         { id: 7, name: "پیتزا موشەکەل", price: 4000, category: "pizza", img: "https://i.postimg.cc/wBH2Bn8C/20251231-233709-0000.jpg" },
         { id: 8, name: "پیتزا پێپەڕۆنی", price: 4000, category: "pizza", img: "https://i.postimg.cc/JzyVqDsk/20251231-232834-0000.jpg" },
-        { id: 9, name: "بووم پیزا (شاهانە)", price: 7000, category: "pizza", img: "https://i.postimg.cc/L69mz8k6/20251231-232908-0000.jpg" },
-        
         { id: 10, name: "بووم بەرگر", price: 6000, category: "burger", img: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500" },
         { id: 11, name: "چیز بەرگر", price: 3000, category: "burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500" },
         { id: 12, name: "دەبڵ چیز بەرگر", price: 4000, category: "burger", img: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500" },
         { id: 13, name: "بەرگری قارچک", price: 5000, category: "burger", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=500" },
-
         { id: 14, name: "لەفەی شاوەرمە", price: 1500, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
-        { id: 15, name: "شاوەرمەی ساج", price: 3000, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
-        { id: 16, name: "شاوەرمە بە پەنیر", price: 2000, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
-
         { id: 17, name: "فینگەر (پەتاتە)", price: 1500, category: "finger", img: "https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png" },
-
-        { id: 18, name: "کۆکا کۆلا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500" },
-        { id: 19, name: "ئاوی بچووک", price: 250, category: "drink", img: "https://i.postimg.cc/v8603rhR/images-(2).jpg" },
-        { id: 20, name: "ماستاو", price: 500, category: "drink", img: "https://i.postimg.cc/xTMFTvNz/images.jpg" },
-        { id: 21, name: "فانتا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1624517452488-04869289c4ca?w=500" }
+        { id: 18, name: "کۆکا کۆلا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500" }
     ];
 
     let cart = [];
-    
-    // Names for titles
     const folderNames = {
         'pizza': '🍕 جۆرەکانی پیزا',
         'burger': '🍔 جۆرەکانی بەرگر',
@@ -247,19 +233,19 @@
         'drink': '🥤 خواردنەوەکان'
     };
 
+    function playSound(type) {
+        const sound = document.getElementById(type === 'add' ? 'orderSound' : 'successSound');
+        sound.currentTime = 0;
+        sound.play();
+    }
+
     function openFolder(category, element) {
-        // Handle UI active state
         document.querySelectorAll('.cat-card').forEach(card => card.classList.remove('active'));
         element.classList.add('active');
-
-        // Update Title
         document.getElementById('folder-title').innerText = folderNames[category];
-
-        // Filter and Display
         const display = document.getElementById('menu-display');
         display.innerHTML = '';
         const filtered = menuItems.filter(item => item.category === category);
-        
         filtered.forEach(item => {
             display.innerHTML += `
                 <div class="item-card">
@@ -276,6 +262,7 @@
     function addToCart(id) {
         const item = menuItems.find(i => i.id === id);
         cart.push(item);
+        playSound('add'); // لێرە دەنگی کلیکەکە لێدەدات
         renderCart();
     }
 
@@ -291,15 +278,12 @@
                     <button class="remove-btn" onclick="cart.splice(${index},1);renderCart();">لادان</button>
                 </div>`;
         });
-        
-        const totalStr = total.toLocaleString();
-        document.getElementById('total-amount').innerText = totalStr;
-        
+        document.getElementById('total-amount').innerText = total.toLocaleString();
         const floatCart = document.getElementById('floating-cart');
         if(cart.length > 0) {
             floatCart.style.display = 'flex';
             document.getElementById('floating-count').innerText = cart.length + " خواردن";
-            document.getElementById('floating-total').innerText = totalStr + " دینار";
+            document.getElementById('floating-total').innerText = total.toLocaleString() + " دینار";
         } else {
             floatCart.style.display = 'none';
         }
@@ -307,7 +291,7 @@
 
     function sendToWhatsApp() {
         if(cart.length === 0) return alert("تکایە سەرەتا خواردن هەڵبژێرە!");
-        
+        playSound('success'); // دەنگی ناردنی داواکاری
         navigator.geolocation.getCurrentPosition(function(p) {
             const loc = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
             finalize(loc);
@@ -326,7 +310,6 @@
         window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(txt)}`;
     }
 
-    // Initialize first category
     openFolder('pizza', document.querySelector('.cat-card'));
 </script>
 </body>
