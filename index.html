@@ -262,7 +262,7 @@
     function addToCart(id) {
         const item = menuItems.find(i => i.id === id);
         cart.push(item);
-        playSound('add'); // لێرە دەنگی کلیکەکە لێدەدات
+        playSound('add');
         renderCart();
     }
 
@@ -291,7 +291,7 @@
 
     function sendToWhatsApp() {
         if(cart.length === 0) return alert("تکایە سەرەتا خواردن هەڵبژێرە!");
-        playSound('success'); // دەنگی ناردنی داواکاری
+        playSound('success');
         navigator.geolocation.getCurrentPosition(function(p) {
             const loc = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
             finalize(loc);
@@ -302,11 +302,29 @@
 
     function finalize(loc) {
         const phone = "9647861995417";
-        let txt = "🌟 *داواکاری نوێ لە Boom's Pizza*\n";
-        txt += "---------------------------------\n";
-        cart.forEach((i, idx) => txt += `${idx+1}. ${i.name}\n`);
-        txt += "---------------------------------\n";
-        txt += `💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} دینار\n📍 *لۆکەیشن:* ${loc}`;
+        const orderID = Math.floor(1000 + Math.random() * 9000); // دروستکردنی ژمارەی داواکاری ناوازە
+        const now = new Date();
+        const timeStr = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+
+        let txt = `📦 *داواکاری نوێ: #${orderID}*\n`;
+        txt += `⏰ کات: ${timeStr}\n`;
+        txt += "----------------------------------\n";
+        
+        // ڕێکخستنی لیستەکە بە شێوەیەکی پرۆفیشناڵ
+        const itemCounts = {};
+        cart.forEach(item => {
+            itemCounts[item.name] = (itemCounts[item.name] || 0) + 1;
+        });
+
+        for (const [name, count] of Object.entries(itemCounts)) {
+            txt += `🔹 ${name} (x${count})\n`;
+        }
+
+        txt += "----------------------------------\n";
+        txt += `💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} دینار\n`;
+        txt += `📍 *شوێنی کڕیار:* ${loc}\n\n`;
+        txt += "✨ داواکراوە لە ڕێگەی وێبسایتی Boom's Pizza";
+        
         window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(txt)}`;
     }
 
