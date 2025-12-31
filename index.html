@@ -49,7 +49,6 @@
         header h1 { font-size: 3rem; margin: 0; text-shadow: 3px 3px 15px rgba(0,0,0,1); color: var(--text-gold); letter-spacing: 2px; }
         header p { margin: 10px 0 0; font-weight: bold; background: var(--primary-red); padding: 4px 20px; border-radius: 50px; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(255,49,49,0.4); }
 
-        /* 1. Search Bar */
         .search-box { padding: 10px 15px; background: var(--dark-bg); }
         .search-input {
             width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #333;
@@ -77,10 +76,7 @@
             transition: 0.3s;
         }
         .cat-card.active img { border-color: var(--primary-red); transform: scale(1.1); box-shadow: 0 0 15px var(--primary-red); }
-        .cat-card:active img { transform: scale(0.9); }
         .cat-card p { font-size: 0.85rem; margin: 10px 0 0; font-weight: bold; color: #ccc; }
-
-        .cart-icon-btn img { border-color: var(--whatsapp-green) !important; background: #222; }
 
         .container { padding: 15px; max-width: 600px; margin: auto; }
 
@@ -91,10 +87,6 @@
             border-right: 4px solid var(--primary-red);
             padding-right: 15px;
         }
-
-        /* 2. Skeleton Effect */
-        .skeleton { background: #222; height: 200px; border-radius: 20px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
         .menu-section {
             display: grid;
@@ -111,10 +103,8 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            animation: fadeIn 0.4s ease;
             position: relative;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .item-card img { width: 100%; height: 140px; object-fit: cover; }
         .item-info { padding: 12px; text-align: center; }
@@ -131,12 +121,9 @@
             border-radius: 12px;
             font-weight: bold;
             font-family: 'Vazirmatn';
-            font-size: 0.9rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             cursor: pointer;
         }
 
-        /* 7. Flying Animation Style */
         .fly-img {
             position: fixed; z-index: 9999; width: 60px; height: 60px;
             border-radius: 50%; object-fit: cover;
@@ -150,16 +137,11 @@
             margin: 50px 0 100px;
             border: 2px solid #222;
         }
-        
-        /* 3 & 4. Delivery Info */
-        .delivery-details {
-            background: #1a1a1a; padding: 10px; border-radius: 10px; margin-top: 10px;
-            font-size: 0.85rem; display: flex; justify-content: space-between; color: #bbb;
-        }
 
-        /* 10. Pre-order Selection */
-        .preorder-box { margin: 15px 0; }
-        .preorder-box select { width: 100%; padding: 10px; background: #222; color: white; border: 1px solid #444; border-radius: 10px; font-family: 'Vazirmatn'; }
+        .delivery-fee-info {
+            background: #1a1a1a; padding: 10px; border-radius: 10px; margin-top: 10px;
+            font-size: 0.85rem; text-align: center; color: #bbb;
+        }
 
         .total-price { font-size: 1.8rem; color: var(--text-gold); text-align: center; margin: 25px 0; font-weight: bold; }
 
@@ -170,23 +152,18 @@
             border-radius: 50px;
             text-align: center;
             font-weight: bold;
-            font-size: 1.2rem;
             width: 100%;
             border: none;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
             font-family: 'Vazirmatn';
         }
 
-        /* 8 & 12. Bottom Actions */
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .action-btn { background: #333; color: white; padding: 12px; border-radius: 15px; text-align: center; text-decoration: none; font-weight: bold; font-size: 0.9rem; border: none; cursor: pointer; }
+        .action-btn { background: #333; color: white; padding: 12px; border-radius: 15px; text-align: center; text-decoration: none; font-weight: bold; border: none; cursor: pointer; }
 
         .bottom-bar {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
+            bottom: 20px; left: 20px; right: 20px;
             background: var(--primary-red);
             padding: 15px 25px;
             border-radius: 50px;
@@ -194,7 +171,6 @@
             justify-content: space-between;
             align-items: center;
             z-index: 2000;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
         }
 
         .snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
@@ -213,21 +189,20 @@
 </header>
 
 <div class="search-box">
-    <input type="text" class="search-input" id="search-input" placeholder="گەڕان بۆ پیتزا، بەرگر..." oninput="searchMenu()">
+    <input type="text" class="search-input" id="search-input" placeholder="گەڕان بۆ خواردن..." oninput="searchMenu()">
 </div>
 
 <div class="category-container">
     <div class="cat-card active" onclick="openFolder('pizza', this)"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200"><p>پیتزا</p></div>
     <div class="cat-card" onclick="openFolder('burger', this)"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200"><p>بەرگر</p></div>
     <div class="cat-card" onclick="openFolder('shawarma', this)"><img src="https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg"><p>شاوەرمە</p></div>
-    <div class="cat-card cart-icon-btn" onclick="document.getElementById('cart-section').scrollIntoView({behavior: 'smooth'})"><img src="https://cdn-icons-png.flaticon.com/512/3144/3144456.png"><p>سەبەتە</p></div>
     <div class="cat-card" onclick="openFolder('finger', this)"><img src="https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png"><p>فینگەر</p></div>
     <div class="cat-card" onclick="openFolder('drink', this)"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200"><p>خواردنەوە</p></div>
 </div>
 
 <div class="container">
     <div id="quick-reorder" style="display:none; background:#1a1a1a; padding:15px; border-radius:15px; margin-bottom:15px; border:1px dashed var(--text-gold);">
-        <span style="font-size:0.9rem">🔄 دووبارە داواکردنەوەی دوایین کڕین؟</span>
+        <span style="font-size:0.9rem">🔄 داواکارییەکەی پێشووت دووبارە دەکەیتەوە؟</span>
         <button onclick="reOrder()" style="float:left; background:var(--text-gold); border:none; border-radius:5px; padding:5px 10px; cursor:pointer">داواکردن</button>
     </div>
 
@@ -238,23 +213,7 @@
         <h3>🛒 سەبەتەی داواکارییەکان</h3>
         <div id="cart-items"></div>
 
-        <div id="drink-suggest" style="display:none; margin:15px 0; font-size:0.8rem; color:var(--text-gold)">
-            💡 پێشنیار: خواردنەوەیەکی سارد لەگەڵ پیتزاکەت داوا بکە!
-        </div>
-
-        <div class="delivery-details">
-            <span>⏱️ کاتی گەیشتن: ٣٠-٤٥ خولەک</span>
-            <span>🛵 گەیاندن: ٢,٠٠٠ دینار</span>
-        </div>
-
-        <div class="preorder-box">
-            <label style="font-size: 0.8rem; color: #888;">کات دیاری بکە:</label>
-            <select id="pre-order-time">
-                <option value="ئێستا">بە زووترین کات (ئێستا)</option>
-                <option value="١ کاتژمێری تر">دوای ١ کاتژمێر</option>
-                <option value="٢ کاتژمێری تر">دوای ٢ کاتژمێر</option>
-            </select>
-        </div>
+        <div class="delivery-fee-info">🛵 تێچووی گەیاندن: ٢,٠٠٠ دینار</div>
 
         <div class="total-price">کۆی گشتی: <span id="total-amount">0</span> دینار</div>
         
@@ -262,19 +221,18 @@
 
         <div class="action-grid">
             <a href="tel:9647861995417" class="action-btn">📞 پەیوەندی ڕاستەوخۆ</a>
-            <button class="action-btn" onclick="shareApp()">📤 بڵاوکردنەوەی ئەپ</button>
+            <button class="action-btn" onclick="shareApp()">📤 بڵاوکردنەوە</button>
         </div>
     </div>
 </div>
 
 <div class="bottom-bar" id="floating-cart" onclick="document.getElementById('cart-section').scrollIntoView({behavior: 'smooth'})">
     <span id="floating-count">0 دانە</span>
-    <strong>بینینی سەبەتە 🛒</strong>
+    <strong>سەبەتە 🛒</strong>
     <span id="floating-total">0</span>
 </div>
 
 <script>
-    // --- Snow Logic ---
     function createSnow() {
         const container = document.createElement('div'); container.className = 'snow-container'; document.body.appendChild(container);
         const symbols = ['❄', '❅', '❆'];
@@ -303,16 +261,9 @@
         { id: 9, name: "بووم پیزا (شاهانە)", price: 7000, category: "pizza", img: "https://i.postimg.cc/L69mz8k6/20251231-232908-0000.jpg" },
         { id: 10, name: "بووم بەرگر", price: 6000, category: "burger", img: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500" },
         { id: 11, name: "چیز بەرگر", price: 3000, category: "burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500" },
-        { id: 12, name: "دەبڵ چیز بەرگر", price: 4000, category: "burger", img: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500" },
-        { id: 13, name: "بەرگری قارچک", price: 5000, category: "burger", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=500" },
         { id: 14, name: "لەفەی شاوەرمە", price: 1500, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
-        { id: 15, name: "شاوەرمەی ساج", price: 3000, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
-        { id: 16, name: "شاوەرمە بە پەنیر", price: 2000, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
         { id: 17, name: "فینگەر (پەتاتە)", price: 1500, category: "finger", img: "https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png" },
-        { id: 18, name: "کۆکا کۆلا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500" },
-        { id: 19, name: "ئاوی بچووک", price: 250, category: "drink", img: "https://i.postimg.cc/v8603rhR/images-(2).jpg" },
-        { id: 20, name: "ماستاو", price: 500, category: "drink", img: "https://i.postimg.cc/xTMFTvNz/images.jpg" },
-        { id: 21, name: "فانتا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1624517452488-04869289c4ca?w=500" }
+        { id: 18, name: "کۆکا کۆلا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500" }
     ];
 
     let cart = [];
@@ -323,24 +274,18 @@
         if(sound) { sound.currentTime = 0; sound.play().catch(e => {}); }
     }
 
-    // 1. Search Function
     function searchMenu() {
         const q = document.getElementById('search-input').value.toLowerCase();
         const filtered = menuItems.filter(i => i.name.toLowerCase().includes(q));
         renderDisplay(filtered);
     }
 
-    // 2. Skeleton Loading
     function openFolder(category, element) {
         document.querySelectorAll('.cat-card').forEach(card => card.classList.remove('active'));
         element.classList.add('active');
         document.getElementById('folder-title').innerText = folderNames[category];
-        const display = document.getElementById('menu-display');
-        display.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
-        setTimeout(() => {
-            const filtered = menuItems.filter(item => item.category === category);
-            renderDisplay(filtered);
-        }, 300);
+        const filtered = menuItems.filter(item => item.category === category);
+        renderDisplay(filtered);
     }
 
     function renderDisplay(items) {
@@ -356,7 +301,6 @@
         });
     }
 
-    // 7. Flying Animation
     function addToCart(id, event) {
         const item = menuItems.find(i => i.id === id);
         cart.push(item);
@@ -387,17 +331,14 @@
             cartDiv.innerHTML += `<div class="cart-item"><span>${counts[name]}x ${name}</span><button class="remove-btn" onclick="removeFromCart('${name}')">لادان</button></div>`;
         });
 
-        // 5. Drink Suggest
-        const hasPizza = cart.some(i => i.category === 'pizza');
-        const hasDrink = cart.some(i => i.category === 'drink');
-        document.getElementById('drink-suggest').style.display = (hasPizza && !hasDrink) ? 'block' : 'none';
-
-        document.getElementById('total-amount').innerText = (total > 0 ? total + 2000 : 0).toLocaleString();
+        const finalTotal = total > 0 ? total + 2000 : 0;
+        document.getElementById('total-amount').innerText = finalTotal.toLocaleString();
+        
         const floatCart = document.getElementById('floating-cart');
         if(cart.length > 0) {
             floatCart.style.display = 'flex';
-            document.getElementById('floating-count').innerText = cart.length + " خواردن";
-            document.getElementById('floating-total').innerText = document.getElementById('total-amount').innerText + " د";
+            document.getElementById('floating-count').innerText = cart.length + " دانە";
+            document.getElementById('floating-total').innerText = finalTotal.toLocaleString() + " د";
         } else { floatCart.style.display = 'none'; }
     }
 
@@ -407,19 +348,16 @@
         renderCart();
     }
 
-    // 12. Share App
     function shareApp() {
-        if(navigator.share) {
-            navigator.share({ title: "Boom's Pizza", text: "خۆشترین پیتزا لێرە داوا بکە!", url: window.location.href });
-        }
+        if(navigator.share) navigator.share({ title: "Boom's Pizza", url: window.location.href });
     }
 
-    // 6. Quick Reorder Logic
     window.onload = () => {
         const last = localStorage.getItem('lastOrder');
         if(last) document.getElementById('quick-reorder').style.display = 'block';
         openFolder('pizza', document.querySelector('.cat-card'));
     }
+
     function reOrder() {
         cart = JSON.parse(localStorage.getItem('lastOrder'));
         renderCart();
@@ -430,19 +368,26 @@
         localStorage.setItem('lastOrder', JSON.stringify(cart));
         playSound('success');
         navigator.geolocation.getCurrentPosition(p => {
-            // 9. Live Map URL
             finalize(`https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`);
         }, () => finalize(prompt("ناونیشان بنووسە:")));
     }
 
     function finalize(loc) {
         const orderID = Math.floor(1000 + Math.random() * 9000);
-        const preTime = document.getElementById('pre-order-time').value;
-        // 11. Digital Receipt Format
-        let txt = `📦 *داواکاری نوێ: #${orderID}*\n⏰ کات: ${preTime}\n------------------\n`;
+        const now = new Date();
+        const timeStr = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+        
+        // --- Digital Receipt Format ---
+        let txt = `🧾 *وەسڵی داواکاری: #${orderID}*\n`;
+        txt += `📅 کات: ${timeStr}\n`;
+        txt += `--------------------------\n`;
         const counts = {}; cart.forEach(i => counts[i.name] = (counts[i.name] || 0) + 1);
         for(let n in counts) txt += `🔹 ${counts[n]}x ${n}\n`;
-        txt += `------------------\n💰 کۆی گشتی: ${document.getElementById('total-amount').innerText} دینار\n📍 لۆکەیشن: ${loc}`;
+        txt += `--------------------------\n`;
+        txt += `🛵 تێچووی گەیاندن: ٢,٠٠٠ د\n`;
+        txt += `💰 *کۆی گشتی: ${document.getElementById('total-amount').innerText} دینار*\n\n`;
+        txt += `📍 لۆکەیشن: ${loc}`;
+        
         window.location.href = `https://wa.me/9647861995417?text=${encodeURIComponent(txt)}`;
     }
 </script>
