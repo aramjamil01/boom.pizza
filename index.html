@@ -1,1 +1,218 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boom's Pizza | بوم پیتزا</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #e62222;
+            --dark-grey: #333;
+            --light-grey: #f4f4f4;
+        }
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            margin: 0;
+            background-color: var(--light-grey);
+            color: var(--dark-grey);
+        }
+        header {
+            background-color: var(--primary-red);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 15px;
+        }
+        .menu-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .item-card {
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .item-card h3 { margin: 10px 0 5px; font-size: 1.1rem; }
+        .item-card p { color: var(--primary-red); font-weight: bold; margin: 5px 0; }
+        .add-btn {
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        /* Cart Styling */
+        #cart-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-top: 4px solid var(--primary-red);
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .remove-btn {
+            background: #ffeded;
+            color: red;
+            border: 1px solid red;
+            padding: 2px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .total-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .whatsapp-btn {
+            background: #25D366;
+            color: white;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
 
+<header>
+    <h1>Boom's Pizza - بوم پیتزا</h1>
+    <p>خێراترین گەیاندن لە شار</p>
+</header>
+
+<div class="container">
+    <h2>پیتزا (Pizza)</h2>
+    <div class="menu-section" id="pizza-menu"></div>
+
+    <h2>بەرگر (Burger)</h2>
+    <div class="menu-section" id="burger-menu"></div>
+
+    <h2>مییانو و خواردنەوەکان</h2>
+    <div class="menu-section" id="other-menu"></div>
+
+    <div id="cart-section">
+        <h3>سەبەتەی کڕین (Cart)</h3>
+        <div id="cart-items">
+            <p style="text-align: center;">سەبەتەکەت خاڵییە</p>
+        </div>
+        <div class="total-price">کۆی گشتی: <span id="total-amount">0</span> IQD</div>
+        <a href="#" class="whatsapp-btn" onclick="sendToWhatsApp()">ناردنی داواکاری بۆ واتسئاپ</a>
+    </div>
+</div>
+
+<script>
+    const menuItems = [
+        // Pizzas
+        { id: 1, name: "پیتزا گۆشت ٢٥سم", price: 4000, category: "pizza" },
+        { id: 2, name: "پیتزا گۆشت ٢٨سم", price: 5000, category: "pizza" },
+        { id: 3, name: "پیتزا گۆشت ٣٠سم", price: 7000, category: "pizza" },
+        { id: 4, name: "پیتزا پەنیرونی ٢٨سم", price: 4000, category: "pizza" },
+        { id: 5, name: "پیتزا مریشک ٢٨سم", price: 5000, category: "pizza" },
+        // Burgers
+        { id: 6, name: "بۆوم بەرگر", price: 6000, category: "burger" },
+        { id: 7, name: "چیزبەرگر", price: 3000, category: "burger" },
+        { id: 8, name: "قارچک بەرگر", price: 5000, category: "burger" },
+        // Others
+        { id: 9, name: "شاوەرمە مریشک", price: 1500, category: "other" },
+        { id: 10, name: "فنگر", price: 1500, category: "other" },
+        { id: 11, name: "خواردنەوە گازییەکان", price: 500, category: "other" }
+    ];
+
+    let cart = [];
+
+    function displayMenu() {
+        menuItems.forEach(item => {
+            const container = document.getElementById(`${item.category}-menu`);
+            const div = document.createElement('div');
+            div.className = 'item-card';
+            div.innerHTML = `
+                <h3>${item.name}</h3>
+                <p>${item.price.toLocaleString()} IQD</p>
+                <button class="add-btn" onclick="addToCart(${item.id})">زیادکردن</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function addToCart(id) {
+        const item = menuItems.find(i => i.id === id);
+        cart.push(item);
+        renderCart();
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        renderCart();
+    }
+
+    function renderCart() {
+        const cartDiv = document.getElementById('cart-items');
+        const totalDiv = document.getElementById('total-amount');
+        cartDiv.innerHTML = '';
+        
+        let total = 0;
+        cart.forEach((item, index) => {
+            total += item.price;
+            cartDiv.innerHTML += `
+                <div class="cart-item">
+                    <span>${item.name}</span>
+                    <div>
+                        <span>${item.price.toLocaleString()} IQD</span>
+                        <button class="remove-btn" onclick="removeFromCart(${index})">لادان</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        if(cart.length === 0) cartDiv.innerHTML = '<p style="text-align: center;">سەبەتەکەت خاڵییە</p>';
+        totalDiv.innerText = total.toLocaleString();
+    }
+
+    function sendToWhatsApp() {
+        if(cart.length === 0) {
+            alert("تکایە سەرەتا خواردن هەڵبژێرە");
+            return;
+        }
+        
+        let phoneNumber = "9647504629237"; // REPLACE WITH YOUR NUMBER
+        let message = "سڵاو بوم پیتزا، داواکاری نوێم هەیە:\n\n";
+        
+        cart.forEach((item, index) => {
+            message += `${index + 1}- ${item.name} (${item.price} IQD)\n`;
+        });
+        
+        message += `\nکۆی گشتی: ${document.getElementById('total-amount').innerText} IQD`;
+        
+        const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+    }
+
+    displayMenu();
+</script>
+
+</body>
+</html>
