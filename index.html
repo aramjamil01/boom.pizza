@@ -138,6 +138,7 @@
             padding: 12px 0;
             border-bottom: 1px solid #222;
             font-size: 0.95rem;
+            align-items: center;
         }
         .remove-btn { color: #ff5555; background: none; border: 1px solid #ff5555; border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; }
 
@@ -341,18 +342,32 @@
         renderCart();
     }
 
+    // --- لێرەدا فەرمانی سەبەتەکە گۆڕدراوە بۆ ئەوەی بڕەکە نیشان بدات ---
     function renderCart() {
         const cartDiv = document.getElementById('cart-items');
         let total = 0;
         cartDiv.innerHTML = '';
-        cart.forEach((item, index) => {
+        
+        // گروپکردنی خواردنەکان بۆ ئەوەی بڕەکەیان دیاری بکرێت
+        const groupedCart = {};
+        cart.forEach((item) => {
             total += item.price;
+            if (groupedCart[item.name]) {
+                groupedCart[item.name].count++;
+            } else {
+                groupedCart[item.name] = { ...item, count: 1 };
+            }
+        });
+
+        // نیشاندانی خواردنەکان بە شێوەی بڕ x ناو
+        Object.values(groupedCart).forEach((item) => {
             cartDiv.innerHTML += `
                 <div class="cart-item">
-                    <span>${item.name}</span>
-                    <button class="remove-btn" onclick="cart.splice(${index},1);renderCart();">لادان</button>
+                    <span>${item.count}x ${item.name}</span>
+                    <button class="remove-btn" onclick="removeFromCart('${item.name}')">لادان</button>
                 </div>`;
         });
+
         document.getElementById('total-amount').innerText = total.toLocaleString();
         const floatCart = document.getElementById('floating-cart');
         if(cart.length > 0) {
@@ -362,6 +377,15 @@
         } else {
             floatCart.style.display = 'none';
         }
+    }
+
+    // فەرمان بۆ لادانی یەک دانە لە خواردنێکی دیاریکراو
+    function removeFromCart(name) {
+        const index = cart.findIndex(i => i.name === name);
+        if (index > -1) {
+            cart.splice(index, 1);
+        }
+        renderCart();
     }
 
     function sendToWhatsApp() {
@@ -391,7 +415,7 @@
         });
 
         for (const [name, count] of Object.entries(itemCounts)) {
-            txt += `🔹 ${name} (x${count})\n`;
+            txt += `🔹 ${count}x ${name}\n`;
         }
 
         txt += "----------------------------------\n";
