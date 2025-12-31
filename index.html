@@ -12,9 +12,7 @@
             --light-grey: #f4f4f4;
             --whatsapp-green: #25D366;
         }
-        
         * { box-sizing: border-box; }
-
         body {
             font-family: 'Vazirmatn', sans-serif;
             margin: 0;
@@ -23,7 +21,7 @@
             scroll-behavior: smooth;
         }
 
-        /* بەشی سەرەوە بە وێنەی پاشبنەما */
+        /* بەشی سەرەوەی ماڵپەڕ (Header) */
         header {
             background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1000');
             background-size: cover;
@@ -34,7 +32,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* بەشی جۆرەکان (Categories) */
+        /* بەشی جۆرەکان (Categories) وەک فۆڵدەر */
         .category-container {
             display: flex;
             justify-content: center;
@@ -45,30 +43,24 @@
             top: 0;
             z-index: 99;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow-x: auto;
         }
         .cat-card {
             text-align: center;
             cursor: pointer;
             padding: 10px;
-            border-radius: 15px;
+            border-radius: 12px;
             border: 1px solid #eee;
             min-width: 90px;
+            background: #fff;
             transition: 0.3s;
         }
-        .cat-card:hover { border-color: var(--primary-red); background: #fffafa; }
-        .cat-card img { width: 45px; height: 45px; margin-bottom: 5px; }
+        .cat-card:hover { border-color: var(--primary-red); }
+        .cat-card img { width: 40px; height: 40px; display: block; margin: 0 auto 5px; }
         .cat-card p { margin: 0; font-weight: bold; font-size: 0.9rem; }
 
-        .container { max-width: 900px; margin: auto; padding: 20px; }
-        
-        h2 { 
-            border-right: 5px solid var(--primary-red); 
-            padding-right: 15px; 
-            margin-top: 50px; 
-            font-size: 1.5rem;
-        }
-        
+        .container { max-width: 900px; margin: auto; padding: 15px; }
+        h2 { border-right: 5px solid var(--primary-red); padding-right: 15px; margin-top: 40px; }
+
         .menu-section {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -81,19 +73,15 @@
             padding: 15px;
             border-radius: 20px;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
-        .item-card:hover { transform: translateY(-5px); }
         .item-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 15px; margin-bottom: 12px; }
-        .item-card h3 { margin: 10px 0 5px; font-size: 1.1rem; }
-        .item-card p { color: var(--primary-red); font-weight: bold; margin-bottom: 15px; }
-
+        
         .add-btn {
             background: var(--primary-red);
             color: white;
             border: none;
-            padding: 12px;
+            padding: 10px;
             border-radius: 10px;
             cursor: pointer;
             width: 100%;
@@ -101,52 +89,31 @@
             font-family: 'Vazirmatn';
         }
 
-        /* بەشی سەبەتە */
+        /* سەبەتەی کڕین */
         #cart-section {
             background: #fff;
-            padding: 30px;
+            padding: 25px;
             border-radius: 25px;
-            margin-top: 60px;
-            border: 2px solid #eee;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            margin-top: 50px;
+            border: 2px solid var(--primary-red);
         }
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #f5f5f5;
-        }
-        .remove-btn {
-            background: #fff0f0;
-            color: #d00;
-            border: 1px solid #ffcccc;
-            padding: 5px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .total-price {
-            font-size: 1.6rem;
-            font-weight: bold;
-            margin: 30px 0;
-            color: var(--primary-red);
-            text-align: left;
-        }
-
+        .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .remove-btn { background: #fff0f0; color: #d00; border: 1px solid #ffcccc; padding: 3px 8px; border-radius: 5px; cursor: pointer; }
+        
         .whatsapp-btn {
             background: var(--whatsapp-green);
             color: white;
             text-decoration: none;
             display: block;
             text-align: center;
-            padding: 20px;
-            border-radius: 18px;
+            padding: 18px;
+            border-radius: 15px;
             font-weight: bold;
-            font-size: 1.3rem;
-            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
-            cursor: pointer;
+            font-size: 1.2rem;
+            margin-top: 20px;
             width: 100%;
             border: none;
+            cursor: pointer;
             font-family: 'Vazirmatn';
         }
     </style>
@@ -154,70 +121,63 @@
 <body>
 
 <header>
-    <h1 style="font-size: 3rem; margin: 0;">Boom's Pizza</h1>
-    <p style="font-size: 1.3rem; opacity: 0.9;">باشترین پیتزا لە شار لێرەیە</p>
+    <h1 style="font-size: 2.5rem; margin: 0;">Boom's Pizza</h1>
+    <p>خۆشترین پیتزا و بەرگر لە شار!</p>
 </header>
 
 <div class="category-container">
-    <div class="cat-card" onclick="scrollToSection('pizza-sec')">
+    <div class="cat-card" onclick="scrollToSection('piz-sec')">
         <img src="https://cdn-icons-png.flaticon.com/512/3595/3595455.png" alt="Pizza">
         <p>پیتزا</p>
     </div>
-    <div class="cat-card" onclick="scrollToSection('burger-sec')">
+    <div class="cat-card" onclick="scrollToSection('bur-sec')">
         <img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" alt="Burger">
         <p>بەرگر</p>
     </div>
-    <div class="cat-card" onclick="scrollToSection('other-sec')">
-        <img src="https://cdn-icons-png.flaticon.com/512/2738/2738730.png" alt="Drink">
+    <div class="cat-card" onclick="scrollToSection('dri-sec')">
+        <img src="https://cdn-icons-png.flaticon.com/512/2738/2738730.png" alt="Drinks">
         <p>خواردنەوە</p>
     </div>
 </div>
 
 <div class="container">
-    <div id="pizza-sec">
+    <div id="piz-sec">
         <h2>🍕 پیتزاکان</h2>
         <div class="menu-section" id="pizza-menu"></div>
     </div>
 
-    <div id="burger-sec">
+    <div id="bur-sec">
         <h2>🍔 بەرگرەکان</h2>
         <div class="menu-section" id="burger-menu"></div>
     </div>
 
-    <div id="other-sec">
-        <h2>🥤 خواردنەوە و فنگر</h2>
+    <div id="dri-sec">
+        <h2>🥤 خواردنەوەکان</h2>
         <div class="menu-section" id="other-menu"></div>
     </div>
 
     <div id="cart-section">
-        <h3 style="font-size: 1.6rem; margin: 0 0 20px 0;">🛒 سەبەتەی داواکارییەکانت</h3>
+        <h3>🛒 سەبەتەکەت</h3>
         <div id="cart-items">
-            <p style="text-align: center; color: #999; padding: 20px;">سەبەتەکەت ئێستا خاڵییە</p>
+            <p style="text-align: center; color: #999;">سەبەتەکەت خاڵییە</p>
         </div>
-        <div class="total-price">کۆی گشتی: <span id="total-amount">0</span> IQD</div>
-        <button class="whatsapp-btn" onclick="sendToWhatsApp()">ناردنی داواکاری و لۆکەیشن (GPS)</button>
+        <h3 style="color: var(--primary-red);">کۆی گشتی: <span id="total-amount">0</span> IQD</h3>
+        <button class="whatsapp-btn" onclick="sendToWhatsApp()">ناردنی داواکاری و GPS</button>
     </div>
 </div>
 
 <script>
-    // لیستی خواردنەکان - دەتوانیت وێنەکان لێرە بگۆڕیت
     const menuItems = [
-        { id: 1, name: "پیتزا گۆشت ٢٨سم", price: 5000, category: "pizza", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400" },
-        { id: 2, name: "پیتزا مریشک ٢٨سم", price: 5000, category: "pizza", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400" },
-        { id: 6, name: "بۆوم بەرگر", price: 6000, category: "burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400" },
-        { id: 7, name: "چیزبەرگر", price: 3500, category: "burger", img: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400" },
-        { id: 10, name: "فنگر سادە", price: 1500, category: "other", img: "https://images.unsplash.com/photo-1630384066242-17a17833c147?w=400" },
-        { id: 11, name: "کۆکا کۆلا", price: 500, category: "other", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400" }
+        { id: 1, name: "پیتزا گۆشت", price: 5000, category: "pizza", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400" },
+        { id: 2, name: "بۆوم بەرگر", price: 6000, category: "burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400" },
+        { id: 3, name: "کۆکا کۆلا", price: 500, category: "other", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400" }
     ];
 
     let cart = [];
 
-    // فەنکشنی ڕۆیشتن بۆ بەشەکان
     function scrollToSection(id) {
         const element = document.getElementById(id);
-        const yOffset = -130; 
-        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-        window.scrollTo({top: y, behavior: 'smooth'});
+        window.scrollTo({ top: element.offsetTop - 80, behavior: "smooth" });
     }
 
     function displayMenu() {
@@ -226,7 +186,7 @@
             const div = document.createElement('div');
             div.className = 'item-card';
             div.innerHTML = `
-                <img src="${item.img}" alt="${item.name}">
+                <img src="${item.img}">
                 <h3>${item.name}</h3>
                 <p>${item.price.toLocaleString()} IQD</p>
                 <button class="add-btn" onclick="addToCart(${item.id})">زیادکردن +</button>
@@ -241,75 +201,49 @@
         renderCart();
     }
 
-    function removeFromCart(index) {
-        cart.splice(index, 1);
-        renderCart();
-    }
-
     function renderCart() {
         const cartDiv = document.getElementById('cart-items');
-        const totalDiv = document.getElementById('total-amount');
-        cartDiv.innerHTML = '';
         let total = 0;
-        
+        cartDiv.innerHTML = '';
         cart.forEach((item, index) => {
             total += item.price;
             cartDiv.innerHTML += `
                 <div class="cart-item">
                     <span>${item.name}</span>
-                    <div>
-                        <span style="margin-left:10px;">${item.price.toLocaleString()} IQD</span>
-                        <button class="remove-btn" onclick="removeFromCart(${index})">لادان</button>
-                    </div>
+                    <button class="remove-btn" onclick="cart.splice(${index},1);renderCart();">لادان</button>
                 </div>`;
         });
-        
-        if(cart.length === 0) cartDiv.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">سەبەتەکەت خاڵییە</p>';
-        totalDiv.innerText = total.toLocaleString();
+        if(cart.length === 0) cartDiv.innerHTML = '<p style="text-align: center; color: #999;">سەبەتەکەت خاڵییە</p>';
+        document.getElementById('total-amount').innerText = total.toLocaleString();
     }
 
     function sendToWhatsApp() {
-        if(cart.length === 0) return alert("تکایە سەرەتا خواردن هەڵبژێرە!");
+        if(cart.length === 0) return alert("سەبەتەکەت خاڵییە!");
 
-        // پشتگیری iOS و Android بۆ GPS
         if (navigator.geolocation) {
-            alert("تکایە 'Allow' بکە بۆ ئەوەی لۆکەیشنی وردت وەرگرین بۆ گەیاندن.");
-            
+            alert("تکایە ڕێگە بدە (Allow) بۆ ناردنی لۆکەیشنەکەت");
             navigator.geolocation.getCurrentPosition(function(position) {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                // لینکی گشتگیر بۆ هەموو جۆرە مۆبایلەکان
-                const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                const mapUrl = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
                 finalizeOrder(mapUrl);
-            }, function(error) {
-                // ئەگەر GPS ئیشی نەکرد (لەوانەیە بەهۆی HTTP بێت یان کڕیار نەیبات)
-                let manualLocation = prompt("نەتوانرا لۆکەیشن وەرگیرێت. تکایە ناونیشانەکەت بنووسە:");
-                finalizeOrder(manualLocation || "ناونیشان دیاری نەکراوە");
-            }, { enableHighAccuracy: true, timeout: 8000 });
+            }, function() {
+                finalizeOrder(prompt("ناونیشانەکەت بنووسە:"));
+            });
         } else {
             finalizeOrder(prompt("ناونیشانەکەت بنووسە:"));
         }
     }
 
-    function finalizeOrder(locationData) {
-        const phoneNumber = "9647504629237"; // لێرە ژمارەی خۆت دابنێ
-        let message = "🍕 *داواکاری نوێ لە بوم پیتزا*\n";
-        message += "--------------------------\n";
+    function finalizeOrder(loc) {
+        const phone = "9647504629237"; // ژمارەی خۆت لێرە دابنێ
+        let txt = "🍕 *داواکاری نوێ لە بوم پیتزا*\n\n";
+        cart.forEach((i, idx) => txt += `${idx+1}- ${i.name}\n`);
+        txt += `\n💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} IQD\n📍 *لۆکەیشن:* ${loc}`;
         
-        cart.forEach((item, index) => {
-            message += `${index + 1}- ${item.name} (${item.price.toLocaleString()} IQD)\n`;
-        });
-        
-        message += "--------------------------\n";
-        message += `💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} IQD\n`;
-        message += `📍 *لۆکەیشنی ورد:* ${locationData}\n`;
-        message += "--------------------------\n";
-        
-        window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        // ئەم هێڵە کێشەی iOS و Android چارەسەر دەکات
+        window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(txt)}`;
     }
 
     displayMenu();
 </script>
-
 </body>
 </html>
