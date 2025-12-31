@@ -206,6 +206,7 @@
 </div>
 
 <script>
+    // Full Menu Items Restored
     const menuItems = [
         { id: 1, name: "پیزای گۆشت small", price: 4500, category: "pizza", img: "https://i.postimg.cc/k5rZvjrz/20251231-232813-0000.jpg" },
         { id: 2, name: "پیتزا گۆشت medium", price: 5000, category: "pizza", img: "https://i.postimg.cc/k5rZvjrz/20251231-232813-0000.jpg" },
@@ -215,13 +216,23 @@
         { id: 6, name: "پیتزا مریشک large", price: 6000, category: "pizza", img: "https://i.postimg.cc/Vv7p9m1R/20251231-232937-0000.jpg" },
         { id: 7, name: "پیتزا موشەکەل", price: 4000, category: "pizza", img: "https://i.postimg.cc/wBH2Bn8C/20251231-233709-0000.jpg" },
         { id: 8, name: "پیتزا پێپەڕۆنی", price: 4000, category: "pizza", img: "https://i.postimg.cc/JzyVqDsk/20251231-232834-0000.jpg" },
+        { id: 9, name: "بووم پیزا (شاهانە)", price: 7000, category: "pizza", img: "https://i.postimg.cc/L69mz8k6/20251231-232908-0000.jpg" },
+        
         { id: 10, name: "بووم بەرگر", price: 6000, category: "burger", img: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500" },
         { id: 11, name: "چیز بەرگر", price: 3000, category: "burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500" },
         { id: 12, name: "دەبڵ چیز بەرگر", price: 4000, category: "burger", img: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500" },
         { id: 13, name: "بەرگری قارچک", price: 5000, category: "burger", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=500" },
+
         { id: 14, name: "لەفەی شاوەرمە", price: 1500, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
+        { id: 15, name: "شاوەرمەی ساج", price: 3000, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
+        { id: 16, name: "شاوەرمە بە پەنیر", price: 2000, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
+
         { id: 17, name: "فینگەر (پەتاتە)", price: 1500, category: "finger", img: "https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png" },
-        { id: 18, name: "کۆکا کۆلا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500" }
+
+        { id: 18, name: "کۆکا کۆلا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500" },
+        { id: 19, name: "ئاوی بچووک", price: 250, category: "drink", img: "https://i.postimg.cc/v8603rhR/images-(2).jpg" },
+        { id: 20, name: "ماستاو", price: 500, category: "drink", img: "https://i.postimg.cc/xTMFTvNz/images.jpg" },
+        { id: 21, name: "فانتا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1624517452488-04869289c4ca?w=500" }
     ];
 
     let cart = [];
@@ -235,8 +246,10 @@
 
     function playSound(type) {
         const sound = document.getElementById(type === 'add' ? 'orderSound' : 'successSound');
-        sound.currentTime = 0;
-        sound.play();
+        if(sound) {
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log("Sound play error: ", e));
+        }
     }
 
     function openFolder(category, element) {
@@ -302,7 +315,7 @@
 
     function finalize(loc) {
         const phone = "9647861995417";
-        const orderID = Math.floor(1000 + Math.random() * 9000); // دروستکردنی ژمارەی داواکاری ناوازە
+        const orderID = Math.floor(1000 + Math.random() * 9000);
         const now = new Date();
         const timeStr = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
 
@@ -310,7 +323,6 @@
         txt += `⏰ کات: ${timeStr}\n`;
         txt += "----------------------------------\n";
         
-        // ڕێکخستنی لیستەکە بە شێوەیەکی پرۆفیشناڵ
         const itemCounts = {};
         cart.forEach(item => {
             itemCounts[item.name] = (itemCounts[item.name] || 0) + 1;
@@ -322,7 +334,7 @@
 
         txt += "----------------------------------\n";
         txt += `💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} دینار\n`;
-        txt += `📍 *شوێنی کڕیار:* ${loc}\n\n`;
+        txt += `📍 *لۆکەیشن:* ${loc}\n\n`;
         txt += "✨ داواکراوە لە ڕێگەی وێبسایتی Boom's Pizza";
         
         window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(txt)}`;
