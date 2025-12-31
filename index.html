@@ -75,6 +75,12 @@
         .cat-card:active img { transform: scale(0.9); }
         .cat-card p { font-size: 0.85rem; margin: 10px 0 0; font-weight: bold; color: #ccc; }
 
+        /* Style for the special Cart Icon in category list */
+        .cart-icon-btn img {
+            border-color: var(--whatsapp-green) !important;
+            background: #222;
+        }
+
         .container { padding: 15px; max-width: 600px; margin: auto; }
 
         h2 { 
@@ -213,6 +219,12 @@
     <div class="cat-card active" onclick="openFolder('pizza', this)"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200"><p>پیتزا</p></div>
     <div class="cat-card" onclick="openFolder('burger', this)"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200"><p>بەرگر</p></div>
     <div class="cat-card" onclick="openFolder('shawarma', this)"><img src="https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg"><p>شاوەرمە</p></div>
+    
+    <div class="cat-card cart-icon-btn" onclick="document.getElementById('cart-section').scrollIntoView({behavior: 'smooth'})">
+        <img src="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" alt="Cart">
+        <p>سەبەتە</p>
+    </div>
+
     <div class="cat-card" onclick="openFolder('finger', this)"><img src="https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png"><p>فینگەر</p></div>
     <div class="cat-card" onclick="openFolder('drink', this)"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200"><p>خواردنەوە</p></div>
 </div>
@@ -342,13 +354,11 @@
         renderCart();
     }
 
-    // --- لێرەدا فەرمانی سەبەتەکە گۆڕدراوە بۆ ئەوەی بڕەکە نیشان بدات ---
     function renderCart() {
         const cartDiv = document.getElementById('cart-items');
         let total = 0;
         cartDiv.innerHTML = '';
         
-        // گروپکردنی خواردنەکان بۆ ئەوەی بڕەکەیان دیاری بکرێت
         const groupedCart = {};
         cart.forEach((item) => {
             total += item.price;
@@ -359,7 +369,6 @@
             }
         });
 
-        // نیشاندانی خواردنەکان بە شێوەی بڕ x ناو
         Object.values(groupedCart).forEach((item) => {
             cartDiv.innerHTML += `
                 <div class="cart-item">
@@ -379,7 +388,6 @@
         }
     }
 
-    // فەرمان بۆ لادانی یەک دانە لە خواردنێکی دیاریکراو
     function removeFromCart(name) {
         const index = cart.findIndex(i => i.name === name);
         if (index > -1) {
@@ -392,7 +400,7 @@
         if(cart.length === 0) return alert("تکایە سەرەتا خواردن هەڵبژێرە!");
         playSound('success');
         navigator.geolocation.getCurrentPosition(function(p) {
-            const loc = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
+            const loc = `http://maps.google.com/?q=${p.coords.latitude},${p.coords.longitude}`;
             finalize(loc);
         }, function() {
             finalize(prompt("تکایە ناونیشانەکەت بنووسە:"));
