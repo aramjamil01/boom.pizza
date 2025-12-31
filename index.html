@@ -19,6 +19,7 @@
             --card-bg: #161616;
             --text-gold: #ffc107;
             --whatsapp-green: #25D366;
+            --skeleton-color: #222;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -32,7 +33,6 @@
             overflow-x: hidden;
         }
 
-        /* Header Design */
         header {
             background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), var(--dark-bg)), 
                              url('https://i.postimg.cc/02R8rCjV/99999999.jpg');
@@ -50,16 +50,25 @@
         header h1 { font-size: 3rem; margin: 0; text-shadow: 3px 3px 15px rgba(0,0,0,1); color: var(--text-gold); letter-spacing: 2px; }
         header p { margin: 10px 0 0; font-weight: bold; background: var(--primary-red); padding: 4px 20px; border-radius: 50px; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(255,49,49,0.4); }
 
-        /* Categories Scroll */
+        /* Search Bar Style */
+        .search-container { padding: 15px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1001; }
+        .search-bar {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 50px;
+            border: 1px solid #333;
+            background: #1a1a1a;
+            color: white;
+            font-family: 'Vazirmatn';
+            outline: none;
+        }
+
         .category-container {
             display: flex;
             overflow-x: auto;
-            padding: 25px 15px;
+            padding: 15px;
             gap: 20px;
             background: var(--dark-bg);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
         }
         .category-container::-webkit-scrollbar { display: none; }
 
@@ -72,24 +81,26 @@
             transition: 0.3s;
         }
         .cat-card.active img { border-color: var(--primary-red); transform: scale(1.1); box-shadow: 0 0 15px var(--primary-red); }
-        .cat-card:active img { transform: scale(0.9); }
         .cat-card p { font-size: 0.85rem; margin: 10px 0 0; font-weight: bold; color: #ccc; }
-
-        /* Style for the special Cart Icon in category list */
-        .cart-icon-btn img {
-            border-color: var(--whatsapp-green) !important;
-            background: #222;
-        }
 
         .container { padding: 15px; max-width: 600px; margin: auto; }
 
-        h2 { 
-            font-size: 1.6rem; 
-            color: var(--text-gold); 
-            margin: 20px 0;
-            border-right: 4px solid var(--primary-red);
-            padding-right: 15px;
+        /* Skeleton Loading */
+        .skeleton {
+            background: var(--skeleton-color);
+            border-radius: 20px;
+            height: 250px;
+            position: relative;
+            overflow: hidden;
         }
+        .skeleton::after {
+            content: "";
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            animation: wave 1.5s infinite;
+        }
+        @keyframes wave { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         .menu-section {
             display: grid;
@@ -106,13 +117,12 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            animation: fadeIn 0.4s ease;
+            position: relative;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .item-card img { width: 100%; height: 140px; object-fit: cover; }
         .item-info { padding: 12px; text-align: center; }
-        .item-info h3 { font-size: 0.95rem; margin: 0; height: 45px; color: #fff; display: flex; align-items: center; justify-content: center; }
+        .item-info h3 { font-size: 0.95rem; margin: 0; height: 45px; color: #fff; }
         .item-info .price { color: var(--text-gold); font-weight: bold; font-size: 1.1rem; margin: 8px 0; }
 
         .add-btn {
@@ -125,11 +135,19 @@
             border-radius: 12px;
             font-weight: bold;
             font-family: 'Vazirmatn';
-            font-size: 0.9rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             cursor: pointer;
         }
-        .add-btn:active { transform: scale(0.95); background: #cc0000; }
+
+        /* Food Flying Animation */
+        .flying-food {
+            position: fixed;
+            z-index: 9999;
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
 
         #cart-section {
             background: #111;
@@ -138,17 +156,32 @@
             margin: 50px 0 100px;
             border: 2px solid #222;
         }
-        .cart-item {
+
+        /* Delivery Info */
+        .delivery-info {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-size: 0.85rem;
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #222;
-            font-size: 0.95rem;
-            align-items: center;
+            color: #aaa;
         }
-        .remove-btn { color: #ff5555; background: none; border: 1px solid #ff5555; border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; }
 
-        .total-price { font-size: 1.8rem; color: var(--text-gold); text-align: center; margin: 25px 0; font-weight: bold; }
+        /* Reorder & Drink Suggestions */
+        .extra-box {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px dashed #333;
+        }
+        .reorder-btn {
+            background: none; border: 1px solid var(--text-gold);
+            color: var(--text-gold); padding: 5px 15px; border-radius: 50px;
+            font-size: 0.8rem; cursor: pointer; margin-top: 10px;
+        }
 
         .whatsapp-btn {
             background: var(--whatsapp-green);
@@ -157,19 +190,43 @@
             border-radius: 50px;
             text-align: center;
             font-weight: bold;
-            font-size: 1.2rem;
             width: 100%;
             border: none;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.4);
-            font-family: 'Vazirmatn';
+            margin-top: 15px;
+        }
+
+        /* Pre-order Styles */
+        .preorder-select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 10px;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-secondary {
+            background: #333;
+            color: white;
+            padding: 12px;
+            border-radius: 50px;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
         }
 
         .bottom-bar {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
+            bottom: 20px; left: 20px; right: 20px;
             background: var(--primary-red);
             padding: 15px 25px;
             border-radius: 50px;
@@ -177,32 +234,11 @@
             justify-content: space-between;
             align-items: center;
             z-index: 2000;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
         }
 
-        /* ستایلی بەفرەکە */
-        .snow-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-        }
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            color: white;
-            font-size: 1em;
-            user-select: none;
-            animation-name: fall;
-            animation-timing-function: linear;
-            animation-iteration-count: infinite;
-        }
-        @keyframes fall {
-            to { transform: translateY(105vh); }
-        }
+        .snow-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        .snowflake { position: absolute; top: -10px; color: white; animation-name: fall; animation-iteration-count: infinite; }
+        @keyframes fall { to { transform: translateY(105vh); } }
     </style>
 </head>
 <body>
@@ -215,31 +251,62 @@
     <p>کوالێتی نایاب و تامێکی لەبیرنەکراو</p>
 </header>
 
+<div class="search-container">
+    <input type="text" class="search-bar" placeholder="بۆ چی دەگەڕێیت؟ (بۆ نموونە: پیتزا)" oninput="searchFood(this.value)">
+</div>
+
 <div class="category-container">
     <div class="cat-card active" onclick="openFolder('pizza', this)"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200"><p>پیتزا</p></div>
     <div class="cat-card" onclick="openFolder('burger', this)"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200"><p>بەرگر</p></div>
     <div class="cat-card" onclick="openFolder('shawarma', this)"><img src="https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg"><p>شاوەرمە</p></div>
-    
-    <div class="cat-card cart-icon-btn" onclick="document.getElementById('cart-section').scrollIntoView({behavior: 'smooth'})">
-        <img src="https://cdn-icons-png.flaticon.com/512/3144/3144456.png" alt="Cart">
-        <p>سەبەتە</p>
-    </div>
-
     <div class="cat-card" onclick="openFolder('finger', this)"><img src="https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png"><p>فینگەر</p></div>
     <div class="cat-card" onclick="openFolder('drink', this)"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200"><p>خواردنەوە</p></div>
 </div>
 
 <div class="container">
+    <div id="quick-reorder-section" class="extra-box" style="display:none;">
+        <span>🔄 حەز دەکەیت داواکارییەکەی پێشووت دووبارە بکەیتەوە؟</span><br>
+        <button class="reorder-btn" onclick="applyLastOrder()">دووبارە داواکردنەوە</button>
+    </div>
+
     <h2 id="folder-title">🍕 جۆرەکانی پیزا</h2>
     <div class="menu-section" id="menu-display"></div>
 
     <div id="cart-section">
         <h3>🛒 سەبەتەی داواکارییەکان</h3>
         <div id="cart-items"></div>
+        
+        <div class="extra-box" id="drink-suggestion" style="display:none;">
+            <small>🥤 پێشنیار: خواردنەوەیەک بۆ پیتزاکەت زیاد بکە؟</small>
+            <button class="reorder-btn" onclick="openFolder('drink', document.querySelectorAll('.cat-card')[4])">بینینی خواردنەوەکان</button>
+        </div>
+
+        <div class="delivery-info">
+            <span>🛵 تێچووی گەیاندن:</span>
+            <span>٢,٠٠٠ دینار</span>
+        </div>
+        <div class="delivery-info">
+            <span>⏱️ کاتی خەمڵێنراو:</span>
+            <span>٣٠ - ٤٥ خولەک</span>
+        </div>
+
+        <select class="preorder-select" id="order-time">
+            <option value="ئێستا">هێنان بە زووترین کات (ئێستا)</option>
+            <option value="سەعاتی ١:٠٠">بۆ کاتژمێر ١:٠٠ی دوای نیوەڕۆ</option>
+            <option value="سەعاتی ٤:٠٠">بۆ کاتژمێر ٤:٠٠ی ئێوارە</option>
+            <option value="سەعاتی ٨:٠٠">بۆ کاتژمێر ٨:٠٠ی شەو</option>
+        </select>
+
         <div class="total-price">کۆی گشتی: <span id="total-amount">0</span> دینار</div>
+        
         <button class="whatsapp-btn" onclick="sendToWhatsApp()">
             ناردنی داواکاری و لۆکەیشن (WhatsApp)
         </button>
+
+        <div class="action-buttons">
+            <a href="tel:07861995417" class="btn-secondary">📞 پەیوەندی ڕاستەوخۆ</a>
+            <button class="btn-secondary" onclick="shareMenu()">🔗 بڵاوکردنەوەی ئەپ</button>
+        </div>
     </div>
 </div>
 
@@ -250,106 +317,78 @@
 </div>
 
 <script>
-    // --- PWA Service Worker Logic ---
-    if ('serviceWorker' in navigator) {
-        const swCode = `
-            self.addEventListener('install', e => self.skipWaiting());
-            self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));
-        `;
-        const blob = new Blob([swCode], { type: 'text/javascript' });
-        const swUrl = URL.createObjectURL(blob);
-        navigator.serviceWorker.register(swUrl);
-    }
-
-    // --- Snow Animation Logic ---
-    function createSnow() {
-        const container = document.createElement('div');
-        container.className = 'snow-container';
-        document.body.appendChild(container);
-        const symbols = ['❄', '❅', '❆'];
-        setInterval(() => {
-            const snowflake = document.createElement('div');
-            snowflake.className = 'snowflake';
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            snowflake.style.opacity = Math.random();
-            snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
-            snowflake.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
-            container.appendChild(snowflake);
-            setTimeout(() => { snowflake.remove(); }, 5000);
-        }, 200);
-    }
-    createSnow();
-
-    // Full Menu Items
     const menuItems = [
         { id: 1, name: "پیزای گۆشت small", price: 4500, category: "pizza", img: "https://i.postimg.cc/k5rZvjrz/20251231-232813-0000.jpg" },
         { id: 2, name: "پیتزا گۆشت medium", price: 5000, category: "pizza", img: "https://i.postimg.cc/k5rZvjrz/20251231-232813-0000.jpg" },
         { id: 3, name: "پیزای گۆشت large", price: 7000, category: "pizza", img: "https://i.postimg.cc/k5rZvjrz/20251231-232813-0000.jpg" },
-        { id: 4, name: "پیتزا مریشک small", price: 4000, category: "pizza", img: "https://i.postimg.cc/Vv7p9m1R/20251231-232937-0000.jpg" },
-        { id: 5, name: "پیتزا مریشک medium", price: 5000, category: "pizza", img: "https://i.postimg.cc/Vv7p9m1R/20251231-232937-0000.jpg" },
-        { id: 6, name: "پیتزا مریشک large", price: 6000, category: "pizza", img: "https://i.postimg.cc/Vv7p9m1R/20251231-232937-0000.jpg" },
-        { id: 7, name: "پیتزا موشەکەل", price: 4000, category: "pizza", img: "https://i.postimg.cc/wBH2Bn8C/20251231-233709-0000.jpg" },
-        { id: 8, name: "پیتزا پێپەڕۆنی", price: 4000, category: "pizza", img: "https://i.postimg.cc/JzyVqDsk/20251231-232834-0000.jpg" },
-        { id: 9, name: "بووم پیزا (شاهانە)", price: 7000, category: "pizza", img: "https://i.postimg.cc/L69mz8k6/20251231-232908-0000.jpg" },
-        
         { id: 10, name: "بووم بەرگر", price: 6000, category: "burger", img: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=500" },
         { id: 11, name: "چیز بەرگر", price: 3000, category: "burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500" },
-        { id: 12, name: "دەبڵ چیز بەرگر", price: 4000, category: "burger", img: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500" },
-        { id: 13, name: "بەرگری قارچک", price: 5000, category: "burger", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=500" },
-
         { id: 14, name: "لەفەی شاوەرمە", price: 1500, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
-        { id: 15, name: "شاوەرمەی ساج", price: 3000, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
-        { id: 16, name: "شاوەرمە بە پەنیر", price: 2000, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
-
         { id: 17, name: "فینگەر (پەتاتە)", price: 1500, category: "finger", img: "https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png" },
-
-        { id: 18, name: "کۆکا کۆلا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500" },
-        { id: 19, name: "ئاوی بچووک", price: 250, category: "drink", img: "https://i.postimg.cc/v8603rhR/images-(2).jpg" },
-        { id: 20, name: "ماستاو", price: 500, category: "drink", img: "https://i.postimg.cc/xTMFTvNz/images.jpg" },
-        { id: 21, name: "فانتا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1624517452488-04869289c4ca?w=500" }
+        { id: 18, name: "کۆکا کۆلا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500" }
     ];
 
     let cart = [];
-    const folderNames = {
-        'pizza': '🍕 جۆرەکانی پیزا',
-        'burger': '🍔 جۆرەکانی بەرگر',
-        'shawarma': '🌯 جۆرەکانی شاوەرمە',
-        'finger': '🍟 فینگەر',
-        'drink': '🥤 خواردنەوەکان'
-    };
+    const deliveryFee = 2000;
 
-    function playSound(type) {
-        const sound = document.getElementById(type === 'add' ? 'orderSound' : 'successSound');
-        if(sound) {
-            sound.currentTime = 0;
-            sound.play().catch(e => console.log("Sound play error: ", e));
-        }
+    // --- Search Function ---
+    function searchFood(query) {
+        const display = document.getElementById('menu-display');
+        const filtered = menuItems.filter(item => item.name.includes(query));
+        renderMenu(filtered);
     }
 
+    // --- Skeleton Loading & Render ---
     function openFolder(category, element) {
         document.querySelectorAll('.cat-card').forEach(card => card.classList.remove('active'));
         element.classList.add('active');
-        document.getElementById('folder-title').innerText = folderNames[category];
+        
+        const display = document.getElementById('menu-display');
+        display.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div>';
+        
+        setTimeout(() => {
+            const filtered = menuItems.filter(item => item.category === category);
+            renderMenu(filtered);
+        }, 500);
+    }
+
+    function renderMenu(items) {
         const display = document.getElementById('menu-display');
         display.innerHTML = '';
-        const filtered = menuItems.filter(item => item.category === category);
-        filtered.forEach(item => {
+        items.forEach(item => {
             display.innerHTML += `
                 <div class="item-card">
-                    <img src="${item.img}" alt="${item.name}" loading="lazy">
+                    <img src="${item.img}" id="img-${item.id}">
                     <div class="item-info">
                         <h3>${item.name}</h3>
                         <div class="price">${item.price.toLocaleString()}د</div>
                     </div>
-                    <button class="add-btn" onclick="addToCart(${item.id})">زیادکردن +</button>
+                    <button class="add-btn" onclick="addToCart(${item.id}, event)">زیادکردن +</button>
                 </div>`;
         });
     }
 
-    function addToCart(id) {
+    // --- Flying Animation ---
+    function addToCart(id, event) {
         const item = menuItems.find(i => i.id === id);
         cart.push(item);
+        
+        const img = document.getElementById(`img-${id}`);
+        const flyer = img.cloneNode();
+        flyer.classList.add('flying-food');
+        flyer.style.top = event.clientY + 'px';
+        flyer.style.left = event.clientX + 'px';
+        document.body.appendChild(flyer);
+
+        setTimeout(() => {
+            flyer.style.top = '90vh';
+            flyer.style.left = '50vw';
+            flyer.style.transform = 'scale(0.1)';
+            flyer.style.opacity = '0';
+        }, 10);
+
+        setTimeout(() => flyer.remove(), 800);
+        
         playSound('add');
         renderCart();
     }
@@ -359,82 +398,76 @@
         let total = 0;
         cartDiv.innerHTML = '';
         
-        const groupedCart = {};
-        cart.forEach((item) => {
+        cart.forEach((item, index) => {
             total += item.price;
-            if (groupedCart[item.name]) {
-                groupedCart[item.name].count++;
-            } else {
-                groupedCart[item.name] = { ...item, count: 1 };
-            }
-        });
-
-        Object.values(groupedCart).forEach((item) => {
             cartDiv.innerHTML += `
                 <div class="cart-item">
-                    <span>${item.count}x ${item.name}</span>
-                    <button class="remove-btn" onclick="removeFromCart('${item.name}')">لادان</button>
+                    <span>${item.name}</span>
+                    <button class="remove-btn" onclick="removeFromCart(${index})">لادان</button>
                 </div>`;
         });
 
-        document.getElementById('total-amount').innerText = total.toLocaleString();
+        const hasPizza = cart.some(i => i.category === 'pizza');
+        const hasDrink = cart.some(i => i.category === 'drink');
+        document.getElementById('drink-suggestion').style.display = (hasPizza && !hasDrink) ? 'block' : 'none';
+
+        const finalTotal = total > 0 ? total + deliveryFee : 0;
+        document.getElementById('total-amount').innerText = finalTotal.toLocaleString();
+        
         const floatCart = document.getElementById('floating-cart');
         if(cart.length > 0) {
             floatCart.style.display = 'flex';
-            document.getElementById('floating-count').innerText = cart.length + " خواردن";
-            document.getElementById('floating-total').innerText = total.toLocaleString() + " دینار";
+            document.getElementById('floating-count').innerText = cart.length + " دانە";
+            document.getElementById('floating-total').innerText = finalTotal.toLocaleString();
         } else {
             floatCart.style.display = 'none';
         }
     }
 
-    function removeFromCart(name) {
-        const index = cart.findIndex(i => i.name === name);
-        if (index > -1) {
-            cart.splice(index, 1);
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        renderCart();
+    }
+
+    // --- Share & Call ---
+    function shareMenu() {
+        if (navigator.share) {
+            navigator.share({ title: "Boom's Pizza", text: "خۆشترین پیتزا لێرە داوا بکە!", url: window.location.href });
         }
+    }
+
+    // --- Quick Reorder Logic ---
+    window.onload = () => {
+        const last = localStorage.getItem('lastOrder');
+        if(last) document.getElementById('quick-reorder-section').style.display = 'block';
+        openFolder('pizza', document.querySelector('.cat-card'));
+    };
+
+    function applyLastOrder() {
+        cart = JSON.parse(localStorage.getItem('lastOrder'));
         renderCart();
     }
 
     function sendToWhatsApp() {
-        if(cart.length === 0) return alert("تکایە سەرەتا خواردن هەڵبژێرە!");
-        playSound('success');
-        navigator.geolocation.getCurrentPosition(function(p) {
-            const loc = `http://maps.google.com/?q=${p.coords.latitude},${p.coords.longitude}`;
+        if(cart.length === 0) return alert("سەبەتەکە خاڵییە!");
+        localStorage.setItem('lastOrder', JSON.stringify(cart));
+        
+        navigator.geolocation.getCurrentPosition(p => {
+            const loc = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
             finalize(loc);
-        }, function() {
-            finalize(prompt("تکایە ناونیشانەکەت بنووسە:"));
-        });
+        }, () => finalize(prompt("ناونیشان:")));
     }
 
     function finalize(loc) {
-        const phone = "9647861995417";
         const orderID = Math.floor(1000 + Math.random() * 9000);
-        const now = new Date();
-        const timeStr = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
-
-        let txt = `📦 *داواکاری نوێ: #${orderID}*\n`;
-        txt += `⏰ کات: ${timeStr}\n`;
-        txt += "----------------------------------\n";
-        
-        const itemCounts = {};
-        cart.forEach(item => {
-            itemCounts[item.name] = (itemCounts[item.name] || 0) + 1;
-        });
-
-        for (const [name, count] of Object.entries(itemCounts)) {
-            txt += `🔹 ${count}x ${name}\n`;
-        }
-
-        txt += "----------------------------------\n";
-        txt += `💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} دینار\n`;
-        txt += `📍 *لۆکەیشن:* ${loc}\n\n`;
-        txt += "✨ داواکراوە لە ڕێگەی ئەپی Boom's Pizza";
-        
-        window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(txt)}`;
+        const time = document.getElementById('order-time').value;
+        let txt = `🧾 *وەسڵی داواکاری #${orderID}*\n⏱ کاتی هێنان: ${time}\n---\n`;
+        cart.forEach(i => txt += `• ${i.name}\n`);
+        txt += `---\n💰 کۆی گشتی بە گەیاندنەوە: ${document.getElementById('total-amount').innerText} دینار\n📍 لۆکەیشن: ${loc}`;
+        window.location.href = `https://wa.me/9647861995417?text=${encodeURIComponent(txt)}`;
     }
 
-    openFolder('pizza', document.querySelector('.cat-card'));
+    function playSound(t){ document.getElementById(t==='add'?'orderSound':'successSound').play(); }
 </script>
 </body>
 </html>
