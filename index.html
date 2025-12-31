@@ -64,7 +64,9 @@
             object-fit: cover;
             transition: 0.3s;
         }
-        .cat-card:active img { transform: scale(0.9); border-color: var(--primary-red); }
+        /* Style for active folder */
+        .cat-card.active img { border-color: var(--primary-red); transform: scale(1.1); box-shadow: 0 0 15px var(--primary-red); }
+        .cat-card:active img { transform: scale(0.9); }
         .cat-card p { font-size: 0.85rem; margin: 10px 0 0; font-weight: bold; color: #ccc; }
 
         .container { padding: 15px; max-width: 600px; margin: auto; }
@@ -72,7 +74,7 @@
         h2 { 
             font-size: 1.6rem; 
             color: var(--text-gold); 
-            margin: 40px 0 20px;
+            margin: 20px 0;
             border-right: 4px solid var(--primary-red);
             padding-right: 15px;
         }
@@ -82,6 +84,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
+            min-height: 300px;
         }
 
         .item-card {
@@ -92,7 +95,10 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            animation: fadeIn 0.4s ease;
         }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         .item-card img { width: 100%; height: 140px; object-fit: cover; }
         
         .item-info { padding: 12px; text-align: center; }
@@ -111,6 +117,7 @@
             font-family: 'Vazirmatn';
             font-size: 0.9rem;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
         }
         .add-btn:active { transform: scale(0.95); background: #cc0000; }
 
@@ -129,7 +136,7 @@
             border-bottom: 1px solid #222;
             font-size: 0.95rem;
         }
-        .remove-btn { color: #ff5555; background: none; border: 1px solid #ff5555; border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; }
+        .remove-btn { color: #ff5555; background: none; border: 1px solid #ff5555; border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; }
 
         .total-price { font-size: 1.8rem; color: var(--text-gold); text-align: center; margin: 25px 0; font-weight: bold; }
 
@@ -148,7 +155,6 @@
             font-family: 'Vazirmatn';
         }
 
-        /* Floating Bottom Bar for Mobile */
         .bottom-bar {
             position: fixed;
             bottom: 20px;
@@ -162,32 +168,28 @@
             align-items: center;
             z-index: 2000;
             box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-            animation: slideUp 0.4s ease;
         }
-        @keyframes slideUp { from { transform: translateY(100px); } to { transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Boom's Pizza</h1>
-    <p>Premium Quality & Unforgettable Taste</p>
+    <p>کوالێتی نایاب و تامێکی لەبیرنەکراو</p>
 </header>
 
 <div class="category-container">
-    <div class="cat-card" onclick="scrollToSection('piz-sec')"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200"><p>پیتزا</p></div>
-    <div class="cat-card" onclick="scrollToSection('bur-sec')"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200"><p>بەرگر</p></div>
-    <div class="cat-card" onclick="scrollToSection('sha-sec')"><img src="https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg"><p>شاوەرمە</p></div>
-    <div class="cat-card" onclick="scrollToSection('fin-sec')"><img src="https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png"><p>فینگەر</p></div>
-    <div class="cat-card" onclick="scrollToSection('dri-sec')"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200"><p>خواردنەوە</p></div>
+    <div class="cat-card active" onclick="openFolder('pizza', this)"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200"><p>پیتزا</p></div>
+    <div class="cat-card" onclick="openFolder('burger', this)"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200"><p>بەرگر</p></div>
+    <div class="cat-card" onclick="openFolder('shawarma', this)"><img src="https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg"><p>شاوەرمە</p></div>
+    <div class="cat-card" onclick="openFolder('finger', this)"><img src="https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png"><p>فینگەر</p></div>
+    <div class="cat-card" onclick="openFolder('drink', this)"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200"><p>خواردنەوە</p></div>
 </div>
 
 <div class="container">
-    <div id="piz-sec"><h2>🍕 جۆرەکانی پیزا</h2><div class="menu-section" id="pizza-menu"></div></div>
-    <div id="bur-sec"><h2>🍔 جۆرەکانی بەرگر</h2><div class="menu-section" id="burger-menu"></div></div>
-    <div id="sha-sec"><h2>🌯 جۆرەکانی شاورمە</h2><div class="menu-section" id="shawarma-menu"></div></div>
-    <div id="fin-sec"><h2>🍟 فـیـنـگـەر</h2><div class="menu-section" id="finger-menu"></div></div>
-    <div id="dri-sec"><h2>🥤 جۆرەکانی خواردنەوە</h2><div class="menu-section" id="drink-menu"></div></div>
+    <h2 id="folder-title">🍕 جۆرەکانی پیزا</h2>
+    <div class="menu-section" id="menu-display">
+        </div>
 
     <div id="cart-section">
         <h3>🛒 سەبەتەی داواکارییەکان</h3>
@@ -199,14 +201,13 @@
     </div>
 </div>
 
-<div class="bottom-bar" id="floating-cart" onclick="scrollToSection('cart-section')">
+<div class="bottom-bar" id="floating-cart" onclick="document.getElementById('cart-section').scrollIntoView({behavior: 'smooth'})">
     <span id="floating-count">0 دانە</span>
     <strong>بینینی سەبەتە 🛒</strong>
     <span id="floating-total">0</span>
 </div>
 
 <script>
-    // مێنۆی نوێ کە هەموو خواردنەکانی ناو بۆتەکەی تێدایە لەگەڵ وێنەی مۆدێرن
     const menuItems = [
         { id: 1, name: "پیزای گۆشت small", price: 4500, category: "pizza", img: "https://i.postimg.cc/k5rZvjrz/20251231-232813-0000.jpg" },
         { id: 2, name: "پیتزا گۆشت medium", price: 5000, category: "pizza", img: "https://i.postimg.cc/k5rZvjrz/20251231-232813-0000.jpg" },
@@ -236,26 +237,39 @@
     ];
 
     let cart = [];
+    
+    // Names for titles
+    const folderNames = {
+        'pizza': '🍕 جۆرەکانی پیزا',
+        'burger': '🍔 جۆرەکانی بەرگر',
+        'shawarma': '🌯 جۆرەکانی شاوەرمە',
+        'finger': '🍟 فینگەر',
+        'drink': '🥤 خواردنەوەکان'
+    };
 
-    function scrollToSection(id) {
-        const el = document.getElementById(id);
-        window.scrollTo({ top: el.offsetTop - 140, behavior: "smooth" });
-    }
+    function openFolder(category, element) {
+        // Handle UI active state
+        document.querySelectorAll('.cat-card').forEach(card => card.classList.remove('active'));
+        element.classList.add('active');
 
-    function displayMenu() {
-        menuItems.forEach(item => {
-            const container = document.getElementById(`${item.category}-menu`);
-            if(container) {
-                container.innerHTML += `
-                    <div class="item-card">
-                        <img src="${item.img}" alt="${item.name}" loading="lazy">
-                        <div class="item-info">
-                            <h3>${item.name}</h3>
-                            <div class="price">${item.price.toLocaleString()}د</div>
-                        </div>
-                        <button class="add-btn" onclick="addToCart(${item.id})">زیادکردن +</button>
-                    </div>`;
-            }
+        // Update Title
+        document.getElementById('folder-title').innerText = folderNames[category];
+
+        // Filter and Display
+        const display = document.getElementById('menu-display');
+        display.innerHTML = '';
+        const filtered = menuItems.filter(item => item.category === category);
+        
+        filtered.forEach(item => {
+            display.innerHTML += `
+                <div class="item-card">
+                    <img src="${item.img}" alt="${item.name}" loading="lazy">
+                    <div class="item-info">
+                        <h3>${item.name}</h3>
+                        <div class="price">${item.price.toLocaleString()}د</div>
+                    </div>
+                    <button class="add-btn" onclick="addToCart(${item.id})">زیادکردن +</button>
+                </div>`;
         });
     }
 
@@ -278,14 +292,14 @@
                 </div>`;
         });
         
-        const totalStr = total.toLocaleString() + " دینار";
-        document.getElementById('total-amount').innerText = total.toLocaleString();
+        const totalStr = total.toLocaleString();
+        document.getElementById('total-amount').innerText = totalStr;
         
         const floatCart = document.getElementById('floating-cart');
         if(cart.length > 0) {
             floatCart.style.display = 'flex';
             document.getElementById('floating-count').innerText = cart.length + " خواردن";
-            document.getElementById('floating-total').innerText = totalStr;
+            document.getElementById('floating-total').innerText = totalStr + " دینار";
         } else {
             floatCart.style.display = 'none';
         }
@@ -303,7 +317,7 @@
     }
 
     function finalize(loc) {
-        const phone = "9647861995417"; // ژمارەی خۆت لێرە دابنێ
+        const phone = "9647861995417";
         let txt = "🌟 *داواکاری نوێ لە Boom's Pizza*\n";
         txt += "---------------------------------\n";
         cart.forEach((i, idx) => txt += `${idx+1}. ${i.name}\n`);
@@ -312,13 +326,8 @@
         window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(txt)}`;
     }
 
-    displayMenu();
+    // Initialize first category
+    openFolder('pizza', document.querySelector('.cat-card'));
 </script>
 </body>
 </html>
-
-
-
-
-
-
