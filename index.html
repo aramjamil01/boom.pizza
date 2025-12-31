@@ -21,7 +21,6 @@
             scroll-behavior: smooth;
         }
 
-        /* بەشی سەرەوەی ماڵپەڕ (Header) */
         header {
             background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1000');
             background-size: cover;
@@ -32,72 +31,72 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* بەشی جۆرەکان (Categories) وەک فۆڵدەر */
         .category-container {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             padding: 15px;
             background: white;
             position: sticky;
             top: 0;
             z-index: 99;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow-x: auto;
         }
         .cat-card {
             text-align: center;
             cursor: pointer;
-            padding: 10px;
+            padding: 8px;
             border-radius: 12px;
             border: 1px solid #eee;
-            min-width: 90px;
-            background: #fff;
+            min-width: 80px;
             transition: 0.3s;
         }
-        .cat-card:hover { border-color: var(--primary-red); }
-        .cat-card img { width: 40px; height: 40px; display: block; margin: 0 auto 5px; }
-        .cat-card p { margin: 0; font-weight: bold; font-size: 0.9rem; }
+        .cat-card:hover { border-color: var(--primary-red); background: #fffafa; }
+        .cat-card p { margin: 0; font-weight: bold; font-size: 0.8rem; }
 
-        .container { max-width: 900px; margin: auto; padding: 15px; }
-        h2 { border-right: 5px solid var(--primary-red); padding-right: 15px; margin-top: 40px; }
-
+        .container { max-width: 900px; margin: auto; padding: 20px; }
+        h2 { border-right: 5px solid var(--primary-red); padding-right: 15px; margin-top: 40px; font-size: 1.4rem; }
+        
         .menu-section {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
             margin-bottom: 30px;
         }
 
         .item-card {
             background: white;
-            padding: 15px;
-            border-radius: 20px;
+            padding: 12px;
+            border-radius: 18px;
             text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: 0.3s;
         }
-        .item-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 15px; margin-bottom: 12px; }
-        
+        .item-card img { width: 100%; height: 120px; object-fit: cover; border-radius: 12px; margin-bottom: 10px; }
+        .item-card h3 { margin: 5px 0; font-size: 1rem; height: 40px; overflow: hidden; }
+        .item-card p { color: var(--primary-red); font-weight: bold; margin-bottom: 10px; }
+
         .add-btn {
             background: var(--primary-red);
             color: white;
             border: none;
-            padding: 10px;
-            border-radius: 10px;
+            padding: 8px;
+            border-radius: 8px;
             cursor: pointer;
             width: 100%;
             font-weight: bold;
             font-family: 'Vazirmatn';
         }
 
-        /* سەبەتەی کڕین */
         #cart-section {
             background: #fff;
             padding: 25px;
-            border-radius: 25px;
+            border-radius: 20px;
             margin-top: 50px;
-            border: 2px solid var(--primary-red);
+            border: 2px solid #eee;
         }
-        .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
         .remove-btn { background: #fff0f0; color: #d00; border: 1px solid #ffcccc; padding: 3px 8px; border-radius: 5px; cursor: pointer; }
         
         .whatsapp-btn {
@@ -121,77 +120,88 @@
 <body>
 
 <header>
-    <h1 style="font-size: 2.5rem; margin: 0;">Boom's Pizza</h1>
-    <p>خۆشترین پیتزا و بەرگر لە شار!</p>
+    <h1 style="font-size: 2.8rem; margin: 0;">Boom's Pizza</h1>
+    <p>چێژ لە باشترین تامی پیتزا و بەرگر وەربگرە</p>
 </header>
 
 <div class="category-container">
-    <div class="cat-card" onclick="scrollToSection('piz-sec')">
-        <img src="https://cdn-icons-png.flaticon.com/512/3595/3595455.png" alt="Pizza">
-        <p>پیتزا</p>
-    </div>
-    <div class="cat-card" onclick="scrollToSection('bur-sec')">
-        <img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" alt="Burger">
-        <p>بەرگر</p>
-    </div>
-    <div class="cat-card" onclick="scrollToSection('dri-sec')">
-        <img src="https://cdn-icons-png.flaticon.com/512/2738/2738730.png" alt="Drinks">
-        <p>خواردنەوە</p>
-    </div>
+    <div class="cat-card" onclick="scrollToSection('piz-sec')"><p>🍕 پیتزا</p></div>
+    <div class="cat-card" onclick="scrollToSection('bur-sec')"><p>🍔 بەرگر</p></div>
+    <div class="cat-card" onclick="scrollToSection('sha-sec')"><p>🌯 شاوەرمە</p></div>
+    <div class="cat-card" onclick="scrollToSection('dri-sec')"><p>🥤 خواردنەوە</p></div>
+    <div class="cat-card" onclick="scrollToSection('fin-sec')"><p>🍟 فینگەر</p></div>
 </div>
 
 <div class="container">
-    <div id="piz-sec">
-        <h2>🍕 پیتزاکان</h2>
-        <div class="menu-section" id="pizza-menu"></div>
-    </div>
-
-    <div id="bur-sec">
-        <h2>🍔 بەرگرەکان</h2>
-        <div class="menu-section" id="burger-menu"></div>
-    </div>
-
-    <div id="dri-sec">
-        <h2>🥤 خواردنەوەکان</h2>
-        <div class="menu-section" id="other-menu"></div>
-    </div>
+    <div id="piz-sec"><h2>🍕 جۆرەکانی پیزا</h2><div class="menu-section" id="pizza-menu"></div></div>
+    <div id="bur-sec"><h2>🍔 جۆرەکانی بەرگر</h2><div class="menu-section" id="burger-menu"></div></div>
+    <div id="sha-sec"><h2>🌯 جۆرەکانی شاورمە</h2><div class="menu-section" id="shawarma-menu"></div></div>
+    <div id="fin-sec"><h2>🍟 فـیـنـگـەر</h2><div class="menu-section" id="finger-menu"></div></div>
+    <div id="dri-sec"><h2>🥤 جۆرەکانی خواردنەوە</h2><div class="menu-section" id="drink-menu"></div></div>
 
     <div id="cart-section">
-        <h3>🛒 سەبەتەکەت</h3>
-        <div id="cart-items">
-            <p style="text-align: center; color: #999;">سەبەتەکەت خاڵییە</p>
-        </div>
-        <h3 style="color: var(--primary-red);">کۆی گشتی: <span id="total-amount">0</span> IQD</h3>
-        <button class="whatsapp-btn" onclick="sendToWhatsApp()">ناردنی داواکاری و GPS</button>
+        <h3>🛒 سەبەتەی کڕین</h3>
+        <div id="cart-items"><p style="text-align: center; color: #999;">سەبەتەکەت خاڵییە</p></div>
+        <h3 style="color: var(--primary-red);">کۆی گشتی: <span id="total-amount">0</span> دینار</h3>
+        <button class="whatsapp-btn" onclick="sendToWhatsApp()">ناردنی داواکاری و لۆکەیشن (GPS)</button>
     </div>
 </div>
 
 <script>
+    // ئەمە ئەو مێنۆیەیە کە لە کۆدی تەلەگرامەکە دەرهێنراوە
     const menuItems = [
-        { id: 1, name: "پیتزا گۆشت", price: 5000, category: "pizza", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400" },
-        { id: 2, name: "بۆوم بەرگر", price: 6000, category: "burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400" },
-        { id: 3, name: "کۆکا کۆلا", price: 500, category: "other", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400" }
+        // پیزاکان
+        { id: 1, name: "پیزای گۆشت small", price: 4500, category: "pizza", img: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400" },
+        { id: 2, name: "پیتزا گۆشت medium", price: 5000, category: "pizza", img: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400" },
+        { id: 3, name: "پیزای گۆشت large", price: 7000, category: "pizza", img: "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=400" },
+        { id: 4, name: "پیتزا مریشک small", price: 4000, category: "pizza", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400" },
+        { id: 5, name: "پیتزا مریشک medium", price: 5000, category: "pizza", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400" },
+        { id: 6, name: "پیتزا مریشک large", price: 6000, category: "pizza", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400" },
+        { id: 7, name: "پیتزا موشەکەل", price: 4000, category: "pizza", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400" },
+        { id: 8, name: "پیتزا پێپەڕۆنی", price: 4000, category: "pizza", img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400" },
+        { id: 9, name: "بووم پیزا", price: 7000, category: "pizza", img: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=400" },
+        
+        // بەرگرەکان
+        { id: 10, name: "بووم بەرگر", price: 6000, category: "burger", img: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400" },
+        { id: 11, name: "چیز بەرگر", price: 3000, category: "burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400" },
+        { id: 12, name: "دەبڵ چیز بەرگر", price: 4000, category: "burger", img: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?w=400" },
+        { id: 13, name: "بەرگری قارچک", price: 5000, category: "burger", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=400" },
+
+        // شاوەرمە
+        { id: 14, name: "لەفەی شاوەرمە", price: 1500, category: "shawarma", img: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=400" },
+        { id: 15, name: "شاوەرمەی ساج", price: 3000, category: "shawarma", img: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=400" },
+        { id: 16, name: "شاوەرمە بە پەنیر", price: 2000, category: "shawarma", img: "https://images.unsplash.com/photo-1561651823-34feb02250e4?w=400" },
+
+        // فینگەر
+        { id: 17, name: "فینگەر (پەتاتە)", price: 1500, category: "finger", img: "https://images.unsplash.com/photo-1630384066252-42a11f892f1b?w=400" },
+
+        // خواردنەوە
+        { id: 18, name: "کۆلا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400" },
+        { id: 19, name: "ئاوی بچووک", price: 250, category: "drink", img: "https://images.unsplash.com/photo-1523362628744-0c14a37ef2f6?w=400" },
+        { id: 20, name: "ماستاو", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=400" },
+        { id: 21, name: "فانتا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1624517452488-04869289c4ca?w=400" }
     ];
 
     let cart = [];
 
     function scrollToSection(id) {
-        const element = document.getElementById(id);
-        window.scrollTo({ top: element.offsetTop - 80, behavior: "smooth" });
+        window.scrollTo({ top: document.getElementById(id).offsetTop - 80, behavior: "smooth" });
     }
 
     function displayMenu() {
         menuItems.forEach(item => {
             const container = document.getElementById(`${item.category}-menu`);
-            const div = document.createElement('div');
-            div.className = 'item-card';
-            div.innerHTML = `
-                <img src="${item.img}">
-                <h3>${item.name}</h3>
-                <p>${item.price.toLocaleString()} IQD</p>
-                <button class="add-btn" onclick="addToCart(${item.id})">زیادکردن +</button>
-            `;
-            container.appendChild(div);
+            if (container) {
+                const div = document.createElement('div');
+                div.className = 'item-card';
+                div.innerHTML = `
+                    <img src="${item.img}">
+                    <h3>${item.name}</h3>
+                    <p>${item.price.toLocaleString()}د</p>
+                    <button class="add-btn" onclick="addToCart(${item.id})">زیادکردن +</button>
+                `;
+                container.appendChild(div);
+            }
         });
     }
 
@@ -218,15 +228,13 @@
     }
 
     function sendToWhatsApp() {
-        if(cart.length === 0) return alert("سەبەتەکەت خاڵییە!");
-
+        if(cart.length === 0) return alert("تکایە سەرەتا خواردنێک هەڵبژێرە!");
         if (navigator.geolocation) {
-            alert("تکایە ڕێگە بدە (Allow) بۆ ناردنی لۆکەیشنەکەت");
             navigator.geolocation.getCurrentPosition(function(position) {
                 const mapUrl = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
                 finalizeOrder(mapUrl);
             }, function() {
-                finalizeOrder(prompt("ناونیشانەکەت بنووسە:"));
+                finalizeOrder(prompt("لۆکەیشن وەرنەگیرا. ناونیشانەکەت بنووسە:"));
             });
         } else {
             finalizeOrder(prompt("ناونیشانەکەت بنووسە:"));
@@ -234,12 +242,10 @@
     }
 
     function finalizeOrder(loc) {
-        const phone = "9647824837262"; // ژمارەی خۆت لێرە دابنێ
+        const phone = "9647500000000"; // ژمارەی خۆت لێرە دابنێ
         let txt = "🍕 *داواکاری نوێ لە بوم پیتزا*\n\n";
-        cart.forEach((i, idx) => txt += `${idx+1}- ${i.name}\n`);
-        txt += `\n💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} IQD\n📍 *لۆکەیشن:* ${loc}`;
-        
-        // ئەم هێڵە کێشەی iOS و Android چارەسەر دەکات
+        cart.forEach((i, idx) => txt += `${idx+1}- ${i.name} (${i.price}د)\n`);
+        txt += `\n💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} دینار\n📍 *لۆکەیشن:* ${loc}`;
         window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(txt)}`;
     }
 
@@ -247,4 +253,3 @@
 </script>
 </body>
 </html>
-
