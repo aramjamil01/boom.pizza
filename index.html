@@ -12,22 +12,26 @@
             --light-grey: #f4f4f4;
             --whatsapp-green: #25D366;
         }
+        
+        * { box-sizing: border-box; }
+
         body {
             font-family: 'Vazirmatn', sans-serif;
             margin: 0;
             background-color: var(--light-grey);
             color: var(--dark-grey);
-            padding-bottom: 50px;
-            scroll-behavior: smooth; /* بۆ ئەوەی بە نەرمی بچێتە خوارەوە */
+            scroll-behavior: smooth;
         }
+
+        /* بەشی سەرەوە بە وێنەی پاشبنەما */
         header {
-            background-color: var(--primary-red);
+            background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1000');
+            background-size: cover;
+            background-position: center;
             color: white;
-            padding: 20px;
+            padding: 60px 20px;
             text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         /* بەشی جۆرەکان (Categories) */
@@ -35,30 +39,35 @@
             display: flex;
             justify-content: center;
             gap: 15px;
-            padding: 20px;
+            padding: 15px;
             background: white;
-            overflow-x: auto;
             position: sticky;
-            top: 80px;
+            top: 0;
             z-index: 99;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow-x: auto;
         }
         .cat-card {
-            min-width: 100px;
             text-align: center;
             cursor: pointer;
-            background: #fff;
             padding: 10px;
             border-radius: 15px;
-            border: 1px solid #ddd;
+            border: 1px solid #eee;
+            min-width: 90px;
             transition: 0.3s;
         }
-        .cat-card:hover { border-color: var(--primary-red); transform: scale(1.05); }
-        .cat-card img { width: 50px; height: 50px; object-fit: contain; }
-        .cat-card p { margin: 5px 0 0; font-weight: bold; font-size: 0.9rem; }
+        .cat-card:hover { border-color: var(--primary-red); background: #fffafa; }
+        .cat-card img { width: 45px; height: 45px; margin-bottom: 5px; }
+        .cat-card p { margin: 0; font-weight: bold; font-size: 0.9rem; }
 
-        .container { max-width: 900px; margin: auto; padding: 15px; }
-        h2 { border-right: 5px solid var(--primary-red); padding-right: 15px; margin-top: 40px; }
+        .container { max-width: 900px; margin: auto; padding: 20px; }
+        
+        h2 { 
+            border-right: 5px solid var(--primary-red); 
+            padding-right: 15px; 
+            margin-top: 50px; 
+            font-size: 1.5rem;
+        }
         
         .menu-section {
             display: grid;
@@ -66,20 +75,25 @@
             gap: 20px;
             margin-bottom: 30px;
         }
+
         .item-card {
             background: white;
             padding: 15px;
             border-radius: 20px;
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            transition: 0.3s;
         }
-        .item-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 15px; }
-        
+        .item-card:hover { transform: translateY(-5px); }
+        .item-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 15px; margin-bottom: 12px; }
+        .item-card h3 { margin: 10px 0 5px; font-size: 1.1rem; }
+        .item-card p { color: var(--primary-red); font-weight: bold; margin-bottom: 15px; }
+
         .add-btn {
             background: var(--primary-red);
             color: white;
             border: none;
-            padding: 10px;
+            padding: 12px;
             border-radius: 10px;
             cursor: pointer;
             width: 100%;
@@ -87,34 +101,61 @@
             font-family: 'Vazirmatn';
         }
 
+        /* بەشی سەبەتە */
         #cart-section {
             background: #fff;
-            padding: 25px;
+            padding: 30px;
             border-radius: 25px;
-            margin-top: 50px;
-            border: 2px solid var(--primary-red);
+            margin-top: 60px;
+            border: 2px solid #eee;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
-        .cart-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .remove-btn { background: #fff0f0; color: #d00; border: 1px solid #ffcccc; padding: 3px 8px; border-radius: 5px; cursor: pointer; }
-        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        .remove-btn {
+            background: #fff0f0;
+            color: #d00;
+            border: 1px solid #ffcccc;
+            padding: 5px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .total-price {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin: 30px 0;
+            color: var(--primary-red);
+            text-align: left;
+        }
+
         .whatsapp-btn {
             background: var(--whatsapp-green);
             color: white;
             text-decoration: none;
             display: block;
             text-align: center;
-            padding: 18px;
-            border-radius: 15px;
+            padding: 20px;
+            border-radius: 18px;
             font-weight: bold;
-            font-size: 1.2rem;
-            margin-top: 20px;
+            font-size: 1.3rem;
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+            cursor: pointer;
+            width: 100%;
+            border: none;
+            font-family: 'Vazirmatn';
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Boom's Pizza - بوم پیتزا</h1>
+    <h1 style="font-size: 3rem; margin: 0;">Boom's Pizza</h1>
+    <p style="font-size: 1.3rem; opacity: 0.9;">باشترین پیتزا لە شار لێرەیە</p>
 </header>
 
 <div class="category-container">
@@ -134,37 +175,39 @@
 
 <div class="container">
     <div id="pizza-sec">
-        <h2>🍕 بەشی پیتزاکان</h2>
+        <h2>🍕 پیتزاکان</h2>
         <div class="menu-section" id="pizza-menu"></div>
     </div>
 
     <div id="burger-sec">
-        <h2>🍔 بەشی بەرگرەکان</h2>
+        <h2>🍔 بەرگرەکان</h2>
         <div class="menu-section" id="burger-menu"></div>
     </div>
 
     <div id="other-sec">
-        <h2>🥤 خواردنەوە و میانو</h2>
+        <h2>🥤 خواردنەوە و فنگر</h2>
         <div class="menu-section" id="other-menu"></div>
     </div>
 
     <div id="cart-section">
-        <h3>🛒 سەبەتەکەت</h3>
+        <h3 style="font-size: 1.6rem; margin: 0 0 20px 0;">🛒 سەبەتەی داواکارییەکانت</h3>
         <div id="cart-items">
-            <p style="text-align: center; color: #999;">سەبەتەکەت خاڵییە</p>
+            <p style="text-align: center; color: #999; padding: 20px;">سەبەتەکەت ئێستا خاڵییە</p>
         </div>
-        <h3 style="color: var(--primary-red);">کۆی گشتی: <span id="total-amount">0</span> IQD</h3>
-        <button class="whatsapp-btn" style="width: 100%; border: none; cursor: pointer;" onclick="sendToWhatsApp()">ناردنی داواکاری و لۆکەیشن</button>
+        <div class="total-price">کۆی گشتی: <span id="total-amount">0</span> IQD</div>
+        <button class="whatsapp-btn" onclick="sendToWhatsApp()">ناردنی داواکاری و لۆکەیشن (GPS)</button>
     </div>
 </div>
 
 <script>
+    // لیستی خواردنەکان - دەتوانیت وێنەکان لێرە بگۆڕیت
     const menuItems = [
-        { id: 1, name: "پیتزا گۆشت ٢٥سم", price: 4000, category: "pizza", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400" },
-        { id: 2, name: "پیتزا گۆشت ٢٨سم", price: 5000, category: "pizza", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400" },
+        { id: 1, name: "پیتزا گۆشت ٢٨سم", price: 5000, category: "pizza", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400" },
+        { id: 2, name: "پیتزا مریشک ٢٨سم", price: 5000, category: "pizza", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400" },
         { id: 6, name: "بۆوم بەرگر", price: 6000, category: "burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400" },
-        { id: 7, name: "چیزبەرگر", price: 3000, category: "burger", img: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400" },
-        { id: 11, name: "خواردنەوە گازییەکان", price: 500, category: "other", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400" }
+        { id: 7, name: "چیزبەرگر", price: 3500, category: "burger", img: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400" },
+        { id: 10, name: "فنگر سادە", price: 1500, category: "other", img: "https://images.unsplash.com/photo-1630384066242-17a17833c147?w=400" },
+        { id: 11, name: "کۆکا کۆلا", price: 500, category: "other", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400" }
     ];
 
     let cart = [];
@@ -172,16 +215,9 @@
     // فەنکشنی ڕۆیشتن بۆ بەشەکان
     function scrollToSection(id) {
         const element = document.getElementById(id);
-        const offset = 140; // بۆ ئەوەی سەر دێڕەکە نەچێتە ژێر هێدەرەکە
-        const bodyRect = document.body.getBoundingClientRect().top;
-        const elementRect = element.getBoundingClientRect().top;
-        const elementPosition = elementRect - bodyRect;
-        const offsetPosition = elementPosition - offset;
-
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth"
-        });
+        const yOffset = -130; 
+        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({top: y, behavior: 'smooth'});
     }
 
     function displayMenu() {
@@ -215,47 +251,60 @@
         const totalDiv = document.getElementById('total-amount');
         cartDiv.innerHTML = '';
         let total = 0;
+        
         cart.forEach((item, index) => {
             total += item.price;
             cartDiv.innerHTML += `
                 <div class="cart-item">
                     <span>${item.name}</span>
-                    <button class="remove-btn" onclick="removeFromCart(${index})">لادان</button>
+                    <div>
+                        <span style="margin-left:10px;">${item.price.toLocaleString()} IQD</span>
+                        <button class="remove-btn" onclick="removeFromCart(${index})">لادان</button>
+                    </div>
                 </div>`;
         });
-        if(cart.length === 0) cartDiv.innerHTML = '<p style="text-align: center; color: #999;">سەبەتەکەت خاڵییە</p>';
+        
+        if(cart.length === 0) cartDiv.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">سەبەتەکەت خاڵییە</p>';
         totalDiv.innerText = total.toLocaleString();
     }
 
     function sendToWhatsApp() {
-        if(cart.length === 0) {
-            alert("تکایە خواردنێک هەڵبژێرە!");
-            return;
-        }
+        if(cart.length === 0) return alert("تکایە سەرەتا خواردن هەڵبژێرە!");
 
+        // پشتگیری iOS و Android بۆ GPS
         if (navigator.geolocation) {
-            alert("تکایە 'Allow' بکە بۆ ناردنی لۆکەیشنەکەت بۆ گەیاندن.");
+            alert("تکایە 'Allow' بکە بۆ ئەوەی لۆکەیشنی وردت وەرگرین بۆ گەیاندن.");
+            
             navigator.geolocation.getCurrentPosition(function(position) {
-                let lat = position.coords.latitude;
-                let lon = position.coords.longitude;
-                let mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                // لینکی گشتگیر بۆ هەموو جۆرە مۆبایلەکان
+                const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
                 finalizeOrder(mapUrl);
-            }, function() {
-                let manualPos = prompt("نەتوانرا لۆکەیشن وەربگیرێت. ناونیشانەکەت بنووسە:");
-                finalizeOrder(manualPos);
-            });
+            }, function(error) {
+                // ئەگەر GPS ئیشی نەکرد (لەوانەیە بەهۆی HTTP بێت یان کڕیار نەیبات)
+                let manualLocation = prompt("نەتوانرا لۆکەیشن وەرگیرێت. تکایە ناونیشانەکەت بنووسە:");
+                finalizeOrder(manualLocation || "ناونیشان دیاری نەکراوە");
+            }, { enableHighAccuracy: true, timeout: 8000 });
         } else {
-            let manualPos = prompt("ناونیشانەکەت بنووسە:");
-            finalizeOrder(manualPos);
+            finalizeOrder(prompt("ناونیشانەکەت بنووسە:"));
         }
     }
 
-    function finalizeOrder(locationInfo) {
-        let phoneNumber = "9647504629237"; 
-        let message = "🍕 *داواکاری نوێ لە بوم پیتزا*\n\n";
-        cart.forEach((item, i) => message += `${i+1}- ${item.name}\n`);
-        message += `\n💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} IQD\n`;
-        message += `📍 *لۆکەیشن:* ${locationInfo}`;
+    function finalizeOrder(locationData) {
+        const phoneNumber = "9647504629237"; // لێرە ژمارەی خۆت دابنێ
+        let message = "🍕 *داواکاری نوێ لە بوم پیتزا*\n";
+        message += "--------------------------\n";
+        
+        cart.forEach((item, index) => {
+            message += `${index + 1}- ${item.name} (${item.price.toLocaleString()} IQD)\n`;
+        });
+        
+        message += "--------------------------\n";
+        message += `💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} IQD\n`;
+        message += `📍 *لۆکەیشنی ورد:* ${locationData}\n`;
+        message += "--------------------------\n";
+        
         window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
     }
 
