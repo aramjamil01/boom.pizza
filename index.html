@@ -172,6 +172,30 @@
             z-index: 2000;
             box-shadow: 0 8px 30px rgba(0,0,0,0.6);
         }
+
+        /* ستایلی بەفرەکە */
+        .snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white;
+            font-size: 1em;
+            user-select: none;
+            animation-name: fall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+        @keyframes fall {
+            to { transform: translateY(105vh); }
+        }
     </style>
 </head>
 <body>
@@ -224,7 +248,27 @@
         navigator.serviceWorker.register(swUrl);
     }
 
-    // Full Menu Items Restored
+    // --- Snow Animation Logic ---
+    function createSnow() {
+        const container = document.createElement('div');
+        container.className = 'snow-container';
+        document.body.appendChild(container);
+        const symbols = ['❄', '❅', '❆'];
+        setInterval(() => {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            snowflake.style.opacity = Math.random();
+            snowflake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+            snowflake.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+            container.appendChild(snowflake);
+            setTimeout(() => { snowflake.remove(); }, 5000);
+        }, 200);
+    }
+    createSnow();
+
+    // Full Menu Items
     const menuItems = [
         { id: 1, name: "پیزای گۆشت small", price: 4500, category: "pizza", img: "https://i.postimg.cc/k5rZvjrz/20251231-232813-0000.jpg" },
         { id: 2, name: "پیتزا گۆشت medium", price: 5000, category: "pizza", img: "https://i.postimg.cc/k5rZvjrz/20251231-232813-0000.jpg" },
