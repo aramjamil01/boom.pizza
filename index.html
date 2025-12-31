@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Boom's Pizza | بوم پیتزا</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#ff3131">
+    
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22Boom's%20Pizza%22,%22short_name%22:%22BoomsPizza%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22#0a0a0a%22,%22theme_color%22:%22#ff3131%22,%22icons%22:[{%22src%22:%22https://i.postimg.cc/02R8rCjV/99999999.jpg%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
+
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -206,6 +213,17 @@
 </div>
 
 <script>
+    // --- PWA Service Worker Logic ---
+    if ('serviceWorker' in navigator) {
+        const swCode = `
+            self.addEventListener('install', e => self.skipWaiting());
+            self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));
+        `;
+        const blob = new Blob([swCode], { type: 'text/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl);
+    }
+
     // Full Menu Items Restored
     const menuItems = [
         { id: 1, name: "پیزای گۆشت small", price: 4500, category: "pizza", img: "https://i.postimg.cc/k5rZvjrz/20251231-232813-0000.jpg" },
@@ -335,7 +353,7 @@
         txt += "----------------------------------\n";
         txt += `💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} دینار\n`;
         txt += `📍 *لۆکەیشن:* ${loc}\n\n`;
-        txt += "✨ داواکراوە لە ڕێگەی وێبسایتی Boom's Pizza";
+        txt += "✨ داواکراوە لە ڕێگەی ئەپی Boom's Pizza";
         
         window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(txt)}`;
     }
