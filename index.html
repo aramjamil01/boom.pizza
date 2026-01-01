@@ -84,13 +84,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- Icon Component Proxy ---
         const Icon = ({ name, ...props }) => {
             const LucideIcon = Lucide[name];
             return LucideIcon ? html`<${LucideIcon} ...${props} />` : null;
         };
 
-        // --- Digital Receipt Component ---
         const DigitalReceipt = ({ order, onClose }) => {
             return html`
                 <div className="fixed inset-0 z-[7000] bg-black/95 flex items-center justify-center p-4">
@@ -103,15 +101,15 @@
                         <p className="text-gray-500 text-sm mb-6">سوپاس بۆ متمانەکەت!</p>
                         <div className="w-full border-t border-dashed border-gray-300 py-4 space-y-3">
                             <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">کۆدی داواکاری:</span>
+                                <span className="text-gray-500 font-bold">کۆدی داواکاری:</span>
                                 <span className="font-bold">#${order.orderID}</span>
                             </div>
                             <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">کات:</span>
+                                <span className="text-gray-500 font-bold">کات:</span>
                                 <span className="font-bold">${order.time}</span>
                             </div>
                             <div className="flex flex-col gap-1 mt-2">
-                                <span className="text-gray-500 text-sm">داواکارییەکان:</span>
+                                <span className="text-gray-500 text-sm font-bold">داواکارییەکان:</span>
                                 <span className="font-bold text-sm bg-gray-50 p-2 rounded-lg">${order.items}</span>
                             </div>
                             <div className="flex justify-between items-center pt-4 border-t border-gray-200 mt-4">
@@ -218,7 +216,6 @@
                     <button onClick=${spin} disabled=${isSpinning} className=${`px-12 py-4 rounded-full font-bold text-xl text-white transition-all ${isSpinning ? 'bg-gray-600' : 'bg-[#ff3131] hover:scale-110 shadow-lg shadow-red-500/20'}`}>
                         ${isSpinning ? 'دەسوڕێتەوە...' : 'بسوڕێنە! 🎰'}
                     </button>
-                    <p className="mt-6 text-gray-400 text-sm text-center">بەختی خۆت تاقی بکەرەوە بۆ بەدەستهێنانی خەڵاتی شایستە!</p>
                 </div>
             `;
         };
@@ -228,23 +225,34 @@
             const [menuItems, setMenuItems] = useState([]);
             const [orders, setOrders] = useState([]);
             
-            // Edit forms states
             const [editingItem, setEditingItem] = useState({ name: '', price: 0, discount: 0, img: '', category: categories[0]?.id || '' });
             const [editingCategory, setEditingCategory] = useState({ id: '', name: '', img: '' });
             const [editingPrize, setEditingPrize] = useState({ label: '', color: '#ff3131', prob: 20 });
 
             useEffect(() => {
-                const unsubMenu = onValue(ref(db, 'menu_items'), (snapshot) => {
+                onValue(ref(db, 'menu_items'), (snapshot) => {
                     const data = snapshot.val();
                     setMenuItems(data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : []);
                 });
-                const unsubOrders = onValue(ref(db, 'orders'), (snapshot) => {
+                onValue(ref(db, 'orders'), (snapshot) => {
                     const data = snapshot.val();
                     const list = data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : [];
                     setOrders(list.reverse());
                 });
-                return () => { unsubMenu(); unsubOrders(); };
             }, []);
+
+            const seedData = async () => {
+                if(!confirm("ئایا دڵنیای لە گەڕاندنەوەی زانیارییە بنەڕەتییەکان؟")) return;
+                const defaultCats = {
+                    pizza: { name: 'پیتزا', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=150' },
+                    burger: { name: 'بەرگر', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150' },
+                    shawarma: { name: 'شاوەرمە', img: 'https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg' },
+                    finger: { name: 'پەنجەکان', img: 'https://i.postimg.cc/FHWp2K1z/fried-chicken-fingers.jpg' },
+                    drink: { name: 'خواردنەوە', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=150' }
+                };
+                await set(ref(db, 'categories'), defaultCats);
+                alert("زانیارییەکان گەڕێنرانەوە! تکایە لاپەڕەکە نوێ بکەرەوە.");
+            };
 
             const saveItem = async (e) => {
                 e.preventDefault();
@@ -275,7 +283,7 @@
                 <div className="p-4 max-w-5xl mx-auto pb-24">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-8 bg-zinc-900 p-2 rounded-xl border border-zinc-800">
                         ${['orders', 'items', 'categories', 'wheel'].map(tab => html`
-                            <button onClick=${() => setActiveTab(tab)} className=${`py-2 rounded-lg text-xs font-bold transition-all ${activeTab === tab ? 'bg-[#ff3131] text-white shadow-lg' : 'text-zinc-400 hover:bg-zinc-800'}`}>
+                            <button key=${tab} onClick=${() => setActiveTab(tab)} className=${`py-2 rounded-lg text-xs font-bold transition-all ${activeTab === tab ? 'bg-[#ff3131] text-white shadow-lg' : 'text-zinc-400 hover:bg-zinc-800'}`}>
                                 ${tab === 'orders' ? 'داواکاری' : tab === 'items' ? 'خواردن' : tab === 'categories' ? 'کاتیگۆری' : '🎰 چەرخ'}
                             </button>
                         `)}
@@ -283,18 +291,18 @@
 
                     ${activeTab === 'orders' && html`
                         <div className="space-y-4">
-                            <h2 className="text-xl font-bold mb-4 text-[#ffc107]">📥 داواکارییەکان</h2>
+                            <h2 className="text-xl font-bold text-[#ffc107]">📥 داواکارییەکان</h2>
                             ${orders.length === 0 ? html`<div className="text-center py-20 text-zinc-500">داواکاری نییە</div>` :
                             orders.map(o => html`
-                                <div key=${o.id} className="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl mb-4 shadow-xl">
+                                <div key=${o.id} className="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl mb-4">
                                     <div className="flex justify-between items-start mb-3">
-                                        <div className="text-xs text-zinc-500">ID: #${o.orderID} • ${o.time}</div>
+                                        <div className="text-xs text-zinc-500">#${o.orderID} • ${o.time}</div>
                                         <button onClick=${() => remove(ref(db, `orders/${o.id}`))} className="text-green-500"><${Icon} name="CheckCircle" size=${22} /></button>
                                     </div>
                                     <div className="text-sm font-bold text-white mb-2">${o.items}</div>
                                     <div className="text-lg font-black text-[#ffc107]">${o.total} د.ع</div>
-                                    <div className="text-xs text-zinc-400 mt-2 italic">${o.note || "بەبێ تێبینی"}</div>
-                                    <a href=${o.location} target="_blank" className="mt-4 flex bg-blue-600/20 text-blue-400 border border-blue-600/30 py-2 rounded-lg items-center justify-center gap-2 text-xs font-bold">
+                                    <div className="text-xs text-zinc-400 mt-2">${o.note || "بەبێ تێبینی"}</div>
+                                    <a href=${o.location} target="_blank" className="mt-4 flex bg-blue-600/20 text-blue-400 border border-blue-600/30 py-2 rounded-lg items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider">
                                         <${Icon} name="MapPin" size=${14} /> بینینی لۆکەیشن
                                     </a>
                                 </div>
@@ -307,22 +315,25 @@
                             <form onSubmit=${saveItem} className="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
                                 <h3 className="font-bold text-white">${editingItem.id ? 'دەستکاری خواردن' : 'زیادکردنی خواردن'}</h3>
                                 <div className="grid grid-cols-2 gap-3">
-                                    <input type="text" placeholder="ناو" className="bg-zinc-800 border-none p-2 rounded text-xs" value=${editingItem.name} onChange=${e => setEditingItem({...editingItem, name: e.target.value})} />
-                                    <input type="number" placeholder="نرخ" className="bg-zinc-800 border-none p-2 rounded text-xs" value=${editingItem.price || ''} onChange=${e => setEditingItem({...editingItem, price: parseInt(e.target.value)})} />
-                                    <input type="number" placeholder="داشکان" className="bg-zinc-800 border-none p-2 rounded text-xs" value=${editingItem.discount || ''} onChange=${e => setEditingItem({...editingItem, discount: parseInt(e.target.value)})} />
-                                    <select className="bg-zinc-800 border-none p-2 rounded text-xs" value=${editingItem.category} onChange=${e => setEditingItem({...editingItem, category: e.target.value})}>
-                                        ${categories.map(c => html`<option value=${c.id}>${c.name}</option>`)}
+                                    <input type="text" placeholder="ناو" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingItem.name} onChange=${e => setEditingItem({...editingItem, name: e.target.value})} />
+                                    <input type="number" placeholder="نرخ" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingItem.price || ''} onChange=${e => setEditingItem({...editingItem, price: parseInt(e.target.value)})} />
+                                    <input type="number" placeholder="داشکان" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingItem.discount || ''} onChange=${e => setEditingItem({...editingItem, discount: parseInt(e.target.value)})} />
+                                    <select className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingItem.category} onChange=${e => setEditingItem({...editingItem, category: e.target.value})}>
+                                        ${categories.map(c => html`<option key=${c.id} value=${c.id}>${c.name}</option>`)}
                                     </select>
-                                    <input type="text" placeholder="وێنە" className="bg-zinc-800 border-none p-2 rounded text-xs col-span-2" value=${editingItem.img} onChange=${e => setEditingItem({...editingItem, img: e.target.value})} />
+                                    <input type="text" placeholder="لێنکی وێنە" className="bg-zinc-800 border-none p-2 rounded text-xs text-white col-span-2" value=${editingItem.img} onChange=${e => setEditingItem({...editingItem, img: e.target.value})} />
                                 </div>
-                                <button className="w-full bg-green-600 text-white font-bold py-2 rounded text-xs">پاشەکەوت</button>
+                                <button className="w-full bg-green-600 text-white font-bold py-2 rounded text-xs">پاشەکەوتکردن</button>
                             </form>
                             <div className="space-y-2">
                                 ${menuItems.map(item => html`
-                                    <div className="bg-zinc-900 border border-zinc-800 p-3 rounded flex items-center justify-between">
-                                        <span className="text-xs font-bold">${item.name} (${item.category})</span>
+                                    <div key=${item.id} className="bg-zinc-900 border border-zinc-800 p-3 rounded flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <img src=${item.img || 'https://via.placeholder.com/150'} className="w-8 h-8 rounded-full object-cover" />
+                                            <span className="text-xs font-bold">${item.name}</span>
+                                        </div>
                                         <div className="flex gap-2">
-                                            <button onClick=${() => setEditingItem(item)} className="text-blue-400"><${Icon} name="Edit" size=${16} /></button>
+                                            <button onClick=${() => { setEditingItem(item); window.scrollTo(0,0); }} className="text-blue-400"><${Icon} name="Edit" size=${16} /></button>
                                             <button onClick=${() => deleteEntry('menu_items', item.id)} className="text-red-500"><${Icon} name="Trash2" size=${16} /></button>
                                         </div>
                                     </div>
@@ -333,19 +344,26 @@
 
                     ${activeTab === 'categories' && html`
                         <div className="space-y-8">
+                            <div className="flex justify-between items-center bg-yellow-500/10 p-3 rounded-xl border border-yellow-500/20">
+                                <span className="text-xs text-yellow-500 font-bold">زانیارییەکان ون بوون؟</span>
+                                <button onClick=${seedData} className="bg-yellow-500 text-black text-[10px] px-3 py-1 rounded-full font-bold">گەڕاندنەوەی سەرەتا</button>
+                            </div>
                             <form onSubmit=${saveCategory} className="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
                                 <h3 className="font-bold text-white">بەڕێوەبردنی کاتیگۆری</h3>
                                 <div className="grid grid-cols-2 gap-3">
-                                    <input type="text" placeholder="ID (ئینگلیزی)" className="bg-zinc-800 border-none p-2 rounded text-xs" value=${editingCategory.id} onChange=${e => setEditingCategory({...editingCategory, id: e.target.value})} />
-                                    <input type="text" placeholder="ناو (کوردی)" className="bg-zinc-800 border-none p-2 rounded text-xs" value=${editingCategory.name} onChange=${e => setEditingCategory({...editingCategory, name: e.target.value})} />
-                                    <input type="text" placeholder="وێنە" className="bg-zinc-800 border-none p-2 rounded text-xs col-span-2" value=${editingCategory.img} onChange=${e => setEditingCategory({...editingCategory, img: e.target.value})} />
+                                    <input type="text" placeholder="ID (ئینگلیزی - pizza)" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingCategory.id} onChange=${e => setEditingCategory({...editingCategory, id: e.target.value})} />
+                                    <input type="text" placeholder="ناو (کوردی - پیتزا)" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingCategory.name} onChange=${e => setEditingCategory({...editingCategory, name: e.target.value})} />
+                                    <input type="text" placeholder="لێنکی وێنە" className="bg-zinc-800 border-none p-2 rounded text-xs text-white col-span-2" value=${editingCategory.img} onChange=${e => setEditingCategory({...editingCategory, img: e.target.value})} />
                                 </div>
                                 <button className="w-full bg-green-600 text-white font-bold py-2 rounded text-xs">پاشەکەوت</button>
                             </form>
                             <div className="space-y-2">
                                 ${categories.map(c => html`
-                                    <div className="bg-zinc-900 border border-zinc-800 p-3 rounded flex items-center justify-between">
-                                        <span className="text-xs font-bold">${c.name} (${c.id})</span>
+                                    <div key=${c.id} className="bg-zinc-900 border border-zinc-800 p-3 rounded flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <img src=${c.img || 'https://via.placeholder.com/150'} className="w-8 h-8 rounded-full object-cover" />
+                                            <span className="text-xs font-bold">${c.name} (${c.id})</span>
+                                        </div>
                                         <div className="flex gap-2">
                                             <button onClick=${() => setEditingCategory({id: c.id, ...c})} className="text-blue-400"><${Icon} name="Edit" size=${16} /></button>
                                             <button onClick=${() => deleteEntry('categories', c.id)} className="text-red-500"><${Icon} name="Trash2" size=${16} /></button>
@@ -361,18 +379,18 @@
                             <form onSubmit=${savePrize} className="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
                                 <h3 className="font-bold text-white">بەڕێوەبردنی خەڵاتەکان</h3>
                                 <div className="grid grid-cols-2 gap-3">
-                                    <input type="text" placeholder="ناوی خەڵات" className="bg-zinc-800 border-none p-2 rounded text-xs" value=${editingPrize.label} onChange=${e => setEditingPrize({...editingPrize, label: e.target.value})} />
-                                    <input type="number" placeholder="ڕێژەی بردنەوە (1-100)" className="bg-zinc-800 border-none p-2 rounded text-xs" value=${editingPrize.prob} onChange=${e => setEditingPrize({...editingPrize, prob: e.target.value})} />
+                                    <input type="text" placeholder="ناوی خەڵات" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingPrize.label} onChange=${e => setEditingPrize({...editingPrize, label: e.target.value})} />
+                                    <input type="number" placeholder="ڕێژەی بردنەوە (1-100)" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingPrize.prob} onChange=${e => setEditingPrize({...editingPrize, prob: e.target.value})} />
                                     <input type="color" className="bg-zinc-800 border-none h-10 w-full rounded p-1" value=${editingPrize.color} onChange=${e => setEditingPrize({...editingPrize, color: e.target.value})} />
                                 </div>
                                 <button className="w-full bg-green-600 text-white font-bold py-2 rounded text-xs">پاشەکەوت</button>
                             </form>
                             <div className="space-y-2">
                                 ${wheelPrizes.map(p => html`
-                                    <div className="bg-zinc-900 border border-zinc-800 p-3 rounded flex items-center justify-between">
+                                    <div key=${p.id} className="bg-zinc-900 border border-zinc-800 p-3 rounded flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                             <div style=${{ backgroundColor: p.color }} className="w-4 h-4 rounded-full border border-zinc-700"></div>
-                                            <span className="text-xs font-bold">${p.label} (${p.prob}%)</span>
+                                            <span className="text-xs font-bold text-white">${p.label} (${p.prob}%)</span>
                                         </div>
                                         <div className="flex gap-2">
                                             <button onClick=${() => setEditingPrize(p)} className="text-blue-400"><${Icon} name="Edit" size=${16} /></button>
@@ -390,7 +408,7 @@
         const App = () => {
             const [view, setView] = useState('menu');
             const [activeCategory, setActiveCategory] = useState('');
-            const [menuItems, setMenuItems] = useState([]);
+            const [allMenuItems, setAllMenuItems] = useState([]);
             const [categories, setCategories] = useState([]);
             const [wheelPrizes, setWheelPrizes] = useState([]);
             const [cart, setCart] = useState({});
@@ -401,27 +419,25 @@
             const [lastOrder, setLastOrder] = useState(null);
 
             useEffect(() => {
-                const unsubCats = onValue(ref(db, 'categories'), (snap) => {
+                onValue(ref(db, 'categories'), (snap) => {
                     const data = snap.val();
                     const list = data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : [];
                     setCategories(list);
                     if (list.length > 0 && !activeCategory) setActiveCategory(list[0].id);
                 });
-                const unsubPrizes = onValue(ref(db, 'prizes'), (snap) => {
+                onValue(ref(db, 'prizes'), (snap) => {
                     const data = snap.val();
                     setWheelPrizes(data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : []);
                 });
-                return () => { unsubCats(); unsubPrizes(); };
+                onValue(ref(db, 'menu_items'), (snapshot) => {
+                    const data = snapshot.val();
+                    setAllMenuItems(data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : []);
+                });
             }, []);
 
-            useEffect(() => {
-                if (!activeCategory) return;
-                const unsub = onValue(query(ref(db, 'menu_items'), orderByChild('category'), equalTo(activeCategory)), (snapshot) => {
-                    const data = snapshot.val();
-                    setMenuItems(data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : []);
-                });
-                return () => unsub();
-            }, [activeCategory]);
+            const filteredMenuItems = useMemo(() => {
+                return allMenuItems.filter(item => item.category === activeCategory);
+            }, [allMenuItems, activeCategory]);
 
             const canSpin = localStorage.getItem('canSpinBoom') === 'true' || !localStorage.getItem('boomSpinCount');
 
@@ -501,19 +517,28 @@
 
                             ${canSpin && html`<button onClick=${() => setShowWheel(true)} className="fixed bottom-28 left-4 z-40 bg-[#ffc107] text-black px-4 py-2 rounded-full font-bold shadow-xl animate-pulse-gold border-2 border-white/20">🎰 چەرخی بەخت</button>`}
                             
-                            <div className="flex overflow-x-auto p-4 gap-4 no-scrollbar bg-zinc-900/50">
-                                ${categories.map(cat => html`
-                                    <button key=${cat.id} onClick=${() => setActiveCategory(cat.id)} className=${`flex flex-col items-center min-w-[80px] transition-transform active:scale-90 ${activeCategory === cat.id ? 'scale-110' : 'opacity-60'}`}>
-                                        <div className=${`w-16 h-16 rounded-full overflow-hidden border-2 mb-2 ${activeCategory === cat.id ? 'border-[#ff3131] shadow-[0_0_15px_rgba(255,49,49,0.5)]' : 'border-zinc-700'}`}>
-                                            <img src=${cat.img || 'https://via.placeholder.com/150'} className="w-full h-full object-cover" />
-                                        </div>
-                                        <span className=${`text-xs font-bold ${activeCategory === cat.id ? 'text-[#ff3131]' : 'text-zinc-400'}`}>${cat.name}</span>
-                                    </button>
-                                `)}
-                            </div>
+                            ${categories.length === 0 ? html`
+                                <div className="p-20 text-center text-zinc-500">
+                                    <p className="mb-4">هیچ کاتیگۆرییەک نەدۆزرایەوە</p>
+                                    <p className="text-xs">تکایە لە بەشی بەڕێوەبردن زانیارییەکان زیاد بکە</p>
+                                </div>
+                            ` : html`
+                                <div className="flex overflow-x-auto p-4 gap-4 no-scrollbar bg-zinc-900/50">
+                                    ${categories.map(cat => html`
+                                        <button key=${cat.id} onClick=${() => setActiveCategory(cat.id)} className=${`flex flex-col items-center min-w-[80px] transition-transform active:scale-90 ${activeCategory === cat.id ? 'scale-110' : 'opacity-60'}`}>
+                                            <div className=${`w-16 h-16 rounded-full overflow-hidden border-2 mb-2 ${activeCategory === cat.id ? 'border-[#ff3131] shadow-[0_0_15px_rgba(255,49,49,0.5)]' : 'border-zinc-700'}`}>
+                                                <img src=${cat.img || 'https://via.placeholder.com/150'} className="w-full h-full object-cover" />
+                                            </div>
+                                            <span className=${`text-xs font-bold ${activeCategory === cat.id ? 'text-[#ff3131]' : 'text-zinc-400'}`}>${cat.name}</span>
+                                        </button>
+                                    `)}
+                                </div>
+                            `}
 
                             <div className="grid grid-cols-2 gap-4 p-4">
-                                ${menuItems.map(item => {
+                                ${filteredMenuItems.length === 0 ? html`
+                                    <div className="col-span-2 py-10 text-center text-zinc-600 text-sm">هیچ خواردنێک لەم کاتیگۆرییەدا نییە</div>
+                                ` : filteredMenuItems.map(item => {
                                     const finalPrice = item.price - (item.discount || 0);
                                     return html`
                                         <div key=${item.id} className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 flex flex-col shadow-lg">
@@ -554,13 +579,13 @@
                                             </div>
                                         </div>
                                     `)}
-                                    ${prizesWon.length > 0 && html`<div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-xs">🎁 خەڵاتەکانت: ${prizesWon.join(", ")}</div>`}
-                                    <textarea className="w-full bg-zinc-800 border-none p-3 rounded-xl text-white text-sm outline-none mb-4" rows=${2} placeholder="تێبینی..." value=${orderNote} onChange=${e => setOrderNote(e.target.value)} />
+                                    ${prizesWon.length > 0 && html`<div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-xs text-yellow-500">🎁 خەڵاتەکانت: ${prizesWon.join(", ")}</div>`}
+                                    <textarea className="w-full bg-zinc-800 border-none p-3 rounded-xl text-white text-sm outline-none mb-4 focus:ring-1 focus:ring-[#ff3131]" rows=${2} placeholder="تێبینی..." value=${orderNote} onChange=${e => setOrderNote(e.target.value)} />
                                     <div className="my-4 flex justify-between items-center px-2">
                                         <span className="text-zinc-400 font-bold">کۆی گشتی:</span>
                                         <span className="text-2xl font-black text-white">${totalAmount.toLocaleString()} د.ع</span>
                                     </div>
-                                    <button onClick=${handleSendOrder} disabled=${isSending} className="w-full bg-[#25D366] text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-3 shadow-lg">
+                                    <button onClick=${handleSendOrder} disabled=${isSending} className="w-full bg-[#25D366] text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-transform">
                                         ${isSending ? '⏳ چاوەڕوانی لۆکەیشن...' : '✅ داواکردن و بینینی وەسڵ'}
                                     </button>
                                 </div>
