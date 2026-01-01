@@ -16,7 +16,7 @@ const menuItems = [
     { id: 15, name: "شاوەرمەی ساج", price: 3000, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
     { id: 16, name: "شاوەرمە بە پەنیر", price: 2000, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" },
     { id: 17, name: "فینگەر (پەتاتە)", price: 1500, category: "finger", img: "https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png" },
-    { id: 18, name: "کۆکا کۆلا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500" },
+    { id: 18, name: "کۆکا کۆلا", price: 1000, category: "drink", img: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500" },
     { id: 19, name: "ئاوی بچووک", price: 250, category: "drink", img: "https://i.postimg.cc/v8603rhR/images-(2).jpg" },
     { id: 20, name: "ماستاو", price: 500, category: "drink", img: "https://i.postimg.cc/xTMFTvNz/images.jpg" },
     { id: 21, name: "فانتا", price: 500, category: "drink", img: "https://images.unsplash.com/photo-1624517452488-04869289c4ca?w=500" }
