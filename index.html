@@ -145,10 +145,10 @@
 
     let isSpinning = false;
     const prizes = [
-        { label: "0%", val: 0.05 },  // سور
-        { label: "5%", val: 0.05 },  // زەرد (پێشتر 10 بوو)
-        { label: "15%", val: 0.15 }, // سەوز
-        { label: "0%", val: 0.0 }    // شین (پێشتر 20 بوو)
+        { label: "5%", val: 0.05 },
+        { label: "5%", val: 0.05 },
+        { label: "15%", val: 0.15 },
+        { label: "0%", val: 0.0 }
     ];
 
     function openWheel() { document.getElementById('wheelOverlay').style.display = 'flex'; }
@@ -163,11 +163,10 @@
         let randomVal = Math.random() * 100;
         let targetIdx;
 
-        // ئەگەرەکان:
-        if (randomVal < 60) { targetIdx = 0; }      // 60% ئەگەر بۆ 5% (بەشی سور)
-        else if (randomVal < 90) { targetIdx = 3; } // 30% ئەگەر بۆ 0% (بەشی شین)
-        else if (randomVal < 98) { targetIdx = 1; } // 8% ئەگەر بۆ 5%ـی دووەم (بەشی زەرد)
-        else { targetIdx = 2; }                     // تەنها 2% ئەگەر بۆ 15% (بەشی سەوز)
+        // ئەگەری دەرچوون (65% بۆ 5% ، 30% بۆ 0% ، 5% بۆ 15%)
+        if (randomVal < 65) { targetIdx = 0; }
+        else if (randomVal < 95) { targetIdx = 3; }
+        else { targetIdx = 2; }
 
         let targetDeg;
         if (targetIdx === 0) targetDeg = Math.floor(Math.random() * 80) + 275;
@@ -176,7 +175,6 @@
         else targetDeg = Math.floor(Math.random() * 80) + 5;
 
         const totalSpin = 2160 + (360 - targetDeg);
-        
         wheel.style.transform = `rotate(${totalSpin}deg)`;
         status.innerText = "بەختت تاقی دەکرێتەوە... ✨";
 
@@ -188,30 +186,25 @@
                 status.innerText = "🎉 پیرۆزە: داشکاندنی " + result.label;
                 status.style.color = "var(--text-gold)";
             } else {
-                status.innerText = "❌ بەداخەوە، ئەمجارە هیچت بۆ دەرنەچوو!";
+                status.innerText = "❌ ئەمجارە بەختت نەبوو!";
                 status.style.color = "#ff5555";
             }
-            
             renderCart();
 
             setTimeout(() => {
-                if(discountRate > 0) {
-                    alert("پیرۆزە! داشکاندنی " + result.label + " بۆت چالاک بوو.");
-                } else {
-                    alert("بەداخەوە ئەمجارە داشکاندن نییە، جارێکی تر تاقی بکەرەوە!");
-                }
+                if(discountRate > 0) alert("پیرۆزە! داشکاندنی " + result.label + " بۆت چالاک بوو.");
+                else alert("بەداخەوە! ئەمجارە داشکاندنت بۆ دەرنەچوو.");
                 isSpinning = false;
                 closeWheel();
             }, 1200);
         }, 4000);
     }
 
-    // لێرەوە فەنکشنەکانی تری کڕین و سەبەتە وەک خۆیانن...
     function shareSite() {
         if (navigator.share) {
-            navigator.share({ title: "Boom's Pizza", text: "خۆشترین پیتزا لێرە داوا بکە و داشکاندن بەرە! 🔥", url: window.location.href });
+            navigator.share({ title: "Boom's Pizza", text: "خۆشترین پیتزا لێرە داوا بکە! 🔥", url: window.location.href });
         } else {
-            alert("سایتەکە کۆپی کرا! 🚀");
+            alert("سایتەکە کۆپی کرا!");
         }
     }
 
@@ -283,6 +276,7 @@
         for (const [n, c] of Object.entries(grouped)) txt += `🔹 ${c}x ${n}\n`;
         if (discountRate > 0) { txt += `\n🎁 *داشکاندن:* ${discountRate * 100}%\n`; }
         txt += `\n💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} دینار`;
+        // ژمارەکە لێرە پارێزراوە
         window.location.href = `https://wa.me/9647504629237?text=${encodeURIComponent(txt)}`;
     }
 
@@ -300,4 +294,3 @@
 </script>
 </body>
 </html>
-
