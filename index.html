@@ -17,7 +17,6 @@
         }
         header h1 { font-size: 3.5rem; color: var(--text-gold); text-shadow: 3px 3px 15px #000; margin: 0; }
         
-        /* بەشی فێرکاری سێ هەنگاوەکە */
         .steps-container {
             background: #111; margin: 15px; padding: 15px; border-radius: 15px;
             display: flex; justify-content: space-around; align-items: center;
@@ -33,7 +32,6 @@
             font-family: 'Vazirmatn'; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,123,255,0.3);
         }
 
-        /* چەرخی بەخت تەنها بۆ داشکاندن */
         .wheel-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); z-index: 5000; display: none;
@@ -100,10 +98,10 @@
     <div class="wheel-wrap">
         <div class="wheel-pointer"></div>
         <div id="theWheel" class="main-wheel"></div>
-        <div style="position:absolute; top:20%; left:50%; transform:translateX(-50%); color:white; font-weight:bold; z-index:5;">5%</div>
-        <div style="position:absolute; right:20%; top:50%; transform:translateY(-50%); color:black; font-weight:bold; z-index:5;">10%</div>
-        <div style="position:absolute; bottom:20%; left:50%; transform:translateX(-50%); color:white; font-weight:bold; z-index:5;">15%</div>
-        <div style="position:absolute; left:20%; top:50%; transform:translateY(-50%); color:white; font-weight:bold; z-index:5;">20%</div>
+        <div style="position:absolute; top:15%; left:50%; transform:translateX(-50%); color:white; font-weight:bold; z-index:5;">5%</div>
+        <div style="position:absolute; right:15%; top:50%; transform:translateY(-50%); color:black; font-weight:bold; z-index:5;">10%</div>
+        <div style="position:absolute; bottom:15%; left:50%; transform:translateX(-50%); color:white; font-weight:bold; z-index:5;">15%</div>
+        <div style="position:absolute; left:15%; top:50%; transform:translateY(-50%); color:white; font-weight:bold; z-index:5;">20%</div>
     </div>
     <button id="spinBtn" class="spin-btn-main" onclick="startSpin()">بسوڕێنە! 🚀</button>
     <p id="wheelStatus" style="color:white; margin-top:15px; font-size:1.2rem; font-weight:bold; height:30px;"></p>
@@ -142,10 +140,9 @@
 
 <script>
     let cart = [];
-    let discountRate = 0; // ڕێژەی داشکاندن لێرە خەزن دەبێت
+    let discountRate = 0;
     const folderNames = { 'pizza': '🍕 جۆرەکانی پیزا', 'burger': '🍔 جۆرەکانی بەرگر', 'shawarma': '🌯 جۆرەکانی شاوەرمە', 'finger': '🍟 فینگەر', 'drink': '🥤 خواردنەوەکان' };
 
-    // فەنکشنەکانی چەرخی بەخت (تەنها داشکاندن)
     let isSpinning = false;
     const prizes = [
         { label: "5%", val: 0.05 },
@@ -157,29 +154,46 @@
     function openWheel() { document.getElementById('wheelOverlay').style.display = 'flex'; }
     function closeWheel() { document.getElementById('wheelOverlay').style.display = 'none'; }
 
+    // فەنکشنی سوڕانەوە بە کۆنترۆڵی ئەگەرەکان (75% بۆ 5% داشکاندن)
     function startSpin() {
         if (isSpinning) return;
         isSpinning = true;
         const wheel = document.getElementById('theWheel');
         const status = document.getElementById('wheelStatus');
-        const deg = Math.floor(Math.random() * 360) + 2160; // سوڕانەوە بۆ ماوەیەک
         
-        wheel.style.transform = `rotate(${deg}deg)`;
+        let randomVal = Math.random() * 100;
+        let targetIdx;
+
+        if (randomVal < 75) { targetIdx = 0; }      // 75% ئەگەر بۆ 5%
+        else if (randomVal < 90) { targetIdx = 1; } // 15% ئەگەر بۆ 10%
+        else if (randomVal < 98) { targetIdx = 2; } // 8% ئەگەر بۆ 15%
+        else { targetIdx = 3; }                     // 2% ئەگەر بۆ 20%
+
+        // لۆژیکی پلەکان: هەر بەشێک 90 پلەیە
+        // 5% (idx 0) دەکەوێتە نیوان 271-360 پلە
+        // 10% (idx 1) دەکەوێتە نیوان 181-270 پلە
+        // 15% (idx 2) دەکەوێتە نیوان 91-180 پلە
+        // 20% (idx 3) دەکەوێتە نیوان 0-90 پلە
+        
+        let targetDeg;
+        if (targetIdx === 0) targetDeg = Math.floor(Math.random() * 80) + 275;
+        else if (targetIdx === 1) targetDeg = Math.floor(Math.random() * 80) + 185;
+        else if (targetIdx === 2) targetDeg = Math.floor(Math.random() * 80) + 95;
+        else targetDeg = Math.floor(Math.random() * 80) + 5;
+
+        const totalSpin = 2160 + (360 - targetDeg); // 6 جار سوڕانەوە + پلەی مەبەست
+        
+        wheel.style.transform = `rotate(${totalSpin}deg)`;
         status.innerText = "بەختت تاقی دەکرێتەوە... ✨";
 
         setTimeout(() => {
-            const finalDeg = deg % 360;
-            // دابەشکردنی ٤ بەش (هەر بەشەی ٩٠ پلە)
-            const prizeIdx = Math.floor((360 - finalDeg) / 90) % 4;
-            const result = prizes[prizeIdx];
-            
-            discountRate = result.val; // جێگیرکردنی داشکاندنەکە
+            const result = prizes[targetIdx];
+            discountRate = result.val;
             status.innerText = "🎉 پیرۆزە: داشکاندنی " + result.label;
-            
-            renderCart(); // نوێکردنەوەی نرخەکان یەکسەر
+            renderCart();
 
             setTimeout(() => {
-                alert("پیرۆزە! داشکاندنی " + result.label + " بۆت چالاک بوو.\nنرخەکان لە سەبەتەکەدا کەم کرانەوە.");
+                alert("پیرۆزە! داشکاندنی " + result.label + " بۆت چالاک بوو.");
                 isSpinning = false;
                 closeWheel();
             }, 1200);
@@ -190,7 +204,7 @@
         if (navigator.share) {
             navigator.share({ title: "Boom's Pizza", text: "خۆشترین پیتزا لێرە داوا بکە و داشکاندن بەرە! 🔥", url: window.location.href });
         } else {
-            alert("سایتەکە بڵاو بکەرەوە بۆ هاوڕێکانت! 🚀");
+            alert("سایتەکە کۆپی کرا! 🚀");
         }
     }
 
@@ -225,26 +239,21 @@
         const discLabel = document.getElementById('discount-label');
         let total = 0; cartDiv.innerHTML = '';
         const grouped = {};
-        
         cart.forEach(i => { total += i.price; grouped[i.name] = (grouped[i.name] || 0) + 1; });
-        
         for (const [name, count] of Object.entries(grouped)) {
             cartDiv.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #222;"><span>${count}x ${name}</span><button onclick="removeFromCart('${name}')" style="color:#ff5555; background:none; border:1px solid #ff5555; border-radius:5px; padding:2px 8px; cursor:pointer;">لادان</button></div>`;
         }
-
-        // جێبەجێکردنی داشکاندنی چەرخەکە
         if (discountRate > 0 && total > 0) {
             const discAmount = total * discountRate;
             const newTotal = total - discAmount;
             discLabel.style.display = 'block';
-            discLabel.innerText = `🎁 داشکاندنی ${discountRate * 100}% جێبەجێ کرا!`;
+            discLabel.innerText = `🎁 داشکاندنی ${Math.round(discountRate * 100)}% جێبەجێ کرا!`;
             document.getElementById('total-amount').innerHTML = `<small style="text-decoration:line-through; color:#888; margin-left:10px;">${total.toLocaleString()}</small> ${Math.round(newTotal).toLocaleString()}`;
             total = newTotal;
         } else {
             discLabel.style.display = 'none';
             document.getElementById('total-amount').innerText = total.toLocaleString();
         }
-
         const fb = document.getElementById('floating-cart');
         if(cart.length > 0) { 
             fb.style.display = 'flex'; 
@@ -265,16 +274,11 @@
         const grouped = {};
         cart.forEach(i => grouped[i.name] = (grouped[i.name] || 0) + 1);
         for (const [n, c] of Object.entries(grouped)) txt += `🔹 ${c}x ${n}\n`;
-        
-        if (discountRate > 0) {
-            txt += `\n🎁 *داشکاندنی چەرخی بەخت:* ${discountRate * 100}%\n`;
-        }
-        
-        txt += `\n💰 *کۆی گشتی کۆتایی:* ${document.getElementById('total-amount').innerText} دینار`;
+        if (discountRate > 0) { txt += `\n🎁 *داشکاندن:* ${discountRate * 100}%\n`; }
+        txt += `\n💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} دینار`;
         window.location.href = `https://wa.me/9647504629237?text=${encodeURIComponent(txt)}`;
     }
 
-    // بەفرەکە
     setInterval(() => {
         const s = document.createElement('div');
         s.className = 'snowflake';
