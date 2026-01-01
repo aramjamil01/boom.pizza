@@ -8,32 +8,62 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
-        :root { --accent: #ff3131; --bg: #0a0b0d; --card: #16181d; --text: #ffffff; --gold: #ffc107; }
-        body { font-family: 'Vazirmatn', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; }
+        :root { --accent: #ff3131; --bg: rgba(10, 11, 13, 0.85); --card: rgba(22, 24, 29, 0.9); --text: #ffffff; --gold: #ffc107; }
         
-        .container { padding: 15px; max-width: 500px; margin: auto; }
+        body { 
+            font-family: 'Vazirmatn', sans-serif; 
+            margin: 0; 
+            padding-bottom: 50px;
+            color: var(--text);
+            /* پاشبنەمای وێنە */
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        /* ستایلی بەفرەکە */
+        .snow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            to { transform: translateY(105vh); }
+        }
+
+        .container { padding: 15px; max-width: 500px; margin: auto; position: relative; z-index: 10; }
         
-        /* Table Grid */
         .table-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .table-btn { background: var(--card); border: 1px solid #25282e; color: white; padding: 15px 5px; border-radius: 12px; cursor: pointer; transition: 0.3s; font-family: inherit; }
+        .table-btn { background: var(--card); border: 1px solid #444; color: white; padding: 15px 5px; border-radius: 12px; cursor: pointer; transition: 0.3s; font-family: inherit; backdrop-filter: blur(5px); }
         .table-btn.active { background: var(--accent); border-color: #fff; }
 
-        /* Order Form */
-        .order-form { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #25282e; }
+        .order-form { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #444; backdrop-filter: blur(10px); }
         
-        /* Selected Items List */
         .selected-list { margin-top: 10px; border-top: 1px solid #333; padding-top: 10px; max-height: 200px; overflow-y: auto; }
         .item-row { display: flex; justify-content: space-between; align-items: center; background: #1f2229; padding: 10px; margin-bottom: 8px; border-radius: 10px; border-right: 3px solid var(--accent); }
         .del-btn { color: #ff3131; background: none; border: none; font-size: 1.2rem; cursor: pointer; }
 
-        /* Category/Folder Styles */
         .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .cat-btn { background: #25282e; border: 1px solid #444; color: white; padding: 20px 10px; border-radius: 15px; cursor: pointer; text-align: center; font-weight: bold; }
         .cat-btn:active { background: var(--accent); }
 
-        /* Modal Styles */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--card); width: 85%; max-width: 350px; padding: 20px; border-radius: 20px; border: 1px solid var(--accent); }
+        .modal-content { background: #16181d; width: 85%; max-width: 350px; padding: 20px; border-radius: 20px; border: 1px solid var(--accent); }
         
         .food-item { background: #1f2229; padding: 15px; margin: 8px 0; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; border: 1px solid #333; }
         
@@ -46,8 +76,10 @@
 </head>
 <body>
 
+    <div class="snow-container" id="snow-container"></div>
+
     <div class="container">
-        <h2 style="text-align:center; color:var(--accent);">بوم پیتزا 🍕</h2>
+        <h2 style="text-align:center; color:var(--accent); text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">بوم پیتزا 🍕</h2>
         
         <div class="table-grid">
             <button class="table-btn" onclick="selectDesk(1, this)">مێزی ١</button>
@@ -59,8 +91,7 @@
         </div>
 
         <div class="order-form">
-            <p style="margin: 0 0 10px; font-size: 0.9rem; color: #888;">پۆلێنەکان هەڵبژێرە:</p>
-            
+            <p style="margin: 0 0 10px; font-size: 0.9rem; color: #ccc;">پۆلێنەکان هەڵبژێرە:</p>
             <div class="category-grid">
                 <div class="cat-btn" onclick="openCat('پیتزاکان')">🍕 پیتزاکان</div>
                 <div class="cat-btn" onclick="openCat('بەرگرەکان')">🍔 بەرگرەکان</div>
@@ -68,10 +99,9 @@
                 <div class="cat-btn" onclick="openCat('خواردنەوە')">🥤 خواردنەوە</div>
             </div>
             
-            <div class="selected-list" id="selected-list">
-                </div>
+            <div class="selected-list" id="selected-list"></div>
 
-            <div style="margin-top:20px; border-top:1px solid #333; padding-top:15px;">
+            <div style="margin-top:20px; border-top:1px solid #444; padding-top:15px;">
                 <div style="display:flex; justify-content:space-between; font-weight:bold;">
                     <span>کۆی گشتی:</span>
                     <span id="display-total" style="color:var(--gold);">0 د.ع</span>
@@ -81,172 +111,5 @@
         </div>
     </div>
 
-    <div id="cat-modal" class="modal">
-        <div class="modal-content">
-            <h3 id="cat-title" style="margin-top:0; color:var(--accent);">ناو</h3>
-            <div id="food-list" style="max-height: 350px; overflow-y: auto;">
-                </div>
-            <button class="btn-cancel" onclick="closeModal('cat-modal')">داخستن</button>
-        </div>
-    </div>
-
-    <div id="qty-modal" class="modal">
-        <div class="modal-content" style="text-align:center;">
-            <h3 id="modal-food-name" style="margin-top:0;">ناو</h3>
-            <div style="margin:15px 0;">
-                <label style="display:block; margin-bottom:10px; color:#888;">بڕی داواکراو:</label>
-                <input type="number" id="qty-input" class="qty-input" value="1" onfocus="this.select()">
-            </div>
-            <input type="text" id="extra-input" class="extra-input" placeholder="زیادەیەک (وەک: بێ پیاز، پەنیر...)">
-            <button class="btn-main" onclick="confirmAdd()">پاشەکەوت و زیادکردن</button>
-            <button class="btn-cancel" onclick="closeModal('qty-modal')">پاشگەزبوونەوە</button>
-        </div>
-    </div>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDqoOjm4m1Fxp760mJPy0sv5_NjaJfkm7g",
-            databaseURL: "https://boompizza-5d048-default-rtdb.firebaseio.com",
-            projectId: "boompizza-5d048",
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        const menuData = {
-            'پیتزاکان': [
-                { name: 'پیزای گۆشت small', price: 4500 },
-                { name: 'پیتزا گۆشت medium', price: 5000 },
-                { name: 'پیزای گۆشت large', price: 7000 },
-                { name: 'پیتزا مریشک small', price: 4000 },
-                { name: 'پیتزا مریشک medium', price: 5000 },
-                { name: 'پیتزا مریشک large', price: 6000 },
-                { name: 'پیتزا موشەکەل', price: 4000 },
-                { name: 'پیتزا پێپەڕۆنی', price: 4000 },
-                { name: 'بووم پیزا (شاهانە)', price: 7000 }
-            ],
-            'بەرگرەکان': [
-                { name: 'بووم بەرگر', price: 6000 },
-                { name: 'چیز بەرگر', price: 3000 },
-                { name: 'زینگەر بەرگر', price: 5500 },
-                { name: 'دەبڵ چیز بەرگر', price: 4000 },
-                { name: 'بەرگری قارچک', price: 5000 }
-            ],
-            'لاوەکییەکان': [
-                { name: 'فینگەر', price: 1500 },
-                { name: 'لەفەی شاوەرمە', price: 1500 },
-                { name: 'شاوەرمەی ساج', price: 3000 }
-            ],
-            'خواردنەوە': [
-                { name: 'پێپسی', price: 500 },
-                { name: 'ئاو', price: 250 },
-                { name: 'ماستاو', price: 500 }
-            ]
-        };
-
-        let selectedDeskNum = null;
-        let cart = [];
-        let currentItem = null;
-
-        function selectDesk(num, btn) {
-            selectedDeskNum = num;
-            document.querySelectorAll('.table-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-
-        function openCat(catName) {
-            const list = document.getElementById('food-list');
-            document.getElementById('cat-title').innerText = catName;
-            list.innerHTML = '';
-            
-            menuData[catName].forEach(food => {
-                list.innerHTML += `
-                    <div class="food-item" onclick="openQty('${food.name}', ${food.price})">
-                        <span>${food.name}</span>
-                        <span style="color:var(--gold)">${food.price.toLocaleString()}</span>
-                    </div>
-                `;
-            });
-            document.getElementById('cat-modal').style.display = 'flex';
-        }
-
-        function openQty(name, price) {
-            currentItem = { name, price };
-            document.getElementById('modal-food-name').innerText = name;
-            document.getElementById('qty-input').value = 1;
-            document.getElementById('extra-input').value = "";
-            document.getElementById('qty-modal').style.display = 'flex';
-        }
-
-        function confirmAdd() {
-            const qty = parseInt(document.getElementById('qty-input').value) || 1;
-            const extra = document.getElementById('extra-input').value;
-            
-            cart.push({
-                name: currentItem.name,
-                price: currentItem.price,
-                qty: qty,
-                extra: extra,
-                total: currentItem.price * qty
-            });
-            
-            closeModal('qty-modal');
-            closeModal('cat-modal');
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const list = document.getElementById('selected-list');
-            const totalEl = document.getElementById('display-total');
-            list.innerHTML = '';
-            let total = 0;
-
-            cart.forEach((item, index) => {
-                total += item.total;
-                list.innerHTML += `
-                    <div class="item-row">
-                        <div>
-                            <b>${item.qty}x ${item.name}</b>
-                            ${item.extra ? `<small style="display:block; color:#888;">+ ${item.extra}</small>` : ''}
-                        </div>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span>${item.total.toLocaleString()}</span>
-                            <button class="del-btn" onclick="removeItem(${index})">×</button>
-                        </div>
-                    </div>
-                `;
-            });
-            totalEl.innerText = total.toLocaleString() + " د.ع";
-        }
-
-        function removeItem(index) {
-            cart.splice(index, 1);
-            updateCartUI();
-        }
-
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        function sendOrder() {
-            if (!selectedDeskNum) return alert("تکایە مێزێک هەڵبژێرە!");
-            if (cart.length === 0) return alert("هیچ خواردنێک هەڵنەبژێردراوە!");
-
-            const itemsSummary = cart.map(i => `${i.qty}x ${i.name}${i.extra ? ' ('+i.extra+')' : ''}`).join(' + ');
-            const finalTotal = cart.reduce((s, i) => s + i.total, 0);
-
-            const orderData = {
-                id: Math.floor(1000 + Math.random() * 9000),
-                items: itemsSummary,
-                total: finalTotal.toLocaleString() + " د.ع",
-                phone: "ناوەوە (مێزی " + selectedDeskNum + ")",
-                time: new Date().toLocaleString('en-CA', { hour12: false }).replace(',', '')
-            };
-
-            db.ref('orders').push(orderData).then(() => {
-                alert("داواکارییەکە بە سەرکەوتوویی نێردرا!");
-                location.reload();
-            }).catch(err => {
-                alert("هەڵەیەک ڕوویدا لە ناردن: " + err.message);
-            });
-        }
-    </script>
-</body>
-</html>
+    <div id="cat-modal" class="modal"><div class="modal-content"><h3 id="cat-title" style="margin-top:0; color:var(--accent);">ناو</h3><div id="food-list" style="max-height: 350px; overflow-y: auto;"></div><button class="btn-cancel" onclick="closeModal('cat-modal')">داخستن</button></div></div>
+    <div id="qty-modal" class="modal"><div class="modal-content" style="text-align:center;"><h3 id="modal-food-name" style="margin-top:0;">ناو</h3><div style="margin:15px 0;"><label style="display:block; margin-bottom:10px
