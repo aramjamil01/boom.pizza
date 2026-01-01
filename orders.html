@@ -8,55 +8,29 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
-        :root { --accent: #ff3131; --bg: #080808; --card-bg: #121212; --text-main: #ffffff; --text-dim: #a0a0a0; }
-        body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 0; }
-        
-        /* Header Dashboard */
-        .dashboard-header { background: linear-gradient(145deg, #1a1a1a, #0a0a0a); padding: 30px 20px; border-bottom: 1px solid #222; text-align: center; }
-        .dashboard-header h1 { margin: 0; font-size: 1.8rem; letter-spacing: 2px; color: var(--accent); }
-        
-        .status-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; margin-top: -30px; }
-        .stat-item { background: var(--card-bg); padding: 15px; border-radius: 20px; border: 1px solid #222; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
-        .stat-item span { font-size: 0.8rem; color: var(--text-dim); display: block; }
-        .stat-item b { font-size: 1.2rem; color: #fff; }
-
-        /* Order List */
-        .container { padding: 10px 20px; }
-        .order-card { background: var(--card-bg); border-radius: 25px; padding: 20px; margin-bottom: 20px; border: 1px solid #1e1e1e; position: relative; transition: 0.3s; }
-        .order-card:active { transform: scale(0.98); }
-        
-        /* New Order Badge */
-        .new-label { position: absolute; top: 20px; left: 20px; background: var(--accent); color: white; padding: 2px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        .order-info { margin-top: 10px; }
-        .order-id { font-size: 1.1rem; font-weight: 800; color: #ffc107; }
-        .order-time { font-size: 0.75rem; color: var(--text-dim); margin-right: 10px; }
-        
-        .items-box { background: #1a1a1a; padding: 15px; border-radius: 15px; margin: 15px 0; border: 1px solid #252525; }
-        .item-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; font-size: 0.95rem; }
-        
-        .footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .btn-call { background: #25D366; color: white; padding: 10px 20px; border-radius: 15px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
-        .price-tag { font-size: 1.2rem; font-weight: 800; }
-
-        .note-bubble { background: #221a00; border: 1px solid #443300; color: #ffc107; padding: 10px; border-radius: 12px; font-size: 0.85rem; margin-top: 10px; }
+        :root { --accent: #ff3131; --bg: #050505; --card: #111111; }
+        body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); color: white; margin: 0; }
+        .nav { background: #000; padding: 20px; text-align: center; border-bottom: 3px solid var(--accent); position: sticky; top: 0; z-index: 100; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
+        .s-card { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #222; }
+        .s-card span { font-size: 0.8rem; color: #888; display: block; }
+        .s-card b { font-size: 1.2rem; color: var(--accent); }
+        .container { padding: 15px; }
+        .order { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border-left: 6px solid var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+        .head { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .id { color: #ffc107; font-weight: bold; }
+        .items { background: #1a1a1a; padding: 10px; border-radius: 10px; margin: 10px 0; border: 1px solid #333; }
+        .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .call { background: #25D366; color: white; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <div class="dashboard-header">
-        <h1>BOOM PIZZA</h1>
-        <p style="color: #666; font-size: 0.8rem;">کۆنتڕۆڵ پانێڵی بەڕێوبەر</p>
+    <div class="nav"><h1>🍕 BOOM PIZZA ADMIN</h1></div>
+    <div class="stats-grid">
+        <div class="s-card"><span>داواکارییەکان</span><b id="count">0</b></div>
+        <div class="s-card"><span>کۆی داهات</span><b id="sum">0</b></div>
     </div>
-
-    <div class="status-bar">
-        <div class="stat-item"><span>ئەمڕۆ</span><b id="count">0</b></div>
-        <div class="stat-item"><span>داهات</span><b id="sum">0</b></div>
-    </div>
-
-    <div class="container" id="orders-container">
-        </div>
+    <div class="container" id="list">چاوەڕوان بە...</div>
 
     <script>
         const firebaseConfig = {
@@ -68,51 +42,33 @@
             messagingSenderId: "636068289590",
             appId: "1:636068289590:web:41fe758906140c700ecc97"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        db.ref('orders').on('value', (snapshot) => {
-            const container = document.getElementById('orders-container');
-            const data = snapshot.val();
-            container.innerHTML = '';
-            
-            let totalMoney = 0;
-            let totalOrders = 0;
-
+        db.ref('orders').on('value', (s) => {
+            const list = document.getElementById('list');
+            const data = s.val();
+            list.innerHTML = '';
+            let total = 0, count = 0;
             if (data) {
-                const keys = Object.keys(data).reverse();
-                totalOrders = keys.length;
-
-                keys.forEach(key => {
-                    const o = data[key];
-                    let p = o.total ? parseInt(o.total.toString().replace(/[^0-9]/g, '')) : 0;
-                    totalMoney += p;
-
-                    container.innerHTML += `
-                        <div class="order-card">
-                            <div class="new-label">نوێ</div>
-                            <div class="order-info">
-                                <span class="order-id">#${o.id || '0000'}</span>
-                                <span class="order-time">${o.time || ''}</span>
+                Object.keys(data).reverse().forEach(k => {
+                    const o = data[k];
+                    count++;
+                    total += parseInt(o.total?.toString().replace(/[^0-9]/g, '') || 0);
+                    list.innerHTML += `
+                        <div class="order">
+                            <div class="head"><span class="id">#${o.id}</span><small style="color:#666">${o.time || ''}</small></div>
+                            <div class="items">🍴 ${Array.isArray(o.items) ? o.items.join(' + ') : o.items}</div>
+                            ${o.note && o.note !== 'نییە' ? `<div style="color:#ffc107; font-size:0.8rem">💬 ${o.note}</div>` : ''}
+                            <div class="foot">
+                                <b>${o.total} IQD</b>
+                                <a href="tel:${o.phone}" class="call">پەیوەندی 📞</a>
                             </div>
-
-                            <div class="items-box">
-                                <div class="item-row">🍕 <b>${Array.isArray(o.items) ? o.items.join(' + ') : (o.items || 'نادیار')}</b></div>
-                            </div>
-
-                            ${o.note && o.note !== 'نییە' ? `<div class="note-bubble">💬 ${o.note}</div>` : ''}
-
-                            <div class="footer">
-                                <div class="price-tag">${o.total || '0'} <small style="font-size:0.6rem">IQD</small></div>
-                                <a href="tel:${o.phone}" class="btn-call">پەیوەندی</a>
-                            </div>
-                        </div>
-                    `;
+                        </div>`;
                 });
             }
-            document.getElementById('count').innerText = totalOrders;
-            document.getElementById('sum').innerText = totalMoney.toLocaleString() + " د.ع";
+            document.getElementById('count').innerText = count;
+            document.getElementById('sum').innerText = total.toLocaleString() + " د.ع";
         });
     </script>
 </body>
