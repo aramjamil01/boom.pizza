@@ -9,7 +9,17 @@
         :root { --primary-red: #ff3131; --dark-bg: #0a0a0a; --card-bg: #161616; --text-gold: #ffc107; --whatsapp-green: #25D366; }
         body { font-family: 'Vazirmatn', sans-serif; margin: 0; background-color: var(--dark-bg); color: #ffffff; direction: rtl; overflow-x: hidden; }
         header { background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), var(--dark-bg)), url('https://i.postimg.cc/02R8rCjV/99999999.jpg'); background-size: cover; background-position: center; height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 4px solid var(--primary-red); }
-        header h1 { font-size: 3rem; color: var(--text-gold); text-shadow: 3px 3px 15px #000; }
+        header h1 { font-size: 3rem; color: var(--text-gold); text-shadow: 3px 3px 15px #000; margin: 0; }
+        
+        /* ستایلی دوگمەی بڵاوکردنەوە */
+        .share-btn {
+            background: #007bff; color: white; border: none; padding: 10px 20px; 
+            border-radius: 50px; font-weight: bold; cursor: pointer; 
+            display: flex; align-items: center; gap: 8px; margin: 15px auto;
+            font-family: 'Vazirmatn'; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+        }
+        .share-btn:active { transform: scale(0.95); }
+
         .category-container { display: flex; overflow-x: auto; padding: 20px; gap: 15px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1000; }
         .cat-card { min-width: 80px; text-align: center; cursor: pointer; }
         .cat-card img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--text-gold); object-fit: cover; }
@@ -20,7 +30,7 @@
         .item-info { padding: 10px; text-align: center; }
         .add-btn { background: var(--primary-red); color: #fff; border: none; padding: 10px; border-radius: 12px; font-weight: bold; margin: 10px; cursor: pointer; }
         #cart-section { background: #111; border-radius: 25px; padding: 20px; margin: 30px 15px 100px; border: 2px solid #222; }
-        .whatsapp-btn { background: var(--whatsapp-green); color: white; padding: 18px; border-radius: 50px; width: 100%; border: none; font-weight: bold; font-family: 'Vazirmatn'; }
+        .whatsapp-btn { background: var(--whatsapp-green); color: white; padding: 18px; border-radius: 50px; width: 100%; border: none; font-weight: bold; font-family: 'Vazirmatn'; cursor: pointer; }
         .bottom-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; background: var(--primary-red); padding: 15px; border-radius: 50px; display: none; justify-content: space-between; z-index: 2000; box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
         .snowflake { position: absolute; top: -10px; color: white; pointer-events: none; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(105vh); } }
@@ -29,12 +39,14 @@
 <body>
 
 <audio id="orderSound" src="https://www.soundjay.com/buttons/button-20.mp3"></audio>
-<audio id="successSound" src="https://www.soundjay.com/buttons/button-09.mp3"></audio>
-
 <header>
     <h1>Boom's Pizza</h1>
     <p style="background:var(--primary-red); padding:4px 15px; border-radius:20px; font-weight:bold;">کوالێتی نایاب و تامێکی لەبیرنەکراو</p>
 </header>
+
+<button class="share-btn" onclick="shareSite()">
+    📤 ناردنی سایت بۆ هاوڕێیان
+</button>
 
 <div class="category-container">
     <div class="cat-card active" onclick="openFolder('pizza', this)"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200"><p>پیتزا</p></div>
@@ -68,6 +80,25 @@
 <script>
     let cart = [];
     const folderNames = { 'pizza': '🍕 جۆرەکانی پیزا', 'burger': '🍔 جۆرەکانی بەرگر', 'shawarma': '🌯 جۆرەکانی شاوەرمە', 'finger': '🍟 فینگەر', 'drink': '🥤 خواردنەوەکان' };
+
+    // فەنکشنی بڵاوکردنەوە
+    function shareSite() {
+        if (navigator.share) {
+            navigator.share({
+                title: "Boom's Pizza",
+                text: "خۆشترین پیتزا و بەرگر لێرە داوا بکە! 🔥",
+                url: window.location.href
+            }).catch((error) => console.log('Error sharing', error));
+        } else {
+            const tempInput = document.createElement('input');
+            document.body.appendChild(tempInput);
+            tempInput.value = window.location.href;
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            alert("لینکی سایتەکە کۆپی کرا! ئێستا دەتوانیت بۆ هاوڕێکانتی بنێریت. 🚀");
+        }
+    }
 
     function openFolder(category, element) {
         document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
@@ -130,7 +161,6 @@
         window.location.href = `https://wa.me/9647861995417?text=${encodeURIComponent(txt)}`;
     }
 
-    // بەفرەکە
     setInterval(() => {
         const s = document.createElement('div');
         s.className = 'snowflake';
