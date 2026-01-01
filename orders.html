@@ -18,7 +18,7 @@
         .daily-sales h2 { margin: 5px 0; color: var(--green); font-size: 1.8rem; }
 
         .order-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #25282e; position: relative; }
-        .new-badge { position: absolute; top: -10px; left: -10px; background: var(--accent); color: white; padding: 4px 12px; border-radius: 50px; font-weight: 900; font-size: 0.7rem; box-shadow: 0 0 10px var(--accent); animation: blink 1s infinite; }
+        .new-badge { position: absolute; top: -10px; left: -10px; background: var(--accent); color: white; padding: 4px 12px; border-radius: 50px; font-weight: 900; font-size: 0.7rem; box-shadow: 0 0 10px var(--accent); animation: blink 1s infinite; z-index: 10; }
         
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
@@ -29,7 +29,7 @@
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
-            #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; color: black; background: white; padding: 20px; }
+            #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; color: black; background: white; padding: 20px; border: 1px solid #000; }
         }
     </style>
 </head>
@@ -41,7 +41,7 @@
     </div>
 
     <div class="daily-sales">
-        <span>💰 داهاتی ئەمڕۆ (٢٤ کاتژمێر)</span>
+        <span>💰 داهاتی ئەمڕۆ</span>
         <h2 id="today-revenue">0 د.ع</h2>
         <small id="current-date" style="color:#555"></small>
     </div>
@@ -70,10 +70,9 @@
             if(confirm("هەموو لیستەکە دەسڕێتەوە، دڵنیای؟")) db.ref('orders').remove();
         }
 
-        // فەنکشنی وەرگرتنی ڕێکەوتی ئەمڕۆ بە کوردی/عەرەبی بۆ بەراوردکردن
         function getTodayDateString() {
             const now = new Date();
-            return now.toLocaleDateString('en-CA'); // یانی YYYY-MM-DD
+            return now.toLocaleDateString('en-CA'); 
         }
 
         db.ref('orders').on('value', (snapshot) => {
@@ -89,7 +88,6 @@
             if (data) {
                 const keys = Object.keys(data);
                 
-                // دەنگی زەنگ
                 if (lastCount !== -1 && keys.length > lastCount) {
                     document.getElementById('bell').play().catch(() => {});
                 }
@@ -97,10 +95,12 @@
 
                 keys.reverse().forEach(key => {
                     const o = data[key];
-                    const itemsStr = Array.isArray(o.items) ? o.items.join(' + ') : o.items;
+                    const itemsStr = Array.isArray(o.items) ? o.items.join(' + ') : (o.items || 'خواردن دیاری نەکراوە');
                     
+                    // چارەسەری undefined بۆ ID - ئەگەر نەبوو کورتەیەک لە Key بەکاردێنێت
+                    const displayID = o.id || key.substring(key.length - 4).toUpperCase();
+
                     // هەژمارکردنی داهاتی تەنها ئەمڕۆ
-                    // تێبینی: دەبێت لە کاتی ناردنی ئۆردەر، کاتەکە بەم شێوەیە بێت: 2024-05-20 14:30
                     if (o.time && o.time.includes(todayStr)) {
                         let price = parseInt(o.total?.toString().replace(/[^0-9]/g, '') || 0);
                         dailyTotal += price;
@@ -108,19 +108,21 @@
 
                     // نیشاندانی نیشانەی NEW بۆ ٥ خولەک
                     let isNew = false;
-                    const orderTime = new Date(o.time).getTime();
-                    if (new Date().getTime() - orderTime < 5 * 60 * 1000) isNew = true;
+                    try {
+                        const orderTime = new Date(o.time).getTime();
+                        if (new Date().getTime() - orderTime < 5 * 60 * 1000) isNew = true;
+                    } catch(e) {}
 
                     listDiv.innerHTML += `
                         <div class="order-card">
                             ${isNew ? '<div class="new-badge">نوێ ✨</div>' : ''}
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="color:var(--gold); font-weight:900;">#${o.id}</span>
+                                <span style="color:var(--gold); font-weight:900; font-size:1.2rem;">#${displayID}</span>
                                 <small style="color:#666">${o.time || ''}</small>
                             </div>
                             <div class="items-box"><b>داواکاری:</b><br> ${itemsStr}</div>
-                            <div style="margin-bottom:15px;">💰 بڕ: <b>${o.total}</b> | 📞 ${o.phone}</div>
-                            <button class="btn-print" onclick="doPrint('${o.id}', '${itemsStr}', '${o.total}', '${o.phone}', '${o.time}', '${o.note}')">چاپکردن 🖨️</button>
+                            <div style="margin-bottom:15px;">💰 بڕ: <b>${o.total || 0}</b> | 📞 ${o.phone || 'نادیار'}</div>
+                            <button class="btn-print" onclick="doPrint('${displayID}', '${itemsStr}', '${o.total}', '${o.phone}', '${o.time}', '${o.note}')">چاپکردن 🖨️</button>
                         </div>
                     `;
                 });
@@ -133,7 +135,21 @@
 
         function doPrint(id, items, total, phone, time, note) {
             const area = document.getElementById('print-area');
-            area.innerHTML = `<div style="text-align:center;"><h2>BOOM PIZZA</h2><hr><h3>Order #${id}</h3><p>${time}</p><p>Phone: ${phone}</p><hr><p>${items}</p><hr><h2>Total: ${total} IQD</h2></div>`;
+            area.innerHTML = `
+                <div style="text-align:center; font-family:sans-serif;">
+                    <h2>BOOM PIZZA</h2>
+                    <div style="border:2px solid black; padding:5px; margin:10px auto; width: fit-content;">
+                        <b>داواکاری #${id}</b>
+                    </div>
+                    <p>${time}</p>
+                    <p>Phone: ${phone}</p>
+                    <hr style="border-top: 1px dashed black;">
+                    <p style="font-size:18px;">${items}</p>
+                    ${note && note !== 'نییە' ? `<p>تێبینی: ${note}</p>` : ''}
+                    <hr style="border-top: 1px dashed black;">
+                    <h3>Total: ${total} IQD</h3>
+                    <p>سوپاس بۆ هەڵبژاردنی ئێمە</p>
+                </div>`;
             window.print();
         }
     </script>
