@@ -15,7 +15,6 @@
             margin: 0; 
             padding-bottom: 50px;
             color: var(--text);
-            /* پاشبنەمای وێنە */
             background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
                         url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1000&q=80');
             background-size: cover;
@@ -24,15 +23,15 @@
             overflow-x: hidden;
         }
 
-        /* ستایلی بەفرەکە */
+        /* چاککردنی ستایلی بەفرەکە */
         .snow-container {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             pointer-events: none;
-            z-index: 9999;
+            z-index: 9999; /* دڵنیابوون لەوەی لەسەرەوەیە */
         }
         .snowflake {
             position: absolute;
@@ -40,38 +39,25 @@
             background: white;
             border-radius: 50%;
             pointer-events: none;
-            animation: fall linear infinite;
+            animation: fall linear forwards;
         }
         @keyframes fall {
             to { transform: translateY(105vh); }
         }
 
         .container { padding: 15px; max-width: 500px; margin: auto; position: relative; z-index: 10; }
-        
         .table-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
         .table-btn { background: var(--card); border: 1px solid #444; color: white; padding: 15px 5px; border-radius: 12px; cursor: pointer; transition: 0.3s; font-family: inherit; backdrop-filter: blur(5px); }
         .table-btn.active { background: var(--accent); border-color: #fff; }
-
         .order-form { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #444; backdrop-filter: blur(10px); }
-        
-        .selected-list { margin-top: 10px; border-top: 1px solid #333; padding-top: 10px; max-height: 200px; overflow-y: auto; }
         .item-row { display: flex; justify-content: space-between; align-items: center; background: #1f2229; padding: 10px; margin-bottom: 8px; border-radius: 10px; border-right: 3px solid var(--accent); }
-        .del-btn { color: #ff3131; background: none; border: none; font-size: 1.2rem; cursor: pointer; }
-
         .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .cat-btn { background: #25282e; border: 1px solid #444; color: white; padding: 20px 10px; border-radius: 15px; cursor: pointer; text-align: center; font-weight: bold; }
-        .cat-btn:active { background: var(--accent); }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center; }
         .modal-content { background: #16181d; width: 85%; max-width: 350px; padding: 20px; border-radius: 20px; border: 1px solid var(--accent); }
-        
-        .food-item { background: #1f2229; padding: 15px; margin: 8px 0; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; border: 1px solid #333; }
-        
-        .qty-input { width: 70px; text-align: center; font-size: 1.5rem; background: #000; color: var(--gold); border: 1px solid #444; border-radius: 8px; padding: 5px; }
-        .extra-input { width: 100%; padding: 12px; background: #1f2229; border: 1px solid #333; color: white; border-radius: 10px; margin-top: 10px; font-family: inherit; }
-
-        .btn-main { background: var(--accent); color: white; padding: 15px; border-radius: 12px; border: none; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; font-family: inherit; }
-        .btn-cancel { background: #333; color: #fff; padding: 10px; border-radius: 8px; border: none; width: 100%; margin-top: 10px; cursor: pointer; font-family: inherit; }
+        .qty-input { width: 70px; text-align: center; font-size: 1.5rem; background: #000; color: var(--gold); border: 1px solid #444; border-radius: 8px; }
+        .btn-main { background: var(--accent); color: white; padding: 15px; border-radius: 12px; border: none; width: 100%; font-weight: bold; cursor: pointer; }
+        .btn-cancel { background: #333; color: #fff; padding: 10px; border-radius: 8px; border: none; width: 100%; margin-top: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -79,7 +65,7 @@
     <div class="snow-container" id="snow-container"></div>
 
     <div class="container">
-        <h2 style="text-align:center; color:var(--accent); text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">بوم پیتزا 🍕</h2>
+        <h2 style="text-align:center; color:var(--accent); text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">بوم پیتزا 🍕</h2>
         
         <div class="table-grid">
             <button class="table-btn" onclick="selectDesk(1, this)">مێزی ١</button>
@@ -91,25 +77,65 @@
         </div>
 
         <div class="order-form">
-            <p style="margin: 0 0 10px; font-size: 0.9rem; color: #ccc;">پۆلێنەکان هەڵبژێرە:</p>
             <div class="category-grid">
                 <div class="cat-btn" onclick="openCat('پیتزاکان')">🍕 پیتزاکان</div>
                 <div class="cat-btn" onclick="openCat('بەرگرەکان')">🍔 بەرگرەکان</div>
                 <div class="cat-btn" onclick="openCat('لاوەکییەکان')">🍟 لاوەکییەکان</div>
                 <div class="cat-btn" onclick="openCat('خواردنەوە')">🥤 خواردنەوە</div>
             </div>
-            
-            <div class="selected-list" id="selected-list"></div>
-
+            <div id="selected-list"></div>
             <div style="margin-top:20px; border-top:1px solid #444; padding-top:15px;">
-                <div style="display:flex; justify-content:space-between; font-weight:bold;">
-                    <span>کۆی گشتی:</span>
-                    <span id="display-total" style="color:var(--gold);">0 د.ع</span>
-                </div>
-                <button class="btn-main" onclick="sendOrder()">ناردنی داواکاری بۆ ئەدمین ✅</button>
+                <div style="display:flex; justify-content:space-between;"><span>کۆی گشتی:</span><span id="display-total" style="color:var(--gold);">0 د.ع</span></div>
+                <button class="btn-main" onclick="sendOrder()">ناردنی داواکاری ✅</button>
             </div>
         </div>
     </div>
 
-    <div id="cat-modal" class="modal"><div class="modal-content"><h3 id="cat-title" style="margin-top:0; color:var(--accent);">ناو</h3><div id="food-list" style="max-height: 350px; overflow-y: auto;"></div><button class="btn-cancel" onclick="closeModal('cat-modal')">داخستن</button></div></div>
-    <div id="qty-modal" class="modal"><div class="modal-content" style="text-align:center;"><h3 id="modal-food-name" style="margin-top:0;">ناو</h3><div style="margin:15px 0;"><label style="display:block; margin-bottom:10px
+    <div id="cat-modal" class="modal"><div class="modal-content"><h3 id="cat-title" style="color:var(--accent);">ناو</h3><div id="food-list" style="max-height: 300px; overflow-y: auto;"></div><button class="btn-cancel" onclick="closeModal('cat-modal')">داخستن</button></div></div>
+    <div id="qty-modal" class="modal"><div class="modal-content" style="text-align:center;"><h3 id="modal-food-name">ناو</h3><input type="number" id="qty-input" class="qty-input" value="1"><input type="text" id="extra-input" style="width:100%; padding:10px; margin-top:10px; background:#111; color:white; border:1px solid #444;" placeholder="تێبینی..."><button class="btn-main" onclick="confirmAdd()">زیادکردن</button><button class="btn-cancel" onclick="closeModal('qty-modal')">پاشگەزبوونەوە</button></div></div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqoOjm4m1Fxp760mJPy0sv5_NjaJfkm7g",
+            databaseURL: "https://boompizza-5d048-default-rtdb.firebaseio.com",
+            projectId: "boompizza-5d048",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const menuData = {
+            'پیتزاکان': [{name:'پیتزا گۆشت S', price:4500},{name:'پیتزا گۆشت M', price:5000},{name:'پیتزا گۆشت L', price:7000},{name:'پیتزا مریشک S', price:4000},{name:'پیتزا مریشک M', price:5000},{name:'پیتزا مریشک L', price:6000},{name:'پیتزا موشەکەل', price:4000},{name:'پیتزا پێپەڕۆنی', price:4000},{name:'بووم پیزا', price:7000}],
+            'بەرگرەکان': [{name:'بووم بەرگر', price:6000},{name:'چیز بەرگر', price:3000},{name:'زینگەر بەرگر', price:5500},{name:'دەبڵ چیز', price:4000},{name:'بەرگری قارچک', price:5000}],
+            'لاوەکییەکان': [{name:'فینگەر', price:1500},{name:'لەفەی شاوەرمە', price:1500},{name:'شاوەرمەی ساج', price:3000}],
+            'خواردنەوە': [{name:'پێپسی', price:500},{name:'ئاو', price:250},{name:'ماستاو', price:500}]
+        };
+
+        let selectedDeskNum = null, cart = [], currentItem = null;
+
+        // --- چاککردنی کۆدی بەفرەکە ---
+        function createSnowflake() {
+            const container = document.getElementById('snow-container');
+            if(!container) return;
+            const snowflake = document.createElement('div');
+            const size = Math.random() * 6 + 3 + 'px'; // بەفری گەورەتر
+            snowflake.classList.add('snowflake');
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.opacity = Math.random() * 0.8 + 0.2;
+            snowflake.style.width = size;
+            snowflake.style.height = size;
+            snowflake.style.animationDuration = Math.random() * 3 + 5 + 's'; // کەمێک هێواشتر
+            container.appendChild(snowflake);
+            setTimeout(() => { snowflake.remove(); }, 8000);
+        }
+        setInterval(createSnowflake, 200); // دروستکردنی بەفر لە هەر ٢٠٠ میللی چرکەیەکدا
+
+        function selectDesk(n, b) { selectedDeskNum = n; document.querySelectorAll('.table-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); }
+        function openCat(c) { const l = document.getElementById('food-list'); document.getElementById('cat-title').innerText = c; l.innerHTML = ''; menuData[c].forEach(f => { l.innerHTML += `<div style="background:#1f2229; padding:15px; margin:5px; border-radius:10px; cursor:pointer;" onclick="openQty('${f.name}', ${f.price})">${f.name} - ${f.price}</div>`; }); document.getElementById('cat-modal').style.display = 'flex'; }
+        function openQty(n, p) { currentItem = {n, p}; document.getElementById('modal-food-name').innerText = n; document.getElementById('qty-modal').style.display = 'flex'; }
+        function confirmAdd() { cart.push({n: currentItem.n, p: currentItem.p, q: parseInt(document.getElementById('qty-input').value), e: document.getElementById('extra-input').value}); closeModal('qty-modal'); closeModal('cat-modal'); updateUI(); }
+        function updateUI() { const l = document.getElementById('selected-list'); let t = 0; l.innerHTML = ''; cart.forEach((i, idx) => { t += (i.p * i.q); l.innerHTML += `<div class="item-row"><div>${i.q}x ${i.n}</div><div>${i.p*i.q} <button onclick="cart.splice(${idx},1);updateUI()" style="background:none; border:none; color:red;">×</button></div></div>`; }); document.getElementById('display-total').innerText = t.toLocaleString() + " د.ع"; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function sendOrder() { if(!selectedDeskNum || cart.length==0) return alert("مێز یان خواردن هەڵبژێرە!"); db.ref('orders').push({ items: cart.map(i=>`${i.q}x ${i.n}`).join(', '), total: document.getElementById('display-total').innerText, phone: "مێزی "+selectedDeskNum, time: new Date().toLocaleString() }).then(()=>location.reload()); }
+    </script>
+</body>
+</html>
