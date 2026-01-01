@@ -11,14 +11,35 @@
         header { background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), var(--dark-bg)), url('https://i.postimg.cc/02R8rCjV/99999999.jpg'); background-size: cover; background-position: center; height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 4px solid var(--primary-red); }
         header h1 { font-size: 3rem; color: var(--text-gold); text-shadow: 3px 3px 15px #000; margin: 0; }
         
-        /* ستایلی دوگمەی بڵاوکردنەوە */
         .share-btn {
             background: #007bff; color: white; border: none; padding: 10px 20px; 
             border-radius: 50px; font-weight: bold; cursor: pointer; 
             display: flex; align-items: center; gap: 8px; margin: 15px auto;
             font-family: 'Vazirmatn'; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,123,255,0.3);
         }
-        .share-btn:active { transform: scale(0.95); }
+
+        /* ستایلی چەرخی بەخت */
+        .wheel-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 5000; display: none;
+            justify-content: center; align-items: center; flex-direction: column;
+        }
+        .wheel-wrap { position: relative; width: 280px; height: 280px; margin-bottom: 20px; border: 5px solid #333; border-radius: 50%; }
+        .wheel-pointer {
+            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; border-left: 15px solid transparent;
+            border-right: 15px solid transparent; border-top: 30px solid var(--primary-red); z-index: 20;
+        }
+        .main-wheel {
+            width: 100%; height: 100%; border-radius: 50%;
+            background: conic-gradient(#ff3131 0deg 60deg, #ffc107 60deg 120deg, #25D366 120deg 180deg, #007bff 180deg 240deg, #e91e63 240deg 300deg, #ffffff 300deg 360deg);
+            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+        }
+        .spin-btn-main {
+            background: linear-gradient(45deg, var(--primary-red), var(--text-gold));
+            color: white; border: none; padding: 12px 30px; border-radius: 50px;
+            font-weight: bold; cursor: pointer; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(255,49,49,0.4);
+        }
 
         .category-container { display: flex; overflow-x: auto; padding: 20px; gap: 15px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1000; }
         .cat-card { min-width: 80px; text-align: center; cursor: pointer; }
@@ -44,9 +65,21 @@
     <p style="background:var(--primary-red); padding:4px 15px; border-radius:20px; font-weight:bold;">کوالێتی نایاب و تامێکی لەبیرنەکراو</p>
 </header>
 
-<button class="share-btn" onclick="shareSite()">
-    📤 ناردنی سایت بۆ هاوڕێیان
-</button>
+<div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+    <button class="share-btn" onclick="shareSite()">📤 بڵاوکردنەوە</button>
+    <button class="share-btn" style="background: var(--text-gold); color: black;" onclick="openWheel()">🎡 چەرخی بەخت</button>
+</div>
+
+<div id="wheelOverlay" class="wheel-overlay">
+    <h2 style="color:var(--text-gold); margin-bottom:20px;">بەختت تاقی بکەرەوە! 🎁</h2>
+    <div class="wheel-wrap">
+        <div class="wheel-pointer"></div>
+        <div id="theWheel" class="main-wheel"></div>
+    </div>
+    <button id="spinBtn" class="spin-btn-main" onclick="startSpin()">بسوڕێنە! 🚀</button>
+    <p id="wheelStatus" style="color:white; margin-top:15px; font-weight:bold;"></p>
+    <span onclick="closeWheel()" style="color:#666; cursor:pointer; margin-top:10px; text-decoration: underline;">داخستن</span>
+</div>
 
 <div class="category-container">
     <div class="cat-card active" onclick="openFolder('pizza', this)"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200"><p>پیتزا</p></div>
@@ -81,22 +114,42 @@
     let cart = [];
     const folderNames = { 'pizza': '🍕 جۆرەکانی پیزا', 'burger': '🍔 جۆرەکانی بەرگر', 'shawarma': '🌯 جۆرەکانی شاوەرمە', 'finger': '🍟 فینگەر', 'drink': '🥤 خواردنەوەکان' };
 
-    // فەنکشنی بڵاوکردنەوە
+    // فەنکشنەکانی چەرخی بەخت
+    let isSpinning = false;
+    const prizes = ["داشکاندنی ١٠٪", "سۆسی خۆڕایی", "گەیاندنی خۆڕایی", "پیتزای بچووک", "کۆکا کۆلا", "بەختێکی تر"];
+
+    function openWheel() { document.getElementById('wheelOverlay').style.display = 'flex'; }
+    function closeWheel() { document.getElementById('wheelOverlay').style.display = 'none'; }
+
+    function startSpin() {
+        if (isSpinning) return;
+        isSpinning = true;
+        const wheel = document.getElementById('theWheel');
+        const status = document.getElementById('wheelStatus');
+        const deg = Math.floor(Math.random() * 360) + 1800; // ٥ جار سوڕانەوە
+        
+        wheel.style.transform = `rotate(${deg}deg)`;
+        status.innerText = "خەریکە دەوەستێت... ✨";
+
+        setTimeout(() => {
+            const finalDeg = deg % 360;
+            const prizeIdx = Math.floor((360 - finalDeg) / 60) % 6;
+            const result = prizes[prizeIdx];
+            status.innerText = "🎉 پیرۆزە: " + result;
+            
+            setTimeout(() => {
+                alert("خەڵاتەکەت: " + result + "\nوێنەی شاشەکە بگرە و بۆمان بنێرە لە واتسئەپ!");
+                isSpinning = false;
+                closeWheel();
+            }, 1000);
+        }, 4000);
+    }
+
     function shareSite() {
         if (navigator.share) {
-            navigator.share({
-                title: "Boom's Pizza",
-                text: "خۆشترین پیتزا و بەرگر لێرە داوا بکە! 🔥",
-                url: window.location.href
-            }).catch((error) => console.log('Error sharing', error));
+            navigator.share({ title: "Boom's Pizza", text: "خۆشترین پیتزا و بەرگر لێرە داوا بکە! 🔥", url: window.location.href });
         } else {
-            const tempInput = document.createElement('input');
-            document.body.appendChild(tempInput);
-            tempInput.value = window.location.href;
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-            alert("لینکی سایتەکە کۆپی کرا! ئێستا دەتوانیت بۆ هاوڕێکانتی بنێریت. 🚀");
+            alert("لینکی سایتەکە کۆپی کرا! 🚀");
         }
     }
 
@@ -131,17 +184,12 @@
         let total = 0; cartDiv.innerHTML = '';
         const grouped = {};
         cart.forEach(i => { total += i.price; grouped[i.name] = (grouped[i.name] || 0) + 1; });
-
         for (const [name, count] of Object.entries(grouped)) {
-            cartDiv.innerHTML += `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #222;">
-                    <span>${count}x ${name}</span>
-                    <button onclick="removeFromCart('${name}')" style="color:#ff5555; background:none; border:1px solid #ff5555; border-radius:5px; padding:2px 8px; cursor:pointer;">لادان</button>
-                </div>`;
+            cartDiv.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #222;"><span>${count}x ${name}</span><button onclick="removeFromCart('${name}')" style="color:#ff5555; background:none; border:1px solid #ff5555; border-radius:5px; padding:2px 8px; cursor:pointer;">لادان</button></div>`;
         }
         document.getElementById('total-amount').innerText = total.toLocaleString();
         const fb = document.getElementById('floating-cart');
-        if(cart.length > 0) { fb.style.display = 'flex'; document.getElementById('floating-count').innerText = cart.length + " خواردن"; document.getElementById('floating-total').innerText = total.toLocaleString() + " دینار"; }
+        if(cart.length > 0) { fb.style.display = 'flex'; document.getElementById('floating-count').innerText = cart.length + " دانە"; document.getElementById('floating-total').innerText = total.toLocaleString() + " دینار"; }
         else { fb.style.display = 'none'; }
     }
 
@@ -166,7 +214,6 @@
         s.className = 'snowflake';
         s.style.left = Math.random() * 100 + 'vw';
         s.style.animationDuration = (Math.random() * 3 + 2) + 's';
-        s.style.opacity = Math.random();
         s.innerHTML = '❄';
         document.body.appendChild(s);
         setTimeout(() => s.remove(), 5000);
@@ -176,4 +223,3 @@
 </script>
 </body>
 </html>
-
