@@ -11,33 +11,14 @@
         header { background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), var(--dark-bg)), url('https://i.postimg.cc/02R8rCjV/99999999.jpg'); background-size: cover; background-position: center; height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 4px solid var(--primary-red); }
         header h1 { font-size: 3rem; color: var(--text-gold); text-shadow: 3px 3px 15px #000; margin: 0; }
         
-        /* Gamification Box */
-        .level-box {
-            background: linear-gradient(145deg, #1a1a1a, #222);
-            margin: 15px; padding: 15px; border-radius: 20px;
-            border: 2px solid #333; text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-        .xp-bg { background: #333; height: 12px; border-radius: 10px; margin: 10px 0; overflow: hidden; }
-        .xp-fill { 
-            background: linear-gradient(90deg, var(--text-gold), var(--primary-red)); 
-            height: 100%; width: 0%; transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        }
-        .pop-food {
-            position: fixed; pointer-events: none; z-index: 9999;
-            font-size: 2.5rem; animation: popUpOut 0.8s ease-out forwards;
-        }
-        @keyframes popUpOut {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-            100% { transform: translate(-50%, -200%) scale(2); opacity: 0; }
-        }
-
+        /* ستایلی دوگمەی بڵاوکردنەوە */
         .share-btn {
             background: #007bff; color: white; border: none; padding: 10px 20px; 
             border-radius: 50px; font-weight: bold; cursor: pointer; 
             display: flex; align-items: center; gap: 8px; margin: 15px auto;
-            font-family: 'Vazirmatn'; transition: 0.3s;
+            font-family: 'Vazirmatn'; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,123,255,0.3);
         }
+        .share-btn:active { transform: scale(0.95); }
 
         .category-container { display: flex; overflow-x: auto; padding: 20px; gap: 15px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1000; }
         .cat-card { min-width: 80px; text-align: center; cursor: pointer; }
@@ -66,13 +47,6 @@
 <button class="share-btn" onclick="shareSite()">
     📤 ناردنی سایت بۆ هاوڕێیان
 </button>
-
-<div class="level-box">
-    <div id="rank-icon" style="font-size: 2.5rem; transition: 0.5s;">🥚</div>
-    <strong id="rank-name" style="color:var(--text-gold); font-size: 1.2rem;">برسییەکی نوێ</strong>
-    <div class="xp-bg"><div id="xp-fill" class="xp-fill"></div></div>
-    <small id="xp-status" style="color:#888;">خواردنێک زیاد بکە بۆ دەستپێکردنی گەشتەکە!</small>
-</div>
 
 <div class="category-container">
     <div class="cat-card active" onclick="openFolder('pizza', this)"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200"><p>پیتزا</p></div>
@@ -107,11 +81,22 @@
     let cart = [];
     const folderNames = { 'pizza': '🍕 جۆرەکانی پیزا', 'burger': '🍔 جۆرەکانی بەرگر', 'shawarma': '🌯 جۆرەکانی شاوەرمە', 'finger': '🍟 فینگەر', 'drink': '🥤 خواردنەوەکان' };
 
+    // فەنکشنی بڵاوکردنەوە
     function shareSite() {
         if (navigator.share) {
-            navigator.share({ title: "Boom's Pizza", text: "خۆشترین پیتزا و بەرگر لێرە داوا بکە! 🔥", url: window.location.href });
+            navigator.share({
+                title: "Boom's Pizza",
+                text: "خۆشترین پیتزا و بەرگر لێرە داوا بکە! 🔥",
+                url: window.location.href
+            }).catch((error) => console.log('Error sharing', error));
         } else {
-            alert("لینکی سایتەکە کۆپی کرا!");
+            const tempInput = document.createElement('input');
+            document.body.appendChild(tempInput);
+            tempInput.value = window.location.href;
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            alert("لینکی سایتەکە کۆپی کرا! ئێستا دەتوانیت بۆ هاوڕێکانتی بنێریت. 🚀");
         }
     }
 
@@ -134,49 +119,10 @@
         });
     }
 
-    // فەنکشنی تەقینەوەی خواردن
-    function foodPop() {
-        const emojis = ['🍕', '🍔', '🍟', '✨', '🔥'];
-        const pop = document.createElement('div');
-        pop.className = 'pop-food';
-        pop.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-        pop.style.left = "50vw";
-        pop.style.top = "50vh";
-        document.body.appendChild(pop);
-        setTimeout(() => pop.remove(), 800);
-    }
-
-    // نوێکردنەوەی سیستەمی ئاست
-    function updateGame() {
-        const count = cart.length;
-        const fill = document.getElementById('xp-fill');
-        const icon = document.getElementById('rank-icon');
-        const name = document.getElementById('rank-name');
-        const status = document.getElementById('xp-status');
-
-        let percent = (count / 6) * 100;
-        fill.style.width = Math.min(percent, 100) + "%";
-
-        if (count === 0) {
-            icon.innerText = "🥚"; name.innerText = "برسییەکی نوێ";
-            status.innerText = "خواردنێک زیاد بکە بۆ دەستپێکردنی گەشتەکە!";
-        } else if (count < 3) {
-            icon.innerText = "🐥"; name.innerText = "تامکەری سەرەتایی";
-            status.innerText = (3 - count) + " خواردنی تر بۆ پلەی داهاتوو!";
-        } else if (count < 6) {
-            icon.innerText = "🦁"; name.innerText = "شێری ژەمەکان";
-            status.innerText = (6 - count) + " دانەی تر تا ببیتە پاشا! 🔥";
-        } else {
-            icon.innerText = "👑"; name.innerText = "پاشای بوم پیتزا";
-            status.innerText = "تۆ گەیشتیتە لوتکەی تام! داشکاندنی تایبەتت بۆ هەژمار کرا.";
-        }
-    }
-
     function addToCart(id) {
         const item = menuItems.find(i => i.id === id);
         cart.push(item);
         document.getElementById('orderSound').play();
-        foodPop();
         renderCart();
     }
 
@@ -197,8 +143,6 @@
         const fb = document.getElementById('floating-cart');
         if(cart.length > 0) { fb.style.display = 'flex'; document.getElementById('floating-count').innerText = cart.length + " خواردن"; document.getElementById('floating-total').innerText = total.toLocaleString() + " دینار"; }
         else { fb.style.display = 'none'; }
-        
-        updateGame(); // نوێکردنەوەی ئاست لە کاتی ڕێندەرکردن
     }
 
     function removeFromCart(name) {
@@ -214,7 +158,7 @@
         cart.forEach(i => grouped[i.name] = (grouped[i.name] || 0) + 1);
         for (const [n, c] of Object.entries(grouped)) txt += `🔹 ${c}x ${n}\n`;
         txt += `\n💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} دینار`;
-        window.location.href = `https://wa.me/9647861995417?text=${encodeURIComponent(txt)}`;
+        window.location.href = `https://wa.me/9647504629237?text=${encodeURIComponent(txt)}`;
     }
 
     setInterval(() => {
@@ -222,6 +166,7 @@
         s.className = 'snowflake';
         s.style.left = Math.random() * 100 + 'vw';
         s.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        s.style.opacity = Math.random();
         s.innerHTML = '❄';
         document.body.appendChild(s);
         setTimeout(() => s.remove(), 5000);
@@ -231,3 +176,4 @@
 </script>
 </body>
 </html>
+
