@@ -23,9 +23,10 @@
         .contact-item { display: flex; align-items: center; gap: 5px; background: #222; color: white; padding: 7px 15px; border-radius: 50px; text-decoration: none; font-size: 0.85rem; border: 1px solid #333; }
         .share-btn { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 15px auto; font-family: 'Vazirmatn'; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,123,255,0.3); }
         
+        /* Wheel UI Improvements */
         .wheel-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 5000; display: none; justify-content: center; align-items: center; flex-direction: column; }
-        .wheel-wrap { position: relative; width: 300px; height: 300px; margin-bottom: 20px; }
-        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--primary-red); z-index: 20; }
+        .wheel-wrap { position: relative; width: 320px; height: 320px; margin-bottom: 20px; border: 5px solid #333; border-radius: 50%; padding: 5px; background: #222; }
+        .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--primary-red); z-index: 20; }
         .main-wheel { width: 100%; height: 100%; border-radius: 50%; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
 
         .category-container { display: flex; overflow-x: auto; padding: 20px; gap: 15px; background: var(--dark-bg); }
@@ -67,7 +68,7 @@
     </header>
 
     <div class="contact-strip">
-        <a href="https://www.google.com/maps" target="_blank" class="contact-item">📍 شوێنی ئێمە</a>
+        <a href="http://googleusercontent.com/maps.google.com/3" target="_blank" class="contact-item">📍 شوێنی ئێمە</a>
         <a href="tel:07504629237" class="contact-item">📞 07504629237</a>
     </div>
 
@@ -125,19 +126,18 @@
         <div class="wheel-pointer"></div>
         <div id="theWheel" class="main-wheel">
             <svg viewBox="0 0 200 200" style="width: 100%; height: 100%;">
-                <g>
-                    <path d="M100,100 L100,0 A100,100 0 0,1 186.6,50 Z" fill="#ffffff" />
-                    <path d="M100,100 L186.6,50 A100,100 0 0,1 186.6,150 Z" fill="#ff3131" />
-                    <path d="M100,100 L186.6,150 A100,100 0 0,1 100,200 Z" fill="#ffc107" />
-                    <path d="M100,100 L100,200 A100,100 0 0,1 13.4,150 Z" fill="#25D366" />
-                    <path d="M100,100 L13.4,150 A100,100 0 0,1 13.4,50 Z" fill="#007bff" />
-                    <path d="M100,100 L13.4,50 A100,100 0 0,1 100,0 Z" fill="#e91e63" />
+                <g transform="rotate(-30 100 100)"> <path d="M100,100 L100,0 A100,100 0 0,1 186.6,50 Z" fill="#ffffff" /><text x="115" y="45" fill="black" font-size="8" transform="rotate(30 115 45)">داشکان 0%</text>
+                    <path d="M100,100 L186.6,50 A100,100 0 0,1 186.6,150 Z" fill="#ff3131" /><text x="140" y="105" fill="white" font-size="8" transform="rotate(90 140 105)">داشکان 10%</text>
+                    <path d="M100,100 L186.6,150 A100,100 0 0,1 100,200 Z" fill="#ffc107" /><text x="115" y="160" fill="black" font-size="8" transform="rotate(150 115 160)">داشکان 20%</text>
+                    <path d="M100,100 L100,200 A100,100 0 0,1 13.4,150 Z" fill="#25D366" /><text x="50" y="160" fill="white" font-size="8" transform="rotate(210 50 160)">داشکان 50%</text>
+                    <path d="M100,100 L13.4,150 A100,100 0 0,1 13.4,50 Z" fill="#007bff" /><text x="25" y="105" fill="white" font-size="8" transform="rotate(270 25 105)">خواردنەوە</text>
+                    <path d="M100,100 L13.4,50 A100,100 0 0,1 100,0 Z" fill="#e91e63" /><text x="50" y="45" fill="white" font-size="8" transform="rotate(330 50 45)">بووم پیتزا</text>
                 </g>
             </svg>
         </div>
     </div>
-    <button onclick="startSpin()">بسوڕێنە!</button>
-    <button onclick="closeWheel()" style="background:#444; color:white; margin-top:10px; border:none; padding:10px 20px; border-radius:10px;">داخستن</button>
+    <button class="add-btn" style="width:200px; padding:15px; font-size:1.2rem;" onclick="startSpin()">بسوڕێنە! 🎰</button>
+    <button onclick="closeWheel()" style="background:none; color:white; margin-top:15px; border:none; cursor:pointer;">داخستن</button>
 </div>
 
 <div class="bottom-bar" id="floating-cart" onclick="document.getElementById('cart-section').scrollIntoView({behavior:'smooth'})">
@@ -162,18 +162,16 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // --- FIX: SHARE FUNCTION ---
     function shareSite() {
         if (navigator.share) {
             navigator.share({
                 title: "Boom's Pizza | بوم پیتزا",
                 text: "باشترین و بەتامترین پیتزا لە بوم پیتزا، ئێستا داوا بکە!",
                 url: window.location.href
-            }).then(() => console.log('بڵاوکرایەوە'))
-              .catch((error) => console.log('هەڵە:', error));
+            }).catch((error) => console.log('Error sharing', error));
         } else {
             navigator.clipboard.writeText(window.location.href);
-            alert("لینکەکە کۆپی کرا بۆ مۆبایلەکەت!");
+            alert("لینکەکە کۆپی کرا!");
         }
     }
 
@@ -200,13 +198,45 @@
     function openWheel() { document.getElementById('wheelOverlay').style.display = 'flex'; }
     function closeWheel() { document.getElementById('wheelOverlay').style.display = 'none'; }
 
+    // --- چاککردنی چەرخی بەخت بەو ئەگەرانەی داوات کردبوو ---
     function startSpin() {
         if (isSpinning) return;
         isSpinning = true;
+        
         const wheel = document.getElementById('theWheel');
-        const randomVal = Math.random() * 3600 + 1440;
-        wheel.style.transform = `rotate(${randomVal}deg)`;
-        setTimeout(() => { isSpinning = false; alert("پیرۆزە!"); closeWheel(); }, 4000);
+        let randomChoice = Math.random() * 100; 
+        let degree = 0;
+        let resultText = "";
+
+        // لۆجیکی ئەگەرەکان
+        if (randomChoice < 60) { 
+            // 60% ئەگەر: داشکانی 0% یان خواردنەوە
+            degree = 2160 + 0; 
+            resultText = "بێبەخت بوویت! خواردنەوەیەک یان 0% داشکان 🥤";
+        } 
+        else if (randomChoice < 90) { 
+            // 30% ئەگەر: داشکانی 10%
+            degree = 2160 + 300; // شوێنی 10%
+            resultText = "پیرۆزە! 10% داشکانت بۆ دەرچوو 🍕";
+        }
+        else if (randomChoice < 98) { 
+            // 8% ئەگەر: داشکانی 20%
+            degree = 2160 + 240; // شوێنی 20%
+            resultText = "نایابە! 20% داشکانت بۆ دەرچوو! 🍔";
+        }
+        else { 
+            // تەنها 2% ئەگەر: داشکانی 50%
+            degree = 2160 + 180; // شوێنی 50%
+            resultText = "باوەڕپێنەکراوە! 50% داشکانی تەواو! 🔥";
+        }
+
+        wheel.style.transform = `rotate(${degree}deg)`;
+
+        setTimeout(() => {
+            isSpinning = false;
+            alert(resultText);
+            closeWheel();
+        }, 4000);
     }
 
     function openFolder(category, element) {
@@ -259,17 +289,17 @@
                 (position) => {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
-                    const mapUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+                    const mapUrl = `http://maps.google.com/?q=${lat},${lon}`;
                     processOrder(mapUrl);
                 },
                 (error) => {
-                    alert("تکایە ڕێگە بە لۆکەیشن بدە بۆ ئەوەی شوێنەکەت بزانین.");
+                    alert("تکایە ڕێگە بە لۆکەیشن بدە.");
                     sendBtn.innerText = "ناردنی داواکاری و لۆکەیشن (WhatsApp)";
                     sendBtn.disabled = false;
                 }
             );
         } else {
-            processOrder("📍 لۆکەیشن لەم مۆبایلە کار ناکات");
+            processOrder("📍 لۆکەیشن پشتگیری ناکرێت");
         }
     }
 
@@ -307,7 +337,7 @@
                 <b>داواکاری #${data[id].orderID}</b> <small>${data[id].time}</small><br>
                 🥗 ${data[id].items}<br>
                 💵 کۆی گشتی: ${data[id].total} دینار<br>
-                📍 <a href="${data[id].location}" target="_blank" style="color:#007bff; font-weight:bold;">بینینی شوێن لەسەر نەخشە</a><br>
+                📍 <a href="${data[id].location}" target="_blank" style="color:#007bff; font-weight:bold;">بینینی شوێن</a><br>
                 <button onclick="database.ref('orders/${id}').remove()" style="color:red; background:none; border:none; margin-top:10px;">سڕینەوە 🗑️</button>
             </div>`;
         }
