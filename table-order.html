@@ -8,7 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
-        :root { --accent: #ff3131; --bg: #0a0b0d; --card: #16181d; --text: #ffffff; }
+        :root { --accent: #ff3131; --bg: #0a0b0d; --card: #16181d; --text: #ffffff; --gold: #ffc107; }
         body { font-family: 'Vazirmatn', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; }
         .header { background: linear-gradient(to bottom, #000, var(--bg)); padding: 30px 20px; text-align: center; border-bottom: 2px solid var(--accent); }
         .header h1 { margin: 0; font-size: 1.8rem; color: var(--accent); }
@@ -24,26 +24,32 @@
 
         /* Modal / Pop-up Styles */
         #food-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--card); width: 90%; max-width: 400px; padding: 20px; border-radius: 20px; border: 1px solid var(--accent); max-height: 80vh; overflow-y: auto; }
-        .food-item { background: #1f2229; padding: 15px; margin: 10px 0; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-        .food-item:hover { background: #2a2d35; border-right: 4px solid var(--accent); }
-        .close-modal { background: var(--accent); color: white; padding: 10px; border-radius: 10px; text-align: center; cursor: pointer; margin-top: 15px; font-weight: bold; }
+        .modal-content { background: var(--card); width: 90%; max-width: 450px; padding: 20px; border-radius: 25px; border: 1px solid var(--accent); max-height: 85vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .food-item { background: #1f2229; padding: 12px 15px; margin: 8px 0; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; border: 1px solid #25282e; }
+        .food-item:hover { background: #2a2d35; border-color: var(--accent); }
+        .category-label { color: var(--accent); font-size: 0.8rem; font-weight: bold; margin-top: 15px; display: block; border-right: 3px solid var(--accent); padding-right: 8px; }
+        .close-modal { background: #333; color: white; padding: 10px; border-radius: 12px; text-align: center; cursor: pointer; margin-top: 15px; font-weight: bold; }
+        .btn-clear-order { background: #2a0a0a; color: #ff3131; border: none; padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="food-modal">
         <div class="modal-content">
-            <h3 style="text-align:center; color:var(--accent);">لیستی خواردنەکان</h3>
+            <div class="modal-header">
+                <button class="btn-clear-order" onclick="clearSelection()">سڕینەوەی هەموو</button>
+                <h3 style="margin:0; color:var(--accent);">لیستی خواردنەکان</h3>
+            </div>
             <div id="food-list-container">
                 </div>
-            <div class="close-modal" onclick="closeModal()">داخستن</div>
+            <div class="close-modal" onclick="closeModal()">تەواو / پاشەکەوت</div>
         </div>
     </div>
 
     <div class="header">
         <h1>بوم پیتزا</h1>
-        <p>داواکاری ناوەوە</p>
+        <p>سیستمی داواکاری مێزەکان</p>
     </div>
 
     <div class="container">
@@ -60,18 +66,18 @@
         <span class="section-title">٢. زانیاری داواکاری</span>
         <div class="order-form">
             <div class="input-group">
-                <label style="display:block; margin-bottom:8px; color:#aaa;">خواردنەکان (کلیک لێرە بکە)</label>
-                <input type="text" id="items" placeholder="کلیک بکە بۆ هەڵبژاردن..." readonly onclick="openModal()">
+                <label style="display:block; margin-bottom:8px; color:#aaa;">خواردنەکان (کلیک بکە بۆ هەڵبژاردن)</label>
+                <input type="text" id="items" placeholder="هیچ خواردنێک هەڵنەبژێردراوە..." readonly onclick="openModal()" style="cursor:pointer; border-color: #444;">
             </div>
             <div class="input-group">
-                <label style="display:block; margin-bottom:8px; color:#aaa;">نرخی گشتی (دینار)</label>
-                <input type="number" id="total" value="0">
+                <label style="display:block; margin-bottom:8px; color:#aaa;">کۆی گشتی (دینار)</label>
+                <input type="text" id="total" value="0" readonly style="color: var(--gold); font-weight: bold;">
             </div>
             <div class="input-group">
                 <label style="display:block; margin-bottom:8px; color:#aaa;">تێبینی</label>
-                <textarea id="note" placeholder="بۆ نموونە: بێ پیاز..."></textarea>
+                <textarea id="note" placeholder="بۆ نموونە: بێ بیبەر..."></textarea>
             </div>
-            <button class="btn-send" onclick="sendOrder()">ناردنی داواکاری ✅</button>
+            <button class="btn-send" onclick="sendOrder()">ناردنی داواکاری بۆ ئاشپەزخانە ✅</button>
         </div>
     </div>
 
@@ -84,15 +90,20 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // لیستی خواردنەکان و نرخەکان
+        // Menu Data copied from index.html logic
         const menu = [
-            { name: "پیتزا مێکس", price: 8000 },
-            { name: "پیتزا پیرۆنی", price: 7000 },
-            { name: "پیتزا سەوزە", price: 6000 },
-            { name: "بەرگر گۆشت", price: 5000 },
-            { name: "بەرگر مریشک", price: 4500 },
-            { name: "فینگەر", price: 2500 },
-            { name: "پێپسی", price: 500 }
+            { cat: "پیتزاکان", name: "پیتزا مێکس", price: 8000 },
+            { cat: "پیتزاکان", name: "پیتزا پیرۆنی", price: 7000 },
+            { cat: "پیتزاکان", name: "پیتزا مریشک", price: 7500 },
+            { cat: "پیتزاکان", name: "پیتزا سەوزە", price: 6000 },
+            { cat: "پیتزاکان", name: "پیتزا پەنیر", price: 5500 },
+            { cat: "بەرگرەکان", name: "بەرگر گۆشت", price: 5000 },
+            { cat: "بەرگرەکان", name: "بەرگر مریشک", price: 4500 },
+            { cat: "بەرگرەکان", name: "زینگەر بەرگر", price: 5500 },
+            { cat: "لاوەکی و خواردنەوە", name: "فینگەر", price: 2500 },
+            { cat: "لاوەکی و خواردنەوە", name: "ناگێت", price: 3500 },
+            { cat: "لاوەکی و خواردنەوە", name: "پێپسی", price: 500 },
+            { cat: "لاوەکی و خواردنەوە", name: "ئاو", price: 250 }
         ];
 
         let selectedDesk = null;
@@ -105,11 +116,16 @@
         function renderFoodList() {
             const container = document.getElementById('food-list-container');
             container.innerHTML = '';
+            let currentCat = "";
             menu.forEach(food => {
+                if(food.cat !== currentCat) {
+                    currentCat = food.cat;
+                    container.innerHTML += `<span class="category-label">${currentCat}</span>`;
+                }
                 container.innerHTML += `
                     <div class="food-item" onclick="addItem('${food.name}', ${food.price})">
                         <span>${food.name}</span>
-                        <span style="color:var(--gold)">${food.price} د.ع</span>
+                        <span style="color:var(--gold)">${food.price.toLocaleString()} د.ع</span>
                     </div>
                 `;
             });
@@ -119,7 +135,14 @@
             selectedItems.push(name);
             totalPrice += price;
             document.getElementById('items').value = selectedItems.join(' + ');
-            document.getElementById('total').value = totalPrice;
+            document.getElementById('total').value = totalPrice.toLocaleString() + " د.ع";
+        }
+
+        function clearSelection() {
+            selectedItems = [];
+            totalPrice = 0;
+            document.getElementById('items').value = "";
+            document.getElementById('total').value = "0";
         }
 
         function selectDesk(num, btn) {
@@ -133,20 +156,20 @@
             const total = document.getElementById('total').value;
             const note = document.getElementById('note').value || "نییە";
 
-            if (!selectedDesk) return alert("مێزێک هەڵبژێرە!");
-            if (!items || total == 0) return alert("خواردن هەڵبژێرە!");
+            if (!selectedDesk) return alert("تکایە سەرەتا مێزێک هەڵبژێرە!");
+            if (!items || totalPrice == 0) return alert("تکایە خواردن هەڵبژێرە!");
 
             const orderData = {
                 id: Math.floor(1000 + Math.random() * 9000),
                 items: items,
-                total: parseInt(total).toLocaleString() + " د.ع",
+                total: total,
                 phone: "ناوەوە (مێزی " + selectedDesk + ")",
                 time: new Date().toLocaleString('en-CA', { hour12: false }).replace(',', ''),
                 note: note
             };
 
             db.ref('orders').push(orderData).then(() => {
-                alert("نێردرا!");
+                alert("داواکاری مێزی " + selectedDesk + " بە سەرکەوتوویی نێردرا!");
                 location.reload();
             });
         }
