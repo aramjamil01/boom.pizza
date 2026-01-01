@@ -5,134 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Boom's Pizza | بوم پیتزا</title>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
         :root { --primary-red: #ff3131; --dark-bg: #0a0a0a; --card-bg: #161616; --text-gold: #ffc107; --whatsapp-green: #25D366; }
-        body { font-family: 'Vazirmatn', sans-serif; margin: 0; background-color: var(--dark-bg); color: #ffffff; direction: rtl; overflow-x: hidden; }
-        header { background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), var(--dark-bg)), url('https://i.postimg.cc/02R8rCjV/99999999.jpg'); background-size: cover; background-position: center; height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 4px solid var(--primary-red); }
-        header h1 { font-size: 3rem; color: var(--text-gold); text-shadow: 3px 3px 15px #000; margin: 0; }
-        .category-container { display: flex; overflow-x: auto; padding: 20px; gap: 15px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1000; }
+        body { font-family: 'Vazirmatn', sans-serif; margin: 0; background-color: var(--dark-bg); color: #ffffff; direction: rtl; }
+        header { background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), var(--dark-bg)), url('https://i.postimg.cc/02R8rCjV/99999999.jpg'); background-size: cover; background-position: center; height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 4px solid var(--primary-red); }
+        .category-container { display: flex; overflow-x: auto; padding: 15px; gap: 10px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1000; }
         .cat-card { min-width: 80px; text-align: center; cursor: pointer; }
-        .cat-card img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--text-gold); object-fit: cover; }
+        .cat-card img { width: 65px; height: 65px; border-radius: 50%; border: 2px solid var(--text-gold); object-fit: cover; transition: 0.3s; }
         .cat-card.active img { border-color: var(--primary-red); transform: scale(1.1); box-shadow: 0 0 15px var(--primary-red); }
         .menu-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
-        .item-card { background: var(--card-bg); border-radius: 20px; overflow: hidden; border: 1px solid #222; display: flex; flex-direction: column; }
-        .item-card img { width: 100%; height: 130px; object-fit: cover; }
-        .add-btn { background: var(--primary-red); color: #fff; border: none; padding: 10px; border-radius: 12px; font-weight: bold; margin: 10px; cursor: pointer; }
-        #cart-section { background: #111; border-radius: 25px; padding: 20px; margin: 30px 15px 100px; border: 2px solid #222; }
-        .order-input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: 1px solid #333; background: #222; color: white; font-family: 'Vazirmatn'; box-sizing: border-box; }
-        .whatsapp-btn { background: var(--whatsapp-green); color: white; padding: 18px; border-radius: 50px; width: 100%; border: none; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .item-card { background: var(--card-bg); border-radius: 15px; overflow: hidden; border: 1px solid #222; display: flex; flex-direction: column; }
+        .item-card img { width: 100%; height: 120px; object-fit: cover; }
+        .add-btn { background: var(--primary-red); color: #fff; border: none; padding: 10px; border-radius: 10px; font-weight: bold; margin: 10px; cursor: pointer; }
+        #cart-section { background: #111; border-radius: 20px; padding: 20px; margin: 20px 15px 100px; border: 1px solid #333; }
+        .order-input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 8px; border: 1px solid #333; background: #222; color: white; font-family: 'Vazirmatn'; box-sizing: border-box; }
+        .whatsapp-btn { background: var(--whatsapp-green); color: white; padding: 15px; border-radius: 50px; width: 100%; border: none; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 1rem; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Boom's Pizza</h1>
-    <p style="background:var(--primary-red); padding:4px 15px; border-radius:20px; font-weight:bold;">کوالێتی نایاب و تامێکی لەبیرنەکراو</p>
+    <h1 style="color:var(--text-gold); font-size: 2.5rem; margin:0;">Boom's Pizza</h1>
+    <p style="background:var(--primary-red); padding:2px 12px; border-radius:15px; font-size:0.9rem;">تامی ڕاستەقینەی پیتزا</p>
 </header>
 
-<div class="category-container">
+<div class="category-container" id="cats">
     <div class="cat-card active" onclick="openFolder('pizza', this)"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200"><p>پیتزا</p></div>
     <div class="cat-card" onclick="openFolder('burger', this)"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200"><p>بەرگر</p></div>
     <div class="cat-card" onclick="openFolder('shawarma', this)"><img src="https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg"><p>شاوەرمە</p></div>
-    <div class="cat-card" onclick="openFolder('drink', this)"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200"><p>خواردنەوە</p></div>
+    <div class="cat-card" onclick="openFolder('finger', this)"><img src="https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png"><p>فینگەر</p></div>
 </div>
 
-<div class="container">
-    <h2 id="folder-title" style="color:var(--text-gold); margin:20px;">🍕 جۆرەکانی پیزا</h2>
-    <div class="menu-section" id="menu-display"></div>
-    
-    <div id="cart-section">
-        <h3 style="color:var(--text-gold);">🛒 سەبەتەی داواکارییەکان</h3>
-        <div id="cart-items"></div>
-        <textarea id="order-note" class="order-input" rows="2" placeholder="تێبینی بۆ داواکاری..."></textarea>
-        <div style="text-align:center; margin:20px 0;"><span style="font-size:1.5rem; color:var(--text-gold); font-weight:bold;">کۆی گشتی: <span id="total-amount">0</span> دینار</span></div>
-        <button class="whatsapp-btn" id="sendBtn" onclick="sendToWhatsApp()">ناردنی داواکاری و لۆکەیشن (WhatsApp)</button>
+<div id="menu-display" class="menu-section"></div>
+
+<div id="cart-section">
+    <h3 style="color:var(--text-gold); margin-top:0;">🛒 سەبەتەی داواکاری</h3>
+    <div id="cart-items" style="font-size: 0.9rem;">سەبەتەکە بەتاڵە</div>
+    <textarea id="order-note" class="order-input" rows="2" placeholder="تێبینی (بۆ نموونە: بێ پیاز)"></textarea>
+    <div style="text-align:center; margin-top:15px;">
+        <span style="font-size:1.2rem; color:var(--text-gold);">کۆی گشتی: <b id="total-amount">0</b> دینار</span>
     </div>
+    <button class="whatsapp-btn" id="sendBtn" onclick="sendOrder()">ناردنی داواکاری (WhatsApp)</button>
 </div>
-
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
-<script src="data.js"></script>
 
 <script>
-    // کۆدی فایەربەیسی تایبەت بە پڕۆژەکەی ئارام
+    // ئەمە کۆدی تایبەتی پڕۆژەکەی تۆیە کە لە وێنەی پێنجەم دەرکەوتووە
     const firebaseConfig = {
         apiKey: "AIzaSyDqoOjm4m1Fxp760mJPy0sv5_NjaJfkm7g",
         authDomain: "boompizza-5d048.firebaseapp.com",
+        databaseURL: "https://boompizza-5d048-default-rtdb.firebaseio.com",
         projectId: "boompizza-5d048",
         storageBucket: "boompizza-5d048.firebasestorage.app",
         messagingSenderId: "636068289590",
-        appId: "1:636068289590:web:41fe758906140c700ecc97",
-        measurementId: "G-XX07Q2BQV9",
-        databaseURL: "https://boompizza-5d048-default-rtdb.firebaseio.com"
+        appId: "1:636068289590:web:41fe758906140c700ecc97"
     };
 
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
+
+    // لیستەی خواردنەکان (نموونە)
+    const menuItems = [
+        { id: 1, name: "پیتزا مێگریتا", price: 7000, category: "pizza", img: "https://images.unsplash.com/photo-1574071318508-1cdbad80ad38?w=300" },
+        { id: 2, name: "پیتزا بیبەرۆنی", price: 9000, category: "pizza", img: "https://images.unsplash.com/photo-1628840042765-356cda07504e?w=300" },
+        { id: 3, name: "چیز بەرگر", price: 5000, category: "burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300" },
+        { id: 4, name: "شاوەرمە گۆشت", price: 4000, category: "shawarma", img: "https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg" }
+    ];
+
     let cart = [];
 
-    function openFolder(category, element) {
+    function openFolder(cat, el) {
         document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
-        element.classList.add('active');
+        el.classList.add('active');
         const display = document.getElementById('menu-display');
         display.innerHTML = '';
-        menuItems.filter(i => i.category === category).forEach(item => {
-            display.innerHTML += `<div class="item-card"><img src="${item.img}"><div style="padding:10px;text-align:center;"><h3>${item.name}</h3><p>${item.price.toLocaleString()} دینار</p></div><button class="add-btn" onclick="addToCart(${item.id})">زیادکردن +</button></div>`;
+        menuItems.filter(i => i.category === cat).forEach(item => {
+            display.innerHTML += `
+                <div class="item-card">
+                    <img src="${item.img}">
+                    <div style="padding:10px; text-align:center;">
+                        <h4 style="margin:5px 0;">${item.name}</h4>
+                        <p style="color:var(--text-gold); margin:5px 0;">${item.price.toLocaleString()} د.ع</p>
+                    </div>
+                    <button class="add-btn" onclick="addToCart(${item.id})">زیادکردن +</button>
+                </div>`;
         });
     }
 
     function addToCart(id) {
-        cart.push(menuItems.find(i => i.id === id));
-        renderCart();
+        const item = menuItems.find(i => i.id === id);
+        cart.push(item);
+        updateCart();
     }
 
-    function renderCart() {
+    function updateCart() {
         const cartDiv = document.getElementById('cart-items');
-        let total = 0; cartDiv.innerHTML = '';
-        const grouped = {};
-        cart.forEach(i => { total += i.price; grouped[i.name] = (grouped[i.name] || 0) + 1; });
-        for (const [name, count] of Object.entries(grouped)) {
-            cartDiv.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #222;"><span>${count}x ${name}</span></div>`;
+        let total = 0;
+        if(cart.length === 0) { cartDiv.innerHTML = "سەبەتەکە بەتاڵە"; }
+        else {
+            cartDiv.innerHTML = cart.map((item, index) => {
+                total += item.price;
+                return `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                            <span>${item.name}</span>
+                            <span style="color:red; cursor:pointer;" onclick="cart.splice(${index},1);updateCart()">سڕینەوە</span>
+                        </div>`;
+            }).join('');
         }
         document.getElementById('total-amount').innerText = total.toLocaleString();
     }
 
-    function sendToWhatsApp() {
-        if(cart.length === 0) return alert("سەبەتە بەتاڵە!");
-        const btn = document.getElementById('sendBtn');
-        btn.innerText = "📍 لۆکەیشن..."; btn.disabled = true;
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(pos) {
-                const mapLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-                finishOrder(mapLink);
-            }, function() { finishOrder("لۆکەیشن نەنێردراوە"); });
-        } else { finishOrder("پشتگیری لۆکەیشن ناکات"); }
-    }
-
-    function finishOrder(locationInfo) {
+    function sendOrder() {
+        if(cart.length === 0) return alert("تکایە سەرەتا خواردن هەڵبژێرە!");
+        
         const orderID = Math.floor(1000 + Math.random() * 9000);
         const note = document.getElementById('order-note').value || "تێبینی نییە";
         const total = document.getElementById('total-amount').innerText;
+        const time = new Date().toLocaleString('ku-IQ');
 
         const orderData = {
             orderID: orderID,
             items: cart.map(i => i.name),
-            total: total,
-            location: locationInfo,
+            totalPrice: total,
             note: note,
-            timestamp: new Date().toLocaleString('ku-IQ')
+            orderTime: time
         };
 
-        // پاشەکەوتکردن لە Firebase
-        database.ref('orders/' + orderID).set(orderData);
-
-        // ناردن بۆ واتسئەپ
-        let txt = `🆔 *داواکاری: #${orderID}*\n📍 *لۆکەیشن:* ${locationInfo}\n📝 *تێبینی:* ${note}\n💰 *کۆی گشتی:* ${total} دینار`;
-        
-        document.getElementById('sendBtn').innerText = "ناردنی داواکاری (WhatsApp)";
-        document.getElementById('sendBtn').disabled = false;
-        window.location.href = `https://wa.me/9647504629237?text=${encodeURIComponent(txt)}`;
+        // پاشەکەوتکردن لە Firebase بۆ ئەوەی ئارام بیبینێت
+        database.ref('orders/' + orderID).set(orderData)
+        .then(() => {
+            // ناردن بۆ واتسئەپ
+            let message = `🆔 *داواکاری نوێ: #${orderID}*\n`;
+            message += `🍴 *خواردنەکان:* ${orderData.items.join(' - ')}\n`;
+            message += `📝 *تێبینی:* ${note}\n`;
+            message += `💰 *کۆی گشتی:* ${total} دینار`;
+            
+            window.location.href = `https://wa.me/9647504629237?text=${encodeURIComponent(message)}`;
+        })
+        .catch(err => alert("کێشەیەک هەیە لە پەیوەندی داتابەیس!"));
     }
 
     window.onload = () => openFolder('pizza', document.querySelector('.cat-card'));
