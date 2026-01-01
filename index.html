@@ -241,6 +241,16 @@
                 });
             }, []);
 
+            const handleImageUpload = (e, callback) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    callback(reader.result);
+                };
+                reader.readAsDataURL(file);
+            };
+
             const seedData = async () => {
                 if(!confirm("ئایا دڵنیای لە گەڕاندنەوەی زانیارییە بنەڕەتییەکان؟")) return;
                 const defaultCats = {
@@ -321,7 +331,11 @@
                                     <select className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingItem.category} onChange=${e => setEditingItem({...editingItem, category: e.target.value})}>
                                         ${categories.map(c => html`<option key=${c.id} value=${c.id}>${c.name}</option>`)}
                                     </select>
-                                    <input type="text" placeholder="لێنکی وێنە" className="bg-zinc-800 border-none p-2 rounded text-xs text-white col-span-2" value=${editingItem.img} onChange=${e => setEditingItem({...editingItem, img: e.target.value})} />
+                                    <div className="col-span-2 space-y-2">
+                                        <label className="text-[10px] text-zinc-500 block">بارکردنی وێنە:</label>
+                                        <input type="file" accept="image/*" onChange=${e => handleImageUpload(e, (res) => setEditingItem({...editingItem, img: res}))} className="text-[10px] text-zinc-400" />
+                                        ${editingItem.img && html`<img src=${editingItem.img} className="h-20 rounded border border-zinc-700 mt-2" />`}
+                                    </div>
                                 </div>
                                 <button className="w-full bg-green-600 text-white font-bold py-2 rounded text-xs">پاشەکەوتکردن</button>
                             </form>
@@ -353,7 +367,11 @@
                                 <div className="grid grid-cols-2 gap-3">
                                     <input type="text" placeholder="ID (ئینگلیزی - pizza)" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingCategory.id} onChange=${e => setEditingCategory({...editingCategory, id: e.target.value})} />
                                     <input type="text" placeholder="ناو (کوردی - پیتزا)" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingCategory.name} onChange=${e => setEditingCategory({...editingCategory, name: e.target.value})} />
-                                    <input type="text" placeholder="لێنکی وێنە" className="bg-zinc-800 border-none p-2 rounded text-xs text-white col-span-2" value=${editingCategory.img} onChange=${e => setEditingCategory({...editingCategory, img: e.target.value})} />
+                                    <div className="col-span-2 space-y-2">
+                                        <label className="text-[10px] text-zinc-500 block">بارکردنی وێنەی کاتیگۆری:</label>
+                                        <input type="file" accept="image/*" onChange=${e => handleImageUpload(e, (res) => setEditingCategory({...editingCategory, img: res}))} className="text-[10px] text-zinc-400" />
+                                        ${editingCategory.img && html`<img src=${editingCategory.img} className="h-20 rounded border border-zinc-700 mt-2" />`}
+                                    </div>
                                 </div>
                                 <button className="w-full bg-green-600 text-white font-bold py-2 rounded text-xs">پاشەکەوت</button>
                             </form>
