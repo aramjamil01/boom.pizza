@@ -3,154 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boom Pizza - Dashboard</title>
+    <title>بوم پیتزا - بەشی پارێزراو</title>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
         :root { --accent: #ff3131; --bg: #0a0b0d; --card: #16181d; --gold: #ffc107; --green: #25D366; }
-        body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; }
+        body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; overflow-x: hidden; }
         
+        /* شێوازی لاپەڕەی وشەی نهێنی */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+        .pass-input { padding: 15px; border-radius: 12px; border: 1px solid #333; background: #1a1a1a; color: white; text-align: center; font-size: 1.2rem; margin-bottom: 20px; outline: none; }
+        .pass-btn { background: var(--accent); color: white; padding: 10px 40px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
+
+        #main-content { display: none; } /* تەنها دوای پاسوۆرد دەردەکەوێت */
+
         .top-nav { background: #000; padding: 15px; border-bottom: 2px solid var(--accent); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        
         .daily-sales { background: linear-gradient(145deg, #1e2024, #16181d); padding: 15px; border-radius: 15px; margin: 15px 0; border: 1px solid #25282e; text-align: center; }
-        .daily-sales span { color: #888; font-size: 0.9rem; }
         .daily-sales h2 { margin: 5px 0; color: var(--green); font-size: 1.8rem; }
-
-        .order-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #25282e; position: relative; }
-        .new-badge { position: absolute; top: -10px; left: -10px; background: var(--accent); color: white; padding: 4px 12px; border-radius: 50px; font-weight: 900; font-size: 0.7rem; box-shadow: 0 0 10px var(--accent); animation: blink 1s infinite; z-index: 10; }
-        
+        .order-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid #25282e; position: relative; animation: slideIn 0.5s ease; }
+        .new-badge { position: absolute; top: -10px; left: -10px; background: var(--accent); color: white; padding: 4px 12px; border-radius: 50px; font-weight: 900; font-size: 0.7rem; box-shadow: 0 0 10px var(--accent); animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         .items-box { background: #1f2229; padding: 12px; border-radius: 10px; margin: 10px 0; border: 1px solid #333; }
-        .btn-print { background: white; color: black; padding: 12px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; font-size: 1rem; }
+        .btn-print { background: white; color: black; padding: 12px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; }
         
         #print-area { display: none; }
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
-            #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; color: black; background: white; padding: 20px; border: 1px solid #000; }
+            #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; color: black; background: white; padding: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="top-nav">
-        <h2 style="margin:0; font-size: 1.2rem; color: var(--accent);">🍕 BOOM PIZZA</h2>
-        <button onclick="clearAll()" style="background:none; border:1px solid #444; color:#888; border-radius:8px; padding:5px 10px; font-family:inherit; cursor:pointer;">سڕینەوەی لیست</button>
+    <div id="login-screen">
+        <h2 style="color:var(--accent)">BOOM PIZZA ADMIN</h2>
+        <input type="password" id="passInput" class="pass-input" placeholder="وشەی نهێنی بنووسە">
+        <button class="pass-btn" onclick="checkPass()">چوونە ژوورەوە</button>
     </div>
 
-    <div class="daily-sales">
-        <span>💰 داهاتی ئەمڕۆ</span>
-        <h2 id="today-revenue">0 د.ع</h2>
-        <small id="current-date" style="color:#555"></small>
+    <div id="main-content">
+        <div class="top-nav">
+            <h2 style="margin:0; font-size: 1.2rem; color: var(--accent);">🍕 BOOM PIZZA</h2>
+            <button onclick="clearAll()" style="background:none; border:1px solid #444; color:#888; border-radius:8px; padding:5px 10px; cursor:pointer;">سڕینەوەی هەمووی</button>
+        </div>
+
+        <div class="daily-sales">
+            <span>💰 داهاتی ئەمڕۆ</span>
+            <h2 id="today-revenue">0 د.ع</h2>
+            <small id="current-date" style="color:#555"></small>
+        </div>
+
+        <div id="list">چاوەڕوانی داواکارییەکانین...</div>
     </div>
 
-    <div id="list">چاوەڕوانی ئۆردەری نوێ...</div>
     <div id="print-area"></div>
-
-    <audio id="bell" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
+    <audio id="bell" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3" preload="auto"></audio>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDqoOjm4m1Fxp760mJPy0sv5_NjaJfkm7g",
-            authDomain: "boompizza-5d048.firebaseapp.com",
-            databaseURL: "https://boompizza-5d048-default-rtdb.firebaseio.com",
-            projectId: "boompizza-5d048",
-            storageBucket: "boompizza-5d048.firebasestorage.app",
-            messagingSenderId: "636068289590",
-            appId: "1:636068289590:web:41fe758906140c700ecc97"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        let lastCount = -1;
-
-        function clearAll() {
-            if(confirm("هەموو لیستەکە دەسڕێتەوە، دڵنیای؟")) db.ref('orders').remove();
+        // فەنکشنی پشکنینی وشەی نهێنی
+        function checkPass() {
+            const input = document.getElementById('passInput').value;
+            if (input === "1998a") {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                startApp();
+            } else {
+                alert("وشەی نهێنی هەڵەیە!");
+            }
         }
 
-        function getTodayDateString() {
-            const now = new Date();
-            return now.toLocaleDateString('en-CA'); 
-        }
-
-        db.ref('orders').on('value', (snapshot) => {
-            const listDiv = document.getElementById('list');
-            const revenueEl = document.getElementById('today-revenue');
-            const data = snapshot.val();
-            listDiv.innerHTML = '';
+        function startApp() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyDqoOjm4m1Fxp760mJPy0sv5_NjaJfkm7g",
+                authDomain: "boompizza-5d048.firebaseapp.com",
+                databaseURL: "https://boompizza-5d048-default-rtdb.firebaseio.com",
+                projectId: "boompizza-5d048",
+                storageBucket: "boompizza-5d048.firebasestorage.app",
+                messagingSenderId: "636068289590",
+                appId: "1:636068289590:web:41fe758906140c700ecc97"
+            };
             
-            let dailyTotal = 0;
-            const todayStr = getTodayDateString();
-            document.getElementById('current-date').innerText = "ڕێکەوت: " + todayStr;
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            const db = firebase.database();
+            let lastCount = -1;
 
-            if (data) {
-                const keys = Object.keys(data);
+            db.ref('orders').on('value', (snapshot) => {
+                const listDiv = document.getElementById('list');
+                const revenueEl = document.getElementById('today-revenue');
+                const data = snapshot.val();
+                listDiv.innerHTML = '';
                 
-                if (lastCount !== -1 && keys.length > lastCount) {
-                    document.getElementById('bell').play().catch(() => {});
-                }
-                lastCount = keys.length;
+                let dailyTotal = 0;
+                const todayStr = new Date().toLocaleDateString('en-CA');
+                document.getElementById('current-date').innerText = "ڕێکەوت: " + todayStr;
 
-                keys.reverse().forEach(key => {
-                    const o = data[key];
-                    const itemsStr = Array.isArray(o.items) ? o.items.join(' + ') : (o.items || 'خواردن دیاری نەکراوە');
-                    
-                    // چارەسەری undefined بۆ ID - ئەگەر نەبوو کورتەیەک لە Key بەکاردێنێت
-                    const displayID = o.id || key.substring(key.length - 4).toUpperCase();
-
-                    // هەژمارکردنی داهاتی تەنها ئەمڕۆ
-                    if (o.time && o.time.includes(todayStr)) {
-                        let price = parseInt(o.total?.toString().replace(/[^0-9]/g, '') || 0);
-                        dailyTotal += price;
+                if (data) {
+                    const keys = Object.keys(data);
+                    if (lastCount !== -1 && keys.length > lastCount) {
+                        document.getElementById('bell').play().catch(() => {});
                     }
+                    lastCount = keys.length;
 
-                    // نیشاندانی نیشانەی NEW بۆ ٥ خولەک
-                    let isNew = false;
-                    try {
+                    keys.reverse().forEach(key => {
+                        const o = data[key];
+                        const displayID = o.id || key.substring(key.length - 5);
+                        const itemsStr = Array.isArray(o.items) ? o.items.join(' + ') : (o.items || 'نادیار');
+                        
+                        if (o.time && o.time.includes(todayStr)) {
+                            let price = parseInt(o.total?.toString().replace(/[^0-9]/g, '') || 0);
+                            dailyTotal += price;
+                        }
+
+                        let isNew = false;
                         const orderTime = new Date(o.time).getTime();
                         if (new Date().getTime() - orderTime < 5 * 60 * 1000) isNew = true;
-                    } catch(e) {}
 
-                    listDiv.innerHTML += `
-                        <div class="order-card">
-                            ${isNew ? '<div class="new-badge">نوێ ✨</div>' : ''}
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="color:var(--gold); font-weight:900; font-size:1.2rem;">#${displayID}</span>
-                                <small style="color:#666">${o.time || ''}</small>
+                        listDiv.innerHTML += `
+                            <div class="order-card">
+                                ${isNew ? '<div class="new-badge">نوێ ✨</div>' : ''}
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span style="color:var(--gold); font-weight:900; font-size:1.2rem;">#${displayID}</span>
+                                    <small style="color:#666">${o.time || ''}</small>
+                                </div>
+                                <div class="items-box"><b>داواکاری:</b><br> ${itemsStr}</div>
+                                <div style="margin-bottom:15px;">💰 بڕ: <b>${o.total || 0}</b> | 📞 ${o.phone || 'نادیار'}</div>
+                                <button class="btn-print" onclick="doPrint('${displayID}', '${itemsStr}', '${o.total}', '${o.phone}', '${o.time}', '${o.note}')">چاپکردنی وەسڵ 🖨️</button>
                             </div>
-                            <div class="items-box"><b>داواکاری:</b><br> ${itemsStr}</div>
-                            <div style="margin-bottom:15px;">💰 بڕ: <b>${o.total || 0}</b> | 📞 ${o.phone || 'نادیار'}</div>
-                            <button class="btn-print" onclick="doPrint('${displayID}', '${itemsStr}', '${o.total}', '${o.phone}', '${o.time}', '${o.note}')">چاپکردن 🖨️</button>
-                        </div>
-                    `;
-                });
-            } else {
-                listDiv.innerHTML = '<p style="text-align:center; color:#444; margin-top:50px;">لیستەکە بەتاڵە</p>';
-                lastCount = 0;
-            }
-            revenueEl.innerText = dailyTotal.toLocaleString() + " د.ع";
-        });
+                        `;
+                    });
+                } else {
+                    listDiv.innerHTML = '<p style="text-align:center; color:#444; margin-top:50px;">هیچ ئۆردەرێک نییە</p>';
+                    lastCount = 0;
+                }
+                revenueEl.innerText = dailyTotal.toLocaleString() + " د.ع";
+            });
+        }
 
         function doPrint(id, items, total, phone, time, note) {
             const area = document.getElementById('print-area');
-            area.innerHTML = `
-                <div style="text-align:center; font-family:sans-serif;">
-                    <h2>BOOM PIZZA</h2>
-                    <div style="border:2px solid black; padding:5px; margin:10px auto; width: fit-content;">
-                        <b>داواکاری #${id}</b>
-                    </div>
-                    <p>${time}</p>
-                    <p>Phone: ${phone}</p>
-                    <hr style="border-top: 1px dashed black;">
-                    <p style="font-size:18px;">${items}</p>
-                    ${note && note !== 'نییە' ? `<p>تێبینی: ${note}</p>` : ''}
-                    <hr style="border-top: 1px dashed black;">
-                    <h3>Total: ${total} IQD</h3>
-                    <p>سوپاس بۆ هەڵبژاردنی ئێمە</p>
-                </div>`;
+            area.innerHTML = `<div style="text-align:center;"><h2>BOOM PIZZA</h2><div style="border:2px solid black; padding:10px; font-size:24px; font-weight:bold; margin:10px 0;">#${id}</div><p>${time}</p><p>مۆبایل: ${phone}</p><hr><p style="font-size:18px;">${items}</p>${note ? `<p>تێبینی: ${note}</p>` : ''}<hr><h2>کۆی گشتی: ${total}</h2></div>`;
             window.print();
+        }
+
+        function clearAll() {
+            if(confirm("دڵنیای لە سڕینەوەی هەموو داواکارییەکان؟")) {
+                firebase.database().ref('orders').remove();
+            }
         }
     </script>
 </body>
