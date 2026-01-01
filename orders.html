@@ -1,49 +1,108 @@
-<style>
-    .btn-print {
-        background: #555;
-        color: white;
-        padding: 10px 15px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 0.9rem;
-        cursor: pointer;
-        border: none;
-    }
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وەسڵی بوم پیتزا</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <style>
+        :root { --accent: #ff3131; --bg: #0a0b0d; --card: #16181d; }
+        body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; }
+        
+        /* Header */
+        .header { text-align: center; padding: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 20px; }
+        .header h1 { color: var(--accent); margin: 0; font-size: 1.5rem; }
 
-    /* ئەم بەشە تەنها کاتی چاپکردن کار دەکات */
-    @media print {
-        body * { visibility: hidden; }
-        .print-section, .print-section * { visibility: visible; }
-        .print-section {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            color: black !important;
-            background: white !important;
-            padding: 20px;
-            direction: rtl;
+        /* Order Card */
+        .order-card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid #25282e; position: relative; }
+        .id-label { color: #ffc107; font-weight: bold; }
+        .time-label { font-size: 0.8rem; color: #888; float: left; }
+        .items-list { background: #1f2229; padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px solid #333; line-height: 1.8; }
+        
+        .footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .price { font-size: 1.2rem; font-weight: 800; }
+        
+        /* Buttons */
+        .actions { display: flex; gap: 10px; }
+        .btn { padding: 10px 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-family: 'Vazirmatn'; text-decoration: none; font-size: 0.9rem; }
+        .btn-call { background: #25D366; color: white; }
+        .btn-print { background: #eee; color: black; }
+
+        /* Receipt Design for Printing */
+        @media print {
+            body { background: white !important; color: black !important; padding: 0; margin: 0; }
+            .header, .no-print { display: none !important; }
+            .order-card { border: none !important; background: white !important; color: black !important; width: 100%; padding: 0; margin: 0; }
+            .items-list { background: white !important; border: 1px solid black !important; color: black !important; }
+            .id-label, .price, .time-label { color: black !important; }
+            .btn-print, .btn-call { display: none !important; }
+            .receipt-header { display: block !important; text-align: center; border-bottom: 2px dashed black; padding-bottom: 10px; margin-bottom: 10px; }
         }
-        .no-print { display: none !important; }
-    }
-</style>
+        .receipt-header { display: none; }
+    </style>
+</head>
+<body>
 
-<script>
-    // ئەم فەنکشنە زیاد بکە بۆ ناو سکریپتەکە
-    function printOrder(id) {
-        const orderEl = document.getElementById('order-' + id);
-        orderEl.classList.add('print-section');
-        window.print();
-        orderEl.classList.remove('print-section');
-    }
+    <div class="header no-print">
+        <h1>🍕 لیستی داواکارییەکان</h1>
+    </div>
 
-    // لە ناو loop ەکەدا، ئەم دوگمەیە زیاد بکە بۆ هەر کارتێک:
-    // listDiv.innerHTML += `
-    //    ...
-    //    <div id="order-${o.id}" class="order-card">
-    //        ...
-    //        <button class="btn-print no-print" onclick="printOrder('${o.id}')">چاپکردنی وەسڵ 🖨️</button>
-    //    </div>
-    // `;
-</script>
+    <div id="list">چاوەڕوان بە...</div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqoOjm4m1Fxp760mJPy0sv5_NjaJfkm7g",
+            authDomain: "boompizza-5d048.firebaseapp.com",
+            databaseURL: "https://boompizza-5d048-default-rtdb.firebaseio.com",
+            projectId: "boompizza-5d048",
+            storageBucket: "boompizza-5d048.firebasestorage.app",
+            messagingSenderId: "636068289590",
+            appId: "1:636068289590:web:41fe758906140c700ecc97"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref('orders').on('value', (snapshot) => {
+            const listDiv = document.getElementById('list');
+            const data = snapshot.val();
+            listDiv.innerHTML = '';
+
+            if (data) {
+                Object.keys(data).reverse().forEach(key => {
+                    const o = data[key];
+                    listDiv.innerHTML += `
+                        <div class="order-card" id="order-${o.id}">
+                            <div class="receipt-header">
+                                <h2>BOOM PIZZA</h2>
+                                <p>وەسڵی کڕیار</p>
+                            </div>
+                            <span class="time-label">${o.time || ''}</span>
+                            <div class="id-label">🆔 داواکاری #${o.id}</div>
+                            
+                            <div class="items-list">
+                                <b>خواردنەکان:</b><br>
+                                ${Array.isArray(o.items) ? o.items.join(' + ') : o.items}
+                            </div>
+                            
+                            ${o.note && o.note !== 'نییە' ? `<div style="margin-bottom:10px;">📝 تێبینی: ${o.note}</div>` : ''}
+                            <div>📱 مۆبایل: ${o.phone}</div>
+
+                            <div class="footer-row">
+                                <div class="price">کۆی گشتی: ${o.total} د.ع</div>
+                                <div class="actions no-print">
+                                    <button class="btn btn-print" onclick="window.print()">چاپکردن 🖨️</button>
+                                    <a href="tel:${o.phone}" class="btn btn-call">پەیوەندی</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                listDiv.innerHTML = '<p style="text-align:center;">هیچ داواکارییەک نییە</p>';
+            }
+        });
+    </script>
+</body>
+</html>
