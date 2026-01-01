@@ -1,13 +1,106 @@
-<!DOCTYPE html>
-<html lang="ku" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>Boom's Pizza</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+:root {
+    --primary-red: #ff3131;
+    --dark-bg: #0a0a0a;
+    --card-bg: #161616;
+    --text-gold: #ffc107;
+    --whatsapp-green: #25D366;
+}
 
-    <script src="data.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+    font-family: 'Vazirmatn', sans-serif;
+    margin: 0;
+    background-color: var(--dark-bg);
+    color: #ffffff;
+    line-height: 1.6;
+    overflow-x: hidden;
+    direction: rtl;
+}
+
+header {
+    background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), var(--dark-bg)), 
+                     url('https://i.postimg.cc/02R8rCjV/99999999.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-bottom: 4px solid var(--primary-red);
+}
+
+header h1 { font-size: 3rem; margin: 0; text-shadow: 3px 3px 15px rgba(0,0,0,1); color: var(--text-gold); }
+
+.category-container {
+    display: flex;
+    overflow-x: auto;
+    padding: 25px 15px;
+    gap: 20px;
+    background: var(--dark-bg);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.cat-card { min-width: 80px; text-align: center; cursor: pointer; }
+.cat-card img {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    border: 2px solid var(--text-gold);
+    object-fit: cover;
+}
+
+.cat-card.active img { border-color: var(--primary-red); transform: scale(1.1); box-shadow: 0 0 15px var(--primary-red); }
+
+.menu-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    padding: 15px;
+}
+
+.item-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid #222;
+    display: flex;
+    flex-direction: column;
+}
+
+.item-card img { width: 100%; height: 140px; object-fit: cover; }
+
+.add-btn {
+    background: var(--primary-red);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 12px;
+    font-weight: bold;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.bottom-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: var(--primary-red);
+    padding: 15px;
+    border-radius: 50px;
+    display: none;
+    justify-content: space-between;
+    z-index: 2000;
+}
+
+.snowflake {
+    position: absolute;
+    top: -10px;
+    color: white;
+    animation: fall linear infinite;
+}
+@keyframes fall { to { transform: translateY(105vh); } }
