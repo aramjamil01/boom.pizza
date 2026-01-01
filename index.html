@@ -99,9 +99,9 @@
         <div class="wheel-pointer"></div>
         <div id="theWheel" class="main-wheel"></div>
         <div style="position:absolute; top:15%; left:50%; transform:translateX(-50%); color:white; font-weight:bold; z-index:5;">5%</div>
-        <div style="position:absolute; right:15%; top:50%; transform:translateY(-50%); color:black; font-weight:bold; z-index:5;">10%</div>
+        <div style="position:absolute; right:15%; top:50%; transform:translateY(-50%); color:black; font-weight:bold; z-index:5;">5%</div>
         <div style="position:absolute; bottom:15%; left:50%; transform:translateX(-50%); color:white; font-weight:bold; z-index:5;">15%</div>
-        <div style="position:absolute; left:15%; top:50%; transform:translateY(-50%); color:white; font-weight:bold; z-index:5;">20%</div>
+        <div style="position:absolute; left:15%; top:50%; transform:translateY(-50%); color:white; font-weight:bold; z-index:5;">0%</div>
     </div>
     <button id="spinBtn" class="spin-btn-main" onclick="startSpin()">بسوڕێنە! 🚀</button>
     <p id="wheelStatus" style="color:white; margin-top:15px; font-size:1.2rem; font-weight:bold; height:30px;"></p>
@@ -145,16 +145,15 @@
 
     let isSpinning = false;
     const prizes = [
-        { label: "5%", val: 0.05 },
-        { label: "10%", val: 0.10 },
-        { label: "15%", val: 0.15 },
-        { label: "20%", val: 0.20 }
+        { label: "5%", val: 0.05 },  // سور
+        { label: "5%", val: 0.05 },  // زەرد (پێشتر 10 بوو)
+        { label: "15%", val: 0.15 }, // سەوز
+        { label: "0%", val: 0.0 }    // شین (پێشتر 20 بوو)
     ];
 
     function openWheel() { document.getElementById('wheelOverlay').style.display = 'flex'; }
     function closeWheel() { document.getElementById('wheelOverlay').style.display = 'none'; }
 
-    // فەنکشنی سوڕانەوە بە کۆنترۆڵی ئەگەرەکان (75% بۆ 5% داشکاندن)
     function startSpin() {
         if (isSpinning) return;
         isSpinning = true;
@@ -164,24 +163,19 @@
         let randomVal = Math.random() * 100;
         let targetIdx;
 
-        if (randomVal < 75) { targetIdx = 0; }      // 75% ئەگەر بۆ 5%
-        else if (randomVal < 90) { targetIdx = 1; } // 15% ئەگەر بۆ 10%
-        else if (randomVal < 98) { targetIdx = 2; } // 8% ئەگەر بۆ 15%
-        else { targetIdx = 3; }                     // 2% ئەگەر بۆ 20%
+        // ئەگەرەکان:
+        if (randomVal < 60) { targetIdx = 0; }      // 60% ئەگەر بۆ 5% (بەشی سور)
+        else if (randomVal < 90) { targetIdx = 3; } // 30% ئەگەر بۆ 0% (بەشی شین)
+        else if (randomVal < 98) { targetIdx = 1; } // 8% ئەگەر بۆ 5%ـی دووەم (بەشی زەرد)
+        else { targetIdx = 2; }                     // تەنها 2% ئەگەر بۆ 15% (بەشی سەوز)
 
-        // لۆژیکی پلەکان: هەر بەشێک 90 پلەیە
-        // 5% (idx 0) دەکەوێتە نیوان 271-360 پلە
-        // 10% (idx 1) دەکەوێتە نیوان 181-270 پلە
-        // 15% (idx 2) دەکەوێتە نیوان 91-180 پلە
-        // 20% (idx 3) دەکەوێتە نیوان 0-90 پلە
-        
         let targetDeg;
         if (targetIdx === 0) targetDeg = Math.floor(Math.random() * 80) + 275;
         else if (targetIdx === 1) targetDeg = Math.floor(Math.random() * 80) + 185;
         else if (targetIdx === 2) targetDeg = Math.floor(Math.random() * 80) + 95;
         else targetDeg = Math.floor(Math.random() * 80) + 5;
 
-        const totalSpin = 2160 + (360 - targetDeg); // 6 جار سوڕانەوە + پلەی مەبەست
+        const totalSpin = 2160 + (360 - targetDeg);
         
         wheel.style.transform = `rotate(${totalSpin}deg)`;
         status.innerText = "بەختت تاقی دەکرێتەوە... ✨";
@@ -189,17 +183,30 @@
         setTimeout(() => {
             const result = prizes[targetIdx];
             discountRate = result.val;
-            status.innerText = "🎉 پیرۆزە: داشکاندنی " + result.label;
+            
+            if (discountRate > 0) {
+                status.innerText = "🎉 پیرۆزە: داشکاندنی " + result.label;
+                status.style.color = "var(--text-gold)";
+            } else {
+                status.innerText = "❌ بەداخەوە، ئەمجارە هیچت بۆ دەرنەچوو!";
+                status.style.color = "#ff5555";
+            }
+            
             renderCart();
 
             setTimeout(() => {
-                alert("پیرۆزە! داشکاندنی " + result.label + " بۆت چالاک بوو.");
+                if(discountRate > 0) {
+                    alert("پیرۆزە! داشکاندنی " + result.label + " بۆت چالاک بوو.");
+                } else {
+                    alert("بەداخەوە ئەمجارە داشکاندن نییە، جارێکی تر تاقی بکەرەوە!");
+                }
                 isSpinning = false;
                 closeWheel();
             }, 1200);
         }, 4000);
     }
 
+    // لێرەوە فەنکشنەکانی تری کڕین و سەبەتە وەک خۆیانن...
     function shareSite() {
         if (navigator.share) {
             navigator.share({ title: "Boom's Pizza", text: "خۆشترین پیتزا لێرە داوا بکە و داشکاندن بەرە! 🔥", url: window.location.href });
