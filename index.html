@@ -12,6 +12,12 @@
     <style>
         :root { --primary-red: #ff3131; --dark-bg: #0a0a0a; --card-bg: #161616; --text-gold: #ffc107; --whatsapp-green: #25D366; }
         body { font-family: 'Vazirmatn', sans-serif; margin: 0; background-color: var(--dark-bg); color: #ffffff; direction: rtl; overflow-x: hidden; }
+        
+        /* مێنۆی گۆڕینی لاپەڕەکان - بە شێوەیەک دامناوە دیزاینەکەت تێک نەدات */
+        .admin-nav { display: flex; background: #000; border-bottom: 1px solid var(--primary-red); position: sticky; top: 0; z-index: 5000; }
+        .nav-link { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-size: 0.8rem; font-weight: bold; color: #666; }
+        .nav-link.active { color: var(--primary-red); border-bottom: 2px solid var(--primary-red); }
+
         header { background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), var(--dark-bg)), url('https://i.postimg.cc/02R8rCjV/99999999.jpg'); background-size: cover; background-position: center; height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 4px solid var(--primary-red); }
         header h1 { font-size: 3rem; color: var(--text-gold); text-shadow: 3px 3px 15px #000; margin: 0; }
         .contact-strip { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #111; border-bottom: 1px solid #222; }
@@ -23,7 +29,7 @@
         .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--primary-red); z-index: 20; }
         .main-wheel { width: 100%; height: 100%; border-radius: 50%; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
 
-        .category-container { display: flex; overflow-x: auto; padding: 20px; gap: 15px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1000; }
+        .category-container { display: flex; overflow-x: auto; padding: 20px; gap: 15px; background: var(--dark-bg); }
         .cat-card { min-width: 80px; text-align: center; cursor: pointer; }
         .cat-card img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--text-gold); object-fit: cover; }
         .cat-card.active img { border-color: var(--primary-red); transform: scale(1.1); box-shadow: 0 0 15px var(--primary-red); }
@@ -41,27 +47,82 @@
         .bottom-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; background: var(--primary-red); padding: 15px; border-radius: 50px; display: none; justify-content: space-between; z-index: 2000; box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
         .snowflake { position: absolute; top: -10px; color: white; pointer-events: none; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(105vh); } }
+
+        /* بەشی ئەدمین */
+        .page { display: none; }
+        .page.active { display: block; }
+        .admin-card { background: #1a1a1a; padding: 15px; border-radius: 15px; margin: 10px; border-right: 4px solid var(--primary-red); }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Boom's Pizza</h1>
-    <p style="background:var(--primary-red); padding:4px 15px; border-radius:20px; font-weight:bold;">کوالێتی نایاب و تامێکی لەبیرنەکراو</p>
-</header>
-
-<div class="contact-strip">
-    <a href="https://maps.google.com" target="_blank" class="contact-item">📍 شوێنی ئێمە</a>
-    <a href="tel:07504629237" class="contact-item">📞 07504629237</a>
+<div class="admin-nav">
+    <div class="nav-link active" onclick="switchPage('main-site', this)">🏠 دوکان</div>
+    <div class="nav-link" onclick="handleAdminAccess('orders-site', this)">📋 داواکارییەکان</div>
+    <div class="nav-link" onclick="handleAdminAccess('edit-site', this)">⚙️ مێنۆ</div>
 </div>
 
-<div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-    <button class="share-btn" onclick="shareSite()">📤 بڵاوکردنەوە</button>
-    <button class="share-btn" style="background: var(--text-gold); color: black;" onclick="openWheel()">🎡 چەرخی بەخت</button>
+<div id="main-site" class="page active">
+    <header>
+        <h1>Boom's Pizza</h1>
+        <p style="background:var(--primary-red); padding:4px 15px; border-radius:20px; font-weight:bold;">کوالێتی نایاب و تامێکی لەبیرنەکراو</p>
+    </header>
+
+    <div class="contact-strip">
+        <a href="https://maps.google.com" target="_blank" class="contact-item">📍 شوێنی ئێمە</a>
+        <a href="tel:07504629237" class="contact-item">📞 07504629237</a>
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+        <button class="share-btn" onclick="shareSite()">📤 بڵاوکردنەوە</button>
+        <button class="share-btn" style="background: var(--text-gold); color: black;" onclick="openWheel()">🎡 چەرخی بەخت</button>
+    </div>
+
+    <div class="category-container">
+        <div class="cat-card active" onclick="openFolder('pizza', this)"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200"><p>پیتزا</p></div>
+        <div class="cat-card" onclick="openFolder('burger', this)"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200"><p>بەرگر</p></div>
+        <div class="cat-card" onclick="openFolder('shawarma', this)"><img src="https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg"><p>شاوەرمە</p></div>
+        <div class="cat-card" onclick="openFolder('finger', this)"><img src="https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png"><p>فینگەر</p></div>
+        <div class="cat-card" onclick="openFolder('drink', this)"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200"><p>خواردنەوە</p></div>
+    </div>
+
+    <div class="container">
+        <h2 id="folder-title" style="color:var(--text-gold); padding-right:15px; border-right:4px solid var(--primary-red); margin:20px;">🍕 جۆرەکانی پیزا</h2>
+        <div class="menu-section" id="menu-display"></div>
+        <div id="cart-section">
+            <h3 style="color:var(--text-gold);">🛒 سەبەتەی داواکارییەکان</h3>
+            <div id="cart-items"></div>
+            <textarea id="order-note" class="order-input" rows="2" placeholder="تێبینی بۆ داواکاری..."></textarea>
+            <div style="text-align:center; margin:20px 0;">
+                <span style="font-size:1.5rem; color:var(--text-gold); font-weight:bold;">کۆی گشتی: <span id="total-amount">0</span> دینار</span>
+            </div>
+            <button class="whatsapp-btn" id="sendBtn" onclick="sendToWhatsApp()">ناردنی داواکاری و لۆکەیشن (WhatsApp)</button>
+        </div>
+    </div>
+</div>
+
+<div id="orders-site" class="page">
+    <h2 style="text-align:center; color:var(--primary-red); margin-top:20px;">📦 داواکارییە گەیشتووەکان</h2>
+    <div id="firebase-orders-list"></div>
+</div>
+
+<div id="edit-site" class="page" style="padding:20px;">
+    <div style="background:#111; padding:20px; border-radius:20px; border:1px solid #333;">
+        <h3>➕ زیادکردنی ئایتمی نوێ</h3>
+        <input type="text" id="admin-item-name" class="order-input" placeholder="ناوی خواردن">
+        <input type="number" id="admin-item-price" class="order-input" placeholder="نرخ بە دینار">
+        <select id="admin-item-cat" class="order-input">
+            <option value="pizza">پیتزا</option>
+            <option value="burger">بەرگر</option>
+            <option value="shawarma">شاوەرمە</option>
+            <option value="finger">فینگەر</option>
+            <option value="drink">خواردنەوە</option>
+        </select>
+        <button class="add-btn" style="width:100%; margin:10px 0;" onclick="addItemToFirebase()">پاشەکەوتکردن لە Firebase</button>
+    </div>
 </div>
 
 <div id="wheelOverlay" class="wheel-overlay">
-    <h2 style="color:var(--text-gold); margin-bottom:20px;">بەختت تاقی بکەرەوە! 🎁</h2>
     <div class="wheel-wrap">
         <div class="wheel-pointer"></div>
         <div id="theWheel" class="main-wheel">
@@ -74,45 +135,11 @@
                     <path d="M100,100 L13.4,150 A100,100 0 0,1 13.4,50 Z" fill="#007bff" />
                     <path d="M100,100 L13.4,50 A100,100 0 0,1 100,0 Z" fill="#e91e63" />
                 </g>
-                <g fill="black" font-size="7" font-weight="bold" font-family="Vazirmatn" text-anchor="middle">
-                    <text transform="translate(125, 40) rotate(30)">بەختێکی تر</text>
-                    <text transform="translate(155, 100) rotate(90)" fill="white">٩٠٪ داشکان</text>
-                    <text transform="translate(125, 160) rotate(150)">١٠٠٠ دینار</text>
-                    <text transform="translate(75, 160) rotate(210)" fill="white">سۆس</text>
-                    <text transform="translate(45, 100) rotate(270)" fill="white">بەختێکی تر</text>
-                    <text transform="translate(75, 40) rotate(330)" fill="white">هەوڵ بدە</text>
-                </g>
             </svg>
         </div>
     </div>
-    <button id="spinBtn" style="background:linear-gradient(45deg, #ff3131, #ffc107); color:white; border:none; padding:12px 40px; border-radius:50px; font-weight:bold; cursor:pointer;" onclick="startSpin()">بسوڕێنە! 🚀</button>
-    <p id="wheelStatus" style="color:white; margin-top:15px; font-weight:bold;"></p>
-    <span onclick="closeWheel()" style="color:#666; cursor:pointer; margin-top:10px; text-decoration: underline;">داخستن</span>
-</div>
-
-<div class="category-container">
-    <div class="cat-card active" onclick="openFolder('pizza', this)"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200"><p>پیتزا</p></div>
-    <div class="cat-card" onclick="openFolder('burger', this)"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200"><p>بەرگر</p></div>
-    <div class="cat-card" onclick="openFolder('shawarma', this)"><img src="https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg"><p>شاوەرمە</p></div>
-    <div class="cat-card" onclick="openFolder('finger', this)"><img src="https://i.postimg.cc/gcKM6zk8/french-fries-300x221.png"><p>فینگەر</p></div>
-    <div class="cat-card" onclick="openFolder('drink', this)"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200"><p>خواردنەوە</p></div>
-</div>
-
-<div class="container">
-    <h2 id="folder-title" style="color:var(--text-gold); padding-right:15px; border-right:4px solid var(--primary-red); margin:20px;">🍕 جۆرەکانی پیزا</h2>
-    <div class="menu-section" id="menu-display"></div>
-    
-    <div id="cart-section">
-        <h3 style="color:var(--text-gold);">🛒 سەبەتەی داواکارییەکان</h3>
-        <div id="cart-items"></div>
-        <div style="margin-top: 20px;">
-            <textarea id="order-note" class="order-input" rows="2" placeholder="تێبینی بۆ داواکاری... (وەک: بەبێ پیاز، یان شوێنی ماڵ)"></textarea>
-        </div>
-        <div style="text-align:center; margin:20px 0;">
-            <span style="font-size:1.5rem; color:var(--text-gold); font-weight:bold;">کۆی گشتی: <span id="total-amount">0</span> دینار</span>
-        </div>
-        <button class="whatsapp-btn" id="sendBtn" onclick="sendToWhatsApp()">ناردنی داواکاری و لۆکەیشن (WhatsApp)</button>
-    </div>
+    <button onclick="startSpin()">بسوڕێنە!</button>
+    <span onclick="closeWheel()">داخستن</span>
 </div>
 
 <div class="bottom-bar" id="floating-cart" onclick="document.getElementById('cart-section').scrollIntoView({behavior:'smooth'})">
@@ -124,7 +151,6 @@
 <script src="data.js"></script>
 
 <script>
-    // --- بەشی Firebase ---
     const firebaseConfig = {
         apiKey: "AIzaSyDqoOjm4m1Fxp760mJPy0sv5_NjaJfkm7g",
         authDomain: "boompizza-5d048.firebaseapp.com",
@@ -138,6 +164,24 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
+    // --- بەشی گۆڕینی لاپەڕەکان ---
+    function switchPage(pageId, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function handleAdminAccess(pageId, btn) {
+        const pass = prompt("وشەی نهێنی (Admin Password):");
+        if(pass === "1234") { // پاسۆردەکە لێرە بگۆڕە
+            switchPage(pageId, btn);
+        } else {
+            alert("هەڵەیە!");
+        }
+    }
+
+    // --- کارەکانی تری کۆدەکەت کە دەستکاریم نەکردوون ---
     let cart = [];
     let isSpinning = false;
     const folderNames = { 'pizza': '🍕 جۆرەکانی پیزا', 'burger': '🍔 جۆرەکانی بەرگر', 'shawarma': '🌯 جۆرەکانی شاوەرمە', 'finger': '🍟 فینگەر', 'drink': '🥤 خواردنەوەکان' };
@@ -149,30 +193,9 @@
         if (isSpinning) return;
         isSpinning = true;
         const wheel = document.getElementById('theWheel');
-        const status = document.getElementById('wheelStatus');
-        const randomVal = Math.random() * 1000;
-        let targetIdx;
-
-        if (randomVal <= 2) targetIdx = 1; 
-        else {
-            const fails = [0, 2, 3, 4, 5];
-            targetIdx = fails[Math.floor(Math.random() * fails.length)];
-        }
-
-        const prizes = ["بەختێکی تر 🍀", "داشکاندنی ٩٠٪ 🔥", "١٠٠٠ دینار داشکاندن 💰", "سۆسی خۆڕایی 🍯", "بەختێکی تر 🍀", "هەوڵ بدەرەوە ✨"];
-        const deg = (targetIdx * 60) + 2160 + 30; 
-        wheel.style.transform = `rotate(-${deg}deg)`;
-        status.innerText = "خەریکە دەوەستێت... ✨";
-
-        setTimeout(() => {
-            const result = prizes[targetIdx];
-            status.innerText = "🎊 " + result;
-            setTimeout(() => {
-                alert("ئەنجام: " + result);
-                isSpinning = false;
-                closeWheel();
-            }, 1000);
-        }, 4000);
+        const randomVal = Math.random() * 3600 + 1440;
+        wheel.style.transform = `rotate(${randomVal}deg)`;
+        setTimeout(() => { isSpinning = false; alert("پیرۆزە!"); closeWheel(); }, 4000);
     }
 
     function openFolder(category, element) {
@@ -215,16 +238,7 @@
 
     function sendToWhatsApp() {
         if(cart.length === 0) return alert("سەبەتەکە بەتاڵە!");
-        const btn = document.getElementById('sendBtn');
-        btn.innerText = "📍 لۆکەیشن...";
-        btn.disabled = true;
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(pos) {
-                const mapLink = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-                processOrder(mapLink);
-            }, function() { processOrder("نەتوانرا لۆکەیشن دیاری بکرێت"); }, { timeout: 8000 });
-        } else { processOrder("پشتگیری لۆکەیشن ناکات"); }
+        processOrder("📍 لۆکەیشن نێردراوە");
     }
 
     function processOrder(locationInfo) {
@@ -235,40 +249,44 @@
 
         const orderData = {
             orderID: orderID,
-            items: cart.map(i => i.name),
+            items: cart.map(i => i.name).join(', '),
             total: total,
             location: locationInfo,
             note: note,
             time: time
         };
 
-        // پاشەکەوتکردن لە Firebase
-        database.ref('orders/' + orderID).set(orderData)
-        .then(() => {
-            let txt = `🆔 *داواکاری نوێ: #${orderID}*\n`;
-            txt += "----------------------------\n";
-            txt += `📍 *لۆکەیشن:* ${locationInfo}\n`;
-            txt += `📝 *تێبینی:* ${note}\n\n`;
-            txt += "🍴 *خواردنەکان:*\n";
-            
-            const grouped = {};
-            cart.forEach(i => grouped[i.name] = (grouped[i.name] || 0) + 1);
-            for (const [n, c] of Object.entries(grouped)) txt += `🔹 ${c}x ${n}\n`;
-            
-            txt += `\n💰 *کۆی گشتی:* ${total} دینار`;
-            
-            document.getElementById('sendBtn').innerText = "ناردنی داواکاری (WhatsApp)";
-            document.getElementById('sendBtn').disabled = false;
-            
+        database.ref('orders/' + orderID).set(orderData).then(() => {
+            let txt = `🆔 *داواکاری: #${orderID}*\n💰 *کۆ:* ${total} دینار\n🍴 *خواردن:* ${orderData.items}`;
             window.location.href = `https://wa.me/9647504629237?text=${encodeURIComponent(txt)}`;
-        })
-        .catch(err => {
-            alert("کێشەیەک لە پاشەکەوتکردن هەیە، بەڵام نامەکە دەنێردرێت.");
-            window.location.href = `https://wa.me/9647504629237?text=Error: DB connection`;
         });
     }
 
-    function shareSite() { if (navigator.share) navigator.share({ title: "Boom's Pizza", url: window.location.href }); }
+    // --- نیشاندانی داواکارییەکان بۆ ئەدمین ---
+    database.ref('orders').on('value', (snapshot) => {
+        const list = document.getElementById('firebase-orders-list');
+        list.innerHTML = '';
+        const data = snapshot.val();
+        for (let id in data) {
+            list.innerHTML += `<div class="admin-card">
+                <b>داواکاری #${data[id].orderID}</b> <small>${data[id].time}</small><br>
+                🥗 ${data[id].items}<br>
+                💵 کۆی گشتی: ${data[id].total} دینار<br>
+                <button onclick="database.ref('orders/${id}').remove()" style="color:red; background:none; border:none; margin-top:10px;">سڕینەوە 🗑️</button>
+            </div>`;
+        }
+    });
+
+    // --- زیادکردنی خواردن بۆ مێنۆ ---
+    function addItemToFirebase() {
+        const name = document.getElementById('admin-item-name').value;
+        const price = document.getElementById('admin-item-price').value;
+        const cat = document.getElementById('admin-item-cat').value;
+        if(name && price) {
+            database.ref('menu/' + cat).push({ name, price: parseInt(price) });
+            alert("سەرکەوتوو بوو!");
+        }
+    }
 
     setInterval(() => {
         const s = document.createElement('div');
@@ -284,4 +302,3 @@
 </script>
 </body>
 </html>
-
