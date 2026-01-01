@@ -3,18 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لیستی داواکارییەکان</title>
+    <title>بەڕێوبەرایەتی داواکارییەکان</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
-        body { font-family: sans-serif; background-color: #0d0d0d; color: white; padding: 20px; direction: rtl; }
-        .card { background: #1a1a1a; padding: 15px; margin-bottom: 10px; border-radius: 10px; border-right: 5px solid red; }
-        h2 { color: red; text-align: center; }
+        :root { --main-red: #ff3131; --dark: #0f1012; --card: #1c1e22; --gold: #ffc107; }
+        body { font-family: 'Vazirmatn', sans-serif; background: var(--dark); color: #e1e1e1; margin: 0; padding-bottom: 50px; }
+        
+        .nav-bar { background: #161719; padding: 20px; text-align: center; border-bottom: 2px solid var(--main-red); position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .nav-bar h1 { margin: 0; font-size: 1.5rem; color: var(--main-red); font-weight: 800; text-transform: uppercase; }
+
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        
+        .order-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #2d3035; position: relative; overflow: hidden; animation: fadeIn 0.5s ease; }
+        .order-card::before { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 6px; background: var(--main-red); }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .id-badge { background: #2d3035; padding: 4px 12px; border-radius: 50px; font-size: 0.8rem; color: var(--gold); font-weight: bold; }
+        .time-text { font-size: 0.75rem; color: #888; }
+
+        .items-list { background: #25282c; padding: 12px; border-radius: 12px; margin: 10px 0; border: 1px solid #363a40; line-height: 1.8; }
+        .items-list b { color: #fff; }
+
+        .customer-box { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #2d3035; }
+        .phone-btn { color: #25D366; text-decoration: none; font-weight: bold; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        .total-price { font-size: 1.1rem; font-weight: 800; color: #fff; }
+        
+        .note-area { background: rgba(255, 193, 7, 0.1); border: 1px dashed var(--gold); color: var(--gold); padding: 10px; border-radius: 10px; font-size: 0.85rem; margin-top: 10px; }
+        
+        .stats { display: flex; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--card); flex: 1; padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #2d3035; }
+        .stat-card span { display: block; font-size: 0.8rem; color: #888; }
+        .stat-card b { font-size: 1.2rem; color: var(--main-red); }
     </style>
 </head>
 <body>
-    <h2>📦 داواکارییەکان</h2>
-    <div id="list">چاوەڕوان بە...</div>
+
+    <div class="nav-bar">
+        <h1>📦 BOOM'S ORDERS</h1>
+    </div>
+
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card"><span>داواکاری کۆی گشتی</span><b id="count">0</b></div>
+            <div class="stat-card"><span>کۆی فرۆش</span><b id="sum">0</b></div>
+        </div>
+        
+        <div id="orders-list"></div>
+    </div>
 
     <script>
         const firebaseConfig = {
@@ -26,24 +65,55 @@
             messagingSenderId: "636068289590",
             appId: "1:636068289590:web:41fe758906140c700ecc97"
         };
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
         db.ref('orders').on('value', (snapshot) => {
-            const listDiv = document.getElementById('list');
-            listDiv.innerHTML = '';
+            const listDiv = document.getElementById('orders-list');
             const data = snapshot.val();
+            listDiv.innerHTML = '';
+            
+            let totalSum = 0;
+            let count = 0;
+
             if (data) {
-                Object.keys(data).reverse().forEach(key => {
+                const keys = Object.keys(data).reverse();
+                count = keys.length;
+                
+                keys.forEach(key => {
                     const o = data[key];
+                    // چاککردنی نرخی نادیار
+                    let priceValue = o.total ? o.total.toString().replace(/[^0-9]/g, '') : 0;
+                    totalSum += parseInt(priceValue) || 0;
+
                     listDiv.innerHTML += `
-                        <div class="card">
-                            <p>🆔 #${o.id} - ⏰ ${o.time || ''}</p>
-                            <p>🍴 ${o.items}</p>
-                            <p>📞 ${o.phone} | 💰 ${o.total} د.ع</p>
-                        </div>`;
+                        <div class="order-card">
+                            <div class="order-header">
+                                <span class="id-badge">#${o.id || 'N/A'}</span>
+                                <span class="time-text">${o.time || 'نادیار'}</span>
+                            </div>
+                            
+                            <div class="items-list">
+                                <b>🍴 خواردنەکان:</b><br>
+                                ${Array.isArray(o.items) ? o.items.join(' + ') : (o.items || 'نادیار')}
+                            </div>
+
+                            ${o.note && o.note !== 'نییە' ? `<div class="note-area">📝 <b>تێبینی:</b> ${o.note}</div>` : ''}
+
+                            <div class="customer-box">
+                                <a href="tel:${o.phone}" class="phone-btn">📞 ${o.phone || 'بی ژمارە'}</a>
+                                <div class="total-price">${o.total || '0'} <small style="font-size:0.6rem">IQD</small></div>
+                            </div>
+                        </div>
+                    `;
                 });
-            } else { listDiv.innerHTML = 'هیچ داواکارییەک نییە.'; }
+            } else {
+                listDiv.innerHTML = '<div style="text-align:center; padding:50px; color:#555;">هیچ داواکارییەک نییە</div>';
+            }
+            
+            document.getElementById('count').innerText = count;
+            document.getElementById('sum').innerText = totalSum.toLocaleString() + " د.ع";
         });
     </script>
 </body>
