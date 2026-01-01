@@ -10,40 +10,14 @@
         body { font-family: 'Vazirmatn', sans-serif; margin: 0; background-color: var(--dark-bg); color: #ffffff; direction: rtl; overflow-x: hidden; }
         header { background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), var(--dark-bg)), url('https://i.postimg.cc/02R8rCjV/99999999.jpg'); background-size: cover; background-position: center; height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 4px solid var(--primary-red); }
         header h1 { font-size: 3rem; color: var(--text-gold); text-shadow: 3px 3px 15px #000; margin: 0; }
-        
-        /* شریتی پەیوەندی و لۆکەیشن */
         .contact-strip { display: flex; justify-content: center; gap: 10px; padding: 10px; background: #111; border-bottom: 1px solid #222; }
         .contact-item { display: flex; align-items: center; gap: 5px; background: #222; color: white; padding: 7px 15px; border-radius: 50px; text-decoration: none; font-size: 0.85rem; border: 1px solid #333; }
-
-        .share-btn {
-            background: #007bff; color: white; border: none; padding: 10px 20px; 
-            border-radius: 50px; font-weight: bold; cursor: pointer; 
-            display: flex; align-items: center; gap: 8px; margin: 15px auto;
-            font-family: 'Vazirmatn'; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,123,255,0.3);
-        }
-
-        .wheel-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 5000; display: none;
-            justify-content: center; align-items: center; flex-direction: column;
-        }
+        .share-btn { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 15px auto; font-family: 'Vazirmatn'; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,123,255,0.3); }
+        .wheel-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 5000; display: none; justify-content: center; align-items: center; flex-direction: column; }
         .wheel-wrap { position: relative; width: 280px; height: 280px; margin-bottom: 20px; border: 5px solid #333; border-radius: 50%; }
-        .wheel-pointer {
-            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0; border-left: 15px solid transparent;
-            border-right: 15px solid transparent; border-top: 30px solid var(--primary-red); z-index: 20;
-        }
-        .main-wheel {
-            width: 100%; height: 100%; border-radius: 50%;
-            background: conic-gradient(#ff3131 0deg 60deg, #ffc107 60deg 120deg, #25D366 120deg 180deg, #007bff 180deg 240deg, #e91e63 240deg 300deg, #ffffff 300deg 360deg);
-            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
-        }
-        .spin-btn-main {
-            background: linear-gradient(45deg, var(--primary-red), var(--text-gold));
-            color: white; border: none; padding: 12px 30px; border-radius: 50px;
-            font-weight: bold; cursor: pointer; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(255,49,49,0.4);
-        }
-
+        .wheel-pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--primary-red); z-index: 20; }
+        .main-wheel { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(#ff3131 0deg 60deg, #ffc107 60deg 120deg, #25D366 120deg 180deg, #007bff 180deg 240deg, #e91e63 240deg 300deg, #ffffff 300deg 360deg); transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
+        .spin-btn-main { background: linear-gradient(45deg, var(--primary-red), var(--text-gold)); color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(255,49,49,0.4); }
         .category-container { display: flex; overflow-x: auto; padding: 20px; gap: 15px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1000; }
         .cat-card { min-width: 80px; text-align: center; cursor: pointer; }
         .cat-card img { width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--text-gold); object-fit: cover; }
@@ -54,7 +28,11 @@
         .item-info { padding: 10px; text-align: center; }
         .add-btn { background: var(--primary-red); color: #fff; border: none; padding: 10px; border-radius: 12px; font-weight: bold; margin: 10px; cursor: pointer; }
         #cart-section { background: #111; border-radius: 25px; padding: 20px; margin: 30px 15px 100px; border: 2px solid #222; }
-        .whatsapp-btn { background: var(--whatsapp-green); color: white; padding: 18px; border-radius: 50px; width: 100%; border: none; font-weight: bold; font-family: 'Vazirmatn'; cursor: pointer; }
+        
+        /* ستایلی خانەی نوێ */
+        .order-input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 10px; border: 1px solid #333; background: #222; color: white; font-family: 'Vazirmatn'; box-sizing: border-box; }
+        
+        .whatsapp-btn { background: var(--whatsapp-green); color: white; padding: 18px; border-radius: 50px; width: 100%; border: none; font-weight: bold; font-family: 'Vazirmatn'; cursor: pointer; margin-top: 15px; }
         .bottom-bar { position: fixed; bottom: 20px; left: 20px; right: 20px; background: var(--primary-red); padding: 15px; border-radius: 50px; display: none; justify-content: space-between; z-index: 2000; box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
         .snowflake { position: absolute; top: -10px; color: white; pointer-events: none; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(105vh); } }
@@ -70,7 +48,7 @@
 </header>
 
 <div class="contact-strip">
-    <a href="https://www.google.com/maps" target="_blank" class="contact-item">📍 شوێنی ئێمە</a>
+    <a href="https://maps.google.com" target="_blank" class="contact-item">📍 شوێنی ئێمە</a>
     <a href="tel:07504629237" class="contact-item">📞 07504629237</a>
 </div>
 
@@ -104,6 +82,12 @@
     <div id="cart-section">
         <h3 style="color:var(--text-gold);">🛒 سەبەتەی داواکارییەکان</h3>
         <div id="cart-items"></div>
+        
+        <div style="margin-top: 20px;">
+            <input type="tel" id="user-phone" class="order-input" placeholder="ژمارەی مۆبایلت بنووسە...">
+            <textarea id="order-note" class="order-input" rows="2" placeholder="تێبینی بۆ داواکارییەکەت (پیاز مەکە، شوێنی ماڵ، هتد...)"></textarea>
+        </div>
+
         <div style="text-align:center; margin:20px 0;">
             <span style="font-size:1.5rem; color:var(--text-gold); font-weight:bold;">کۆی گشتی: <span id="total-amount">0</span> دینار</span>
         </div>
@@ -204,9 +188,11 @@
         renderCart();
     }
 
-    // فەنکشنەکە گۆڕدرا بۆ ناردنی ئۆتۆماتیکی لۆکەیشن
     function sendToWhatsApp() {
         if(cart.length === 0) return alert("سەبەتەکە بەتاڵە!");
+        
+        const phone = document.getElementById('user-phone').value;
+        if(!phone) return alert("تکایە ژمارەی مۆبایلەکەت بنووسە بۆ ئەوەی پەیوەندیت پێوە بکەین.");
 
         const btn = document.getElementById('sendBtn');
         btn.innerText = "📍 چاوەڕێ بکە... دۆزینەوەی شوێن";
@@ -214,14 +200,10 @@
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                // لینکی ستاندارد بۆ هەردوو سیستمەکە
-                const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
+                const mapLink = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
                 processOrder(mapLink);
             }, function() {
-                // ئەگەر کڕیار لۆکەیشنی داخستبوو
-                processOrder("لۆکەیشن دیاری نەکراوە (داخراوە)");
+                processOrder("لۆکەیشن دیاری نەکراوە");
             }, { enableHighAccuracy: true, timeout: 8000 });
         } else {
             processOrder("مۆبایلەکە پشتگیری لۆکەیشن ناکات");
@@ -230,11 +212,16 @@
 
     function processOrder(locationInfo) {
         const btn = document.getElementById('sendBtn');
+        const phone = document.getElementById('user-phone').value;
+        const note = document.getElementById('order-note').value || "تێبینی نییە";
+        
         btn.innerText = "ناردنی داواکاری و لۆکەیشن (WhatsApp)";
         btn.disabled = false;
 
         let txt = "📦 *داواکاری نوێ:*\n\n";
-        txt += `📍 *لۆکەیشن:* ${locationInfo}\n\n`;
+        txt += `👤 *مۆبایل:* ${phone}\n`;
+        txt += `📍 *لۆکەیشن:* ${locationInfo}\n`;
+        txt += `📝 *تێبینی:* ${note}\n\n`;
         txt += "🍴 *خواردنەکان:*\n";
         
         const grouped = {};
