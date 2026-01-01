@@ -3,45 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print Orders - Boom Pizza</title>
+    <title>Boom Pizza - Orders</title>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <style>
-        :root { --accent: #ff3131; --bg: #0a0b0d; --card: #16181d; }
+        :root { --accent: #ff3131; --bg: #0a0b0d; --card: #16181d; --gold: #ffc107; }
         body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; }
-        .header { text-align: center; padding: 10px; border-bottom: 2px solid var(--accent); margin-bottom: 20px; }
-        .order-card { background: var(--card); border-radius: 15px; padding: 20px; margin-bottom: 20px; border: 1px solid #25282e; }
-        .id-badge { color: #ffc107; font-weight: 900; font-size: 1.2rem; }
-        .items-box { background: #1f2229; padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px solid #333; }
-        .btn-print { background: #ffffff; color: #000; padding: 10px 20px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
         
-        /* شێوازی وەسڵەکە کاتی چاپکردن */
+        .header { text-align: center; padding: 15px; border-bottom: 2px solid var(--accent); margin-bottom: 20px; }
+        .order-card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #25282e; position: relative; animation: slideIn 0.5s ease; }
+        
+        /* ئایکۆنی نوێ بۆ ماوەی ٥ خولەک */
+        .new-badge { 
+            position: absolute; top: -10px; left: -10px; 
+            background: var(--accent); color: white; padding: 5px 15px; 
+            border-radius: 50px; font-weight: 900; font-size: 0.8rem;
+            box-shadow: 0 0 15px var(--accent); animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .id-badge { color: var(--gold); font-weight: 900; font-size: 1.2rem; }
+        .items-box { background: #1f2229; padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid #333; }
+        .btn-print { background: white; color: black; padding: 12px; border-radius: 10px; border: none; font-weight: bold; width: 100%; cursor: pointer; }
+
+        /* بەشی وەسڵ بۆ چاپکردن */
         #print-area { display: none; }
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
-            #print-area {
-                display: block !important;
-                position: absolute;
-                left: 0; top: 0; width: 100%;
-                color: black !important;
-                background: white !important;
-                padding: 10px;
-                font-size: 14px;
-            }
-            .receipt-title { text-align: center; font-size: 22px; font-weight: 900; margin-bottom: 5px; }
-            .receipt-id { text-align: center; font-size: 18px; border: 2px solid black; padding: 5px; margin: 10px 0; }
-            .line { border-bottom: 1px dashed black; margin: 10px 0; }
+            #print-area { display: block !important; position: absolute; left: 0; top: 0; width: 100%; color: black; background: white; padding: 20px; }
+            .r-head { text-align: center; font-size: 24px; font-weight: 900; border-bottom: 2px solid black; padding-bottom: 10px; }
+            .r-id { font-size: 20px; font-weight: 900; text-align: center; margin: 15px 0; border: 1px solid black; }
         }
     </style>
 </head>
 <body>
 
-    <div class="header"><h1>🍕 بەڕێوبەرایەتی داواکارییەکان</h1></div>
+    <div class="header"><h1>🍕 داواکارییەکانی بوم پیتزا</h1></div>
     <div id="list">چاوەڕوان بە...</div>
-
     <div id="print-area"></div>
+
+    <audio id="order-sound" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
 
     <script>
         const firebaseConfig = {
@@ -56,23 +61,20 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // فەنکشنی چاپکردنی تەنها یەک دانە
+        let lastOrderCount = -1;
+
         function doPrint(id, items, total, phone, time, note) {
-            const printArea = document.getElementById('print-area');
-            printArea.innerHTML = `
-                <div class="receipt-title">BOOM PIZZA</div>
-                <div style="text-align:center">بەخێربێیت بۆ بوم پیتزا</div>
-                <div class="receipt-id">ژمارەی داواکاری: #${id}</div>
-                <div class="line"></div>
-                <div><b>کات:</b> ${time}</div>
-                <div><b>مۆبایل:</b> ${phone}</div>
-                <div class="line"></div>
-                <div style="min-height: 50px;"><b>داواکاری:</b><br> ${items}</div>
-                <div class="line"></div>
-                ${note !== 'نییە' ? `<div><b>تێبینی:</b> ${note}</div><div class="line"></div>` : ''}
-                <div style="font-size: 18px; font-weight: bold; text-align: left;">کۆی گشتی: ${total} دینار</div>
-                <div class="line" style="border-bottom-style: solid;"></div>
-                <div style="text-align:center; font-size: 10px; margin-top: 10px;">سوپاس بۆ هەڵبژاردنی ئێمە</div>
+            const area = document.getElementById('print-area');
+            area.innerHTML = `
+                <div class="r-head">BOOM PIZZA</div>
+                <div class="r-id">داواکاری #${id}</div>
+                <p><b>کات:</b> ${time}</p>
+                <p><b>مۆبایل:</b> ${phone}</p>
+                <hr>
+                <p><b>داواکاری:</b><br>${items}</p>
+                ${note !== 'نییە' ? `<p><b>تێبینی:</b> ${note}</p>` : ''}
+                <hr>
+                <h3 style="text-align:left">کۆی گشتی: ${total} د.ع</h3>
             `;
             window.print();
         }
@@ -81,20 +83,39 @@
             const listDiv = document.getElementById('list');
             const data = snapshot.val();
             listDiv.innerHTML = '';
-
+            
             if (data) {
-                Object.keys(data).reverse().forEach(key => {
+                const keys = Object.keys(data);
+                
+                // لێدانی دەنگ ئەگەر داواکاری نوێ هات
+                if (lastOrderCount !== -1 && keys.length > lastOrderCount) {
+                    document.getElementById('order-sound').play().catch(e => console.log("دەنگ کارناکات تا کلیک نەکەیت"));
+                }
+                lastOrderCount = keys.length;
+
+                // ڕیزکردن: نوێترین لە سەرەوە
+                keys.reverse().forEach(key => {
                     const o = data[key];
                     const itemsStr = Array.isArray(o.items) ? o.items.join(' + ') : o.items;
+                    
+                    // لۆجیکی ئایکۆنی "New" بۆ ماوەی ٥ خولەک
+                    let isNew = false;
+                    if(o.time) {
+                        const orderTime = new Date(o.time).getTime();
+                        const now = new Date().getTime();
+                        if (now - orderTime < 5 * 60 * 1000) isNew = true;
+                    }
+
                     listDiv.innerHTML += `
                         <div class="order-card">
+                            ${isNew ? '<div class="new-badge">NEW ✨</div>' : ''}
                             <div style="display:flex; justify-content:space-between">
                                 <span class="id-badge">#${o.id}</span>
                                 <small style="color:#888">${o.time || ''}</small>
                             </div>
-                            <div class="items-box"><b>خواردنەکان:</b><br> ${itemsStr}</div>
+                            <div class="items-box"><b>داواکاری:</b><br> ${itemsStr}</div>
                             <div style="margin-bottom:15px">💰 کۆ: <b>${o.total}</b> | 📱 ${o.phone}</div>
-                            <button class="btn-print" onclick="doPrint('${o.id}', '${itemsStr}', '${o.total}', '${o.phone}', '${o.time}', '${o.note}')">چاپکردنی ئەم وەسڵە 🖨️</button>
+                            <button class="btn-print" onclick="doPrint('${o.id}', '${itemsStr}', '${o.total}', '${o.phone}', '${o.time}', '${o.note}')">چاپکردنی وەسڵ 🖨️</button>
                         </div>
                     `;
                 });
