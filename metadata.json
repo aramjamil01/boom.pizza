@@ -1,0 +1,8 @@
+
+{
+  "name": "Boom's Pizza Kurdish",
+  "description": "A premium pizza ordering application localized in Kurdish with a lucky wheel, cart management, and admin dashboard.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

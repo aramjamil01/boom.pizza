@@ -12,6 +12,8 @@
             background-color: #0a0a0a;
             color: #ffffff;
             overflow-x: hidden;
+            margin: 0;
+            padding: 0;
         }
         ::-webkit-scrollbar {
             width: 6px;
@@ -37,31 +39,37 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        .lucky-wheel-canvas {
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+        }
     </style>
     <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@18.2.0",
-    "react-dom": "https://esm.sh/react-dom@18.2.0/client",
-    "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-    "firebase/database": "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js",
-    "lucide-react": "https://esm.sh/lucide-react@0.344.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "firebase/": "https://esm.sh/firebase@^12.7.0/"
-  }
-}
-</script>
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom": "https://esm.sh/react-dom@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+            "firebase/database": "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js",
+            "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
+            "htm": "https://esm.sh/htm@3.1.1"
+        }
+    }
+    </script>
+<link rel="stylesheet" href="/index.css">
 </head>
 <body>
     <div id="root"></div>
 
     <script type="module">
-        import React, { useState, useEffect, useRef, useCallback } from 'react';
-        import ReactDOM from 'react-dom';
+        import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+        import { createRoot } from 'react-dom/client';
         import { initializeApp } from 'firebase/app';
         import { getDatabase, ref, onValue, push, set, update, remove, query, orderByChild, equalTo } from 'firebase/database';
         import * as Lucide from 'lucide-react';
+        import htm from 'htm';
+
+        const html = htm.bind(React.createElement);
 
         // --- Firebase Setup ---
         const firebaseConfig = {
@@ -76,6 +84,12 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // --- Icon Component Proxy ---
+        const Icon = ({ name, ...props }) => {
+            const LucideIcon = Lucide[name];
+            return LucideIcon ? html`<${LucideIcon} ...${props} />` : null;
+        };
+
         // --- Components ---
 
         const LuckyWheel = ({ onWin, onClose }) => {
@@ -83,13 +97,13 @@
             const canvasRef = useRef(null);
             const [rotation, setRotation] = useState(0);
 
-            const PRIZES = [
+            const PRIZES = useMemo(() => [
                 { label: "%5 داشکان", color: "#ff3131", prob: 60 },
                 { label: "کۆلای بەلاش", color: "#ffc107", prob: 20 },
                 { label: "%10 داشکان", color: "#161616", prob: 10 },
                 { label: "بوم پیتزا", color: "#25D366", prob: 5 },
                 { label: "دیاری تایبەت", color: "#444444", prob: 5 }
-            ];
+            ], []);
 
             useEffect(() => {
                 const canvas = canvasRef.current;
@@ -117,7 +131,7 @@
                     ctx.fillText(p.label, 150, 5);
                     ctx.restore();
                 });
-            }, []);
+            }, [PRIZES]);
 
             const spin = () => {
                 if (isSpinning) return;
@@ -147,25 +161,29 @@
                 }, 5000);
             };
 
-            return React.createElement('div', { className: "fixed inset-0 z-[6000] bg-black/90 flex flex-col items-center justify-center p-4" },
-                React.createElement('button', { onClick: onClose, className: "absolute top-6 right-6 text-white text-3xl hover:text-red-500 transition-colors" }, "✕"),
-                React.createElement('div', { className: "relative mb-8" },
-                    React.createElement('div', { className: "absolute top-[-15px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[30px] border-t-red-500 z-10 drop-shadow-lg" }),
-                    React.createElement('canvas', {
-                        ref: canvasRef,
-                        width: "350",
-                        height: "350",
-                        className: "rounded-full border-[8px] border-[#333] shadow-2xl transition-transform duration-[5000ms]",
-                        style: { transitionTimingFunction: 'cubic-bezier(0.15, 0, 0.15, 1)', transform: `rotate(${rotation}deg)` }
-                    })
-                ),
-                React.createElement('button', {
-                    onClick: spin,
-                    disabled: isSpinning,
-                    className: `px-12 py-4 rounded-full font-bold text-xl text-white transition-all ${isSpinning ? 'bg-gray-600' : 'bg-[#ff3131] hover:scale-110 shadow-lg shadow-red-500/20'}`
-                }, isSpinning ? 'دەسوڕێتەوە...' : 'بسوڕێنە! 🎰'),
-                React.createElement('p', { className: "mt-6 text-gray-400 text-sm" }, "بەختی خۆت تاقی بکەرەوە بۆ بەدەستهێنانی خەڵاتی شایستە!")
-            );
+            return html`
+                <div className="fixed inset-0 z-[6000] bg-black/90 flex flex-col items-center justify-center p-4">
+                    <button onClick=${onClose} className="absolute top-6 right-6 text-white text-3xl hover:text-red-500 transition-colors">✕</button>
+                    <div className="relative mb-8">
+                        <div className="absolute top-[-15px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[30px] border-t-red-500 z-10 drop-shadow-lg"></div>
+                        <canvas 
+                            ref=${canvasRef} 
+                            width="350" 
+                            height="350" 
+                            className="rounded-full border-[8px] border-[#333] shadow-2xl transition-transform duration-[5000ms] lucky-wheel-canvas"
+                            style=${{ transitionTimingFunction: 'cubic-bezier(0.15, 0, 0.15, 1)', transform: `rotate(${rotation}deg)` }}
+                        />
+                    </div>
+                    <button
+                        onClick=${spin}
+                        disabled=${isSpinning}
+                        className=${`px-12 py-4 rounded-full font-bold text-xl text-white transition-all ${isSpinning ? 'bg-gray-600' : 'bg-[#ff3131] hover:scale-110 shadow-lg shadow-red-500/20'}`}
+                    >
+                        ${isSpinning ? 'دەسوڕێتەوە...' : 'بسوڕێنە! 🎰'}
+                    </button>
+                    <p className="mt-6 text-gray-400 text-sm">بەختی خۆت تاقی بکەرەوە بۆ بەدەستهێنانی خەڵاتی شایستە!</p>
+                </div>
+            `;
         };
 
         const AdminPanel = () => {
@@ -190,75 +208,98 @@
             const handleSaveItem = async (e) => {
                 e.preventDefault();
                 if (!editingItem.name || !editingItem.price) return alert("تکایە هەموو خانەکان پڕبکەرەوە");
-                if (editingItem.id) {
-                    const { id, ...data } = editingItem;
-                    await update(ref(db, `menu_items/${id}`), data);
-                } else {
-                    await push(ref(db, 'menu_items'), editingItem);
+                try {
+                    if (editingItem.id) {
+                        const { id, ...data } = editingItem;
+                        await update(ref(db, `menu_items/${id}`), data);
+                    } else {
+                        await push(ref(db, 'menu_items'), editingItem);
+                    }
+                    setEditingItem({ name: '', price: 0, discount: 0, img: '', category: 'pizza' });
+                } catch (err) {
+                    alert("هەڵە ڕوویدا لە پاشەکەوتکردن");
                 }
-                setEditingItem({ name: '', price: 0, discount: 0, img: '', category: 'pizza' });
             };
 
-            const handleEdit = (item) => {
-                setEditingItem(item);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            };
+            return html`
+                <div className="p-4 max-w-5xl mx-auto pb-24">
+                    <div className="flex gap-4 mb-8 bg-zinc-900 p-2 rounded-xl border border-zinc-800">
+                        <button onClick=${() => setActiveTab('orders')} className=${`flex-1 py-3 rounded-lg font-bold transition-all ${activeTab === 'orders' ? 'bg-[#ff3131] text-white shadow-lg' : 'text-zinc-400 hover:bg-zinc-800'}`}>📥 داواکارییەکان (${orders.length})</button>
+                        <button onClick=${() => setActiveTab('items')} className=${`flex-1 py-3 rounded-lg font-bold transition-all ${activeTab === 'items' ? 'bg-[#ff3131] text-white shadow-lg' : 'text-zinc-400 hover:bg-zinc-800'}`}>⚙️ دەستکاری مێنۆ</button>
+                    </div>
 
-            return React.createElement('div', { className: "p-4 max-w-5xl mx-auto pb-24" },
-                React.createElement('div', { className: "flex gap-4 mb-8 bg-zinc-900 p-2 rounded-xl border border-zinc-800" },
-                    React.createElement('button', { onClick: () => setActiveTab('orders'), className: `flex-1 py-3 rounded-lg font-bold transition-all ${activeTab === 'orders' ? 'bg-[#ff3131] text-white shadow-lg' : 'text-zinc-400 hover:bg-zinc-800'}` }, `📥 داواکارییەکان (${orders.length})`),
-                    React.createElement('button', { onClick: () => setActiveTab('items'), className: `flex-1 py-3 rounded-lg font-bold transition-all ${activeTab === 'items' ? 'bg-[#ff3131] text-white shadow-lg' : 'text-zinc-400 hover:bg-zinc-800'}` }, "⚙️ دەستکاری مێنۆ")
-                ),
-                activeTab === 'orders' ? React.createElement('div', { className: "space-y-4" },
-                    React.createElement('h2', { className: "text-2xl font-bold mb-4 text-[#ffc107]" }, "لیستی داواکارییەکان"),
-                    orders.length === 0 ? React.createElement('div', { className: "text-center py-20 text-zinc-500" }, "هیچ داواکارییەک نییە") :
-                    orders.map(o => React.createElement('div', { key: o.id, className: "bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-xl mb-4" },
-                        React.createElement('div', { className: "flex justify-between items-start mb-4" },
-                            React.createElement('div', null,
-                                React.createElement('span', { className: "text-[#ff3131] font-bold text-lg ml-2" }, `🆔 #${o.orderID}`),
-                                React.createElement('span', { className: "text-zinc-500 text-sm" }, `⏰ ${o.time}`)
-                            ),
-                            React.createElement('button', { onClick: () => remove(ref(db, `orders/${o.id}`)), className: "p-2 text-zinc-500 hover:text-green-500 transition-colors" }, React.createElement(Lucide.CheckCircle, { size: 24 }))
-                        ),
-                        React.createElement('div', { className: "space-y-2 text-zinc-300" },
-                            React.createElement('p', null, React.createElement('span', { className: "text-zinc-500" }, "خواردنەکان: "), React.createElement('span', { className: "font-bold text-white" }, o.items)),
-                            React.createElement('p', null, React.createElement('span', { className: "text-zinc-500" }, "کۆی گشتی: "), React.createElement('span', { className: "text-[#ffc107] font-bold" }, `${o.total} د.ع`)),
-                            React.createElement('p', null, React.createElement('span', { className: "text-zinc-500" }, "تێبینی: "), React.createElement('span', null, o.note || "نییە"))
-                        ),
-                        React.createElement('div', { className: "mt-6" },
-                            React.createElement('a', { href: o.location, target: "_blank", className: "flex bg-blue-600/20 text-blue-400 border border-blue-600/30 py-3 rounded-xl items-center justify-center gap-2 font-bold hover:bg-blue-600/30 transition-all" }, React.createElement(Lucide.ExternalLink, { size: 18 }), "بینینی لۆکەیشن")
-                        )
-                    ))
-                ) : React.createElement('div', { className: "space-y-8" },
-                    React.createElement('form', { onSubmit: handleSaveItem, className: "bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-4" },
-                        React.createElement('h2', { className: "text-xl font-bold text-white flex items-center gap-2" }, editingItem.id ? React.createElement(Lucide.Edit, { size: 20 }) : React.createElement(Lucide.Plus, { size: 20 }), editingItem.id ? 'دەستکاری خواردن' : 'زیادکردنی خواردنی نوێ'),
-                        React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4" },
-                            React.createElement('input', { type: "text", placeholder: "ناوی خواردن", className: "w-full bg-zinc-800 border border-zinc-700 p-3 rounded-xl text-white outline-none focus:border-[#ff3131]", value: editingItem.name, onChange: e => setEditingItem({ ...editingItem, name: e.target.value }) }),
-                            React.createElement('input', { type: "number", placeholder: "نرخ", className: "w-full bg-zinc-800 border border-zinc-700 p-3 rounded-xl text-white outline-none focus:border-[#ff3131]", value: editingItem.price || '', onChange: e => setEditingItem({ ...editingItem, price: parseInt(e.target.value) }) }),
-                            React.createElement('input', { type: "number", placeholder: "داشکان", className: "w-full bg-zinc-800 border border-zinc-700 p-3 rounded-xl text-white outline-none focus:border-[#ff3131]", value: editingItem.discount || '', onChange: e => setEditingItem({ ...editingItem, discount: parseInt(e.target.value) }) }),
-                            React.createElement('select', { className: "w-full bg-zinc-800 border border-zinc-700 p-3 rounded-xl text-white outline-none focus:border-[#ff3131]", value: editingItem.category, onChange: e => setEditingItem({ ...editingItem, category: e.target.value }) },
-                                ['pizza', 'burger', 'shawarma', 'finger', 'drink'].map(c => React.createElement('option', { key: c, value: c }, c))
-                            ),
-                            React.createElement('input', { type: "text", placeholder: "لێنکی وێنە", className: "w-full bg-zinc-800 border border-zinc-700 p-3 rounded-xl text-white outline-none focus:border-[#ff3131] md:col-span-2", value: editingItem.img, onChange: e => setEditingItem({ ...editingItem, img: e.target.value }) })
-                        ),
-                        React.createElement('button', { className: "w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all" }, editingItem.id ? 'پاشەکەوتکردنی گۆڕانکارییەکان' : 'زیادکردنی خواردن'),
-                        editingItem.id && React.createElement('button', { type: "button", onClick: () => setEditingItem({ name: '', price: 0, discount: 0, img: '', category: 'pizza' }), className: "w-full bg-zinc-800 text-zinc-400 py-2 rounded-xl" }, "لابردن")
-                    ),
-                    React.createElement('div', { className: "space-y-4" },
-                        React.createElement('h2', { className: "text-xl font-bold text-white" }, `بەڕێوەبردن (${menuItems.length})`),
-                        menuItems.map(item => React.createElement('div', { key: item.id, className: "bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex items-center justify-between mb-2" },
-                            React.createElement('div', { className: "flex items-center gap-4" },
-                                React.createElement('img', { src: item.img, className: "w-12 h-12 rounded-full object-cover" }),
-                                React.createElement('div', null, React.createElement('h4', { className: "font-bold text-white" }, item.name), React.createElement('p', { className: "text-xs text-zinc-500" }, `${item.price} د.ع - ${item.category}`))
-                            ),
-                            React.createElement('div', { className: "flex gap-2" },
-                                React.createElement('button', { onClick: () => handleEdit(item), className: "p-2 text-blue-400 hover:bg-blue-400/10 rounded-lg" }, React.createElement(Lucide.Edit, { size: 20 })),
-                                React.createElement('button', { onClick: () => remove(ref(db, `menu_items/${item.id}`)), className: "p-2 text-red-500 hover:bg-red-500/10 rounded-lg" }, React.createElement(Lucide.Trash2, { size: 20 }))
-                            )
-                        ))
-                    )
-                )
-            );
+                    ${activeTab === 'orders' ? html`
+                        <div className="space-y-4">
+                            <h2 className="text-2xl font-bold mb-4 text-[#ffc107]">لیستی داواکارییەکان</h2>
+                            ${orders.length === 0 ? html`<div className="text-center py-20 text-zinc-500">هیچ داواکارییەک نییە</div>` :
+                            orders.map(o => html`
+                                <div key=${o.id} className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl shadow-xl mb-4">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <span className="text-[#ff3131] font-bold text-lg ml-2">🆔 #${o.orderID}</span>
+                                            <span className="text-zinc-500 text-sm">⏰ ${o.time}</span>
+                                        </div>
+                                        <button onClick=${() => remove(ref(db, `orders/${o.id}`))} className="p-2 text-zinc-500 hover:text-green-500 transition-colors">
+                                            <${Icon} name="CheckCircle" size=${24} />
+                                        </button>
+                                    </div>
+                                    <div className="space-y-2 text-zinc-300">
+                                        <p><span className="text-zinc-500 font-bold ml-1">خواردنەکان:</span> <span className="text-white">${o.items}</span></p>
+                                        <p><span className="text-zinc-500 font-bold ml-1">کۆی گشتی:</span> <span className="text-[#ffc107] font-bold">${o.total} د.ع</span></p>
+                                        <p><span className="text-zinc-500 font-bold ml-1">تێبینی:</span> <span>${o.note || "نییە"}</span></p>
+                                    </div>
+                                    <div className="mt-6">
+                                        <a href=${o.location} target="_blank" className="flex bg-blue-600/20 text-blue-400 border border-blue-600/30 py-3 rounded-xl items-center justify-center gap-2 font-bold hover:bg-blue-600/30 transition-all">
+                                            <${Icon} name="ExternalLink" size=${18} /> بینینی لۆکەیشن
+                                        </a>
+                                    </div>
+                                </div>
+                            `)}
+                        </div>
+                    ` : html`
+                        <div className="space-y-8">
+                            <form onSubmit=${handleSaveItem} className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-4">
+                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <${Icon} name=${editingItem.id ? 'Edit' : 'Plus'} size=${20} />
+                                    ${editingItem.id ? 'دەستکاری خواردن' : 'زیادکردنی خواردنی نوێ'}
+                                </h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input type="text" placeholder="ناوی خواردن" className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-xl text-white outline-none focus:border-[#ff3131]" value=${editingItem.name} onChange=${e => setEditingItem({ ...editingItem, name: e.target.value })} />
+                                    <input type="number" placeholder="نرخ" className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-xl text-white outline-none focus:border-[#ff3131]" value=${editingItem.price || ''} onChange=${e => setEditingItem({ ...editingItem, price: parseInt(e.target.value) })} />
+                                    <input type="number" placeholder="داشکان" className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-xl text-white outline-none focus:border-[#ff3131]" value=${editingItem.discount || ''} onChange=${e => setEditingItem({ ...editingItem, discount: parseInt(e.target.value) })} />
+                                    <select className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-xl text-white outline-none focus:border-[#ff3131]" value=${editingItem.category} onChange=${e => setEditingItem({ ...editingItem, category: e.target.value })}>
+                                        ${['pizza', 'burger', 'shawarma', 'finger', 'drink'].map(c => html`<option key=${c} value=${c}>${c}</option>`)}
+                                    </select>
+                                    <input type="text" placeholder="لێنکی وێنە" className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-xl text-white outline-none focus:border-[#ff3131] md:col-span-2" value=${editingItem.img} onChange=${e => setEditingItem({ ...editingItem, img: e.target.value })} />
+                                </div>
+                                <button className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all">
+                                    ${editingItem.id ? 'پاشەکەوتکردنی گۆڕانکارییەکان' : 'زیادکردنی خواردن'}
+                                </button>
+                                ${editingItem.id && html`<button type="button" onClick=${() => setEditingItem({ name: '', price: 0, discount: 0, img: '', category: 'pizza' })} className="w-full bg-zinc-800 text-zinc-400 py-2 rounded-xl">لابردن</button>`}
+                            </form>
+
+                            <div className="space-y-4">
+                                <h2 className="text-xl font-bold text-white">بەڕێوەبردن (${menuItems.length})</h2>
+                                ${menuItems.map(item => html`
+                                    <div key=${item.id} className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex items-center justify-between mb-2 shadow-md">
+                                        <div className="flex items-center gap-4">
+                                            <img src=${item.img || 'https://via.placeholder.com/150'} className="w-12 h-12 rounded-full object-cover border border-zinc-700" />
+                                            <div>
+                                                <h4 className="font-bold text-white">${item.name}</h4>
+                                                <p className="text-xs text-zinc-500">${item.price} د.ع - ${item.category}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button onClick=${() => { setEditingItem(item); window.scrollTo({top: 0, behavior: 'smooth'}); }} className="p-2 text-blue-400 hover:bg-blue-400/10 rounded-lg"><${Icon} name="Edit" size=${20} /></button>
+                                            <button onClick=${() => remove(ref(db, `menu_items/${item.id}`))} className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg"><${Icon} name="Trash2" size=${20} /></button>
+                                        </div>
+                                    </div>
+                                `)}
+                            </div>
+                        </div>
+                    `}
+                </div>
+            `;
         };
 
         const App = () => {
@@ -271,13 +312,13 @@
             const [orderNote, setOrderNote] = useState('');
             const [isSending, setIsSending] = useState(false);
 
-            const CATEGORIES = [
+            const CATEGORIES = useMemo(() => [
                 { id: 'pizza', name: 'پیتزا', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=150' },
                 { id: 'burger', name: 'بەرگر', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150' },
                 { id: 'shawarma', name: 'شاوەرمە', img: 'https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg' },
                 { id: 'finger', name: 'پەنجەکان', img: 'https://i.postimg.cc/FHWp2K1z/fried-chicken-fingers.jpg' },
                 { id: 'drink', name: 'خواردنەوە', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=150' }
-            ];
+            ], []);
 
             useEffect(() => {
                 const unsub = onValue(query(ref(db, 'menu_items'), orderByChild('category'), equalTo(activeCategory)), (snapshot) => {
@@ -319,7 +360,7 @@
                 setIsSending(true);
                 const pos = await new Promise(resolve => navigator.geolocation.getCurrentPosition(
                     p => resolve(`https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`),
-                    () => resolve("دیاری نەکراوە"), { timeout: 5000 }
+                    () => resolve("دیاری نەکراوە"), { timeout: 5000, enableHighAccuracy: true }
                 ));
                 const orderID = Math.floor(1000 + Math.random() * 9000);
                 const itemsStr = Object.values(cart).map(i => `${i.qty}x ${i.name}`).join(", ");
@@ -329,63 +370,149 @@
                 try {
                     await set(ref(db, `orders/${orderID}`), orderData);
                     localStorage.setItem('canSpinBoom', 'true');
-                    window.location.href = `https://wa.me/9647504629237?text=${encodeURIComponent(`🆔 #${orderID}\n🍴 ${itemsStr}${prizeStr}\n💰 ${totalAmount.toLocaleString()} د.ع\n📍 ${pos}\n📝 ${orderNote || "بەبێ تێبینی"}`)}`;
-                } catch { alert("هەڵە ڕوویدا"); setIsSending(false); }
+                    const msg = `🆔 # ${orderID}\n🍴 ${itemsStr}${prizeStr}\n💰 ${totalAmount.toLocaleString()} د.ع\n📍 ${pos}\n📝 ${orderNote || "بەبێ تێبینی"}`;
+                    window.location.href = `https://wa.me/9647504629237?text=${encodeURIComponent(msg)}`;
+                } catch { alert("هەڵە ڕوویدا لە ناردنی داواکاری"); setIsSending(false); }
             };
 
-            return React.createElement('div', { className: "min-h-screen bg-[#0a0a0a] pb-24 relative overflow-x-hidden" },
-                React.createElement('nav', { className: "sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-zinc-800 flex items-center justify-around h-16" },
-                    React.createElement('button', { onClick: () => setView('menu'), className: `flex-1 flex flex-col items-center justify-center gap-1 transition-colors ${view === 'menu' ? 'text-[#ff3131]' : 'text-zinc-500'}` }, React.createElement(Lucide.LayoutGrid, { size: 20 }), React.createElement('span', { className: "text-[10px] font-bold" }, "مێنۆ")),
-                    React.createElement('button', { onClick: () => handleAdminAccess('admin_orders'), className: `flex-1 flex flex-col items-center justify-center gap-1 transition-colors ${view === 'admin_orders' ? 'text-[#ff3131]' : 'text-zinc-500'}` }, React.createElement(Lucide.ClipboardList, { size: 20 }), React.createElement('span', { className: "text-[10px] font-bold" }, "داواکارییەکان")),
-                    React.createElement('button', { onClick: () => handleAdminAccess('admin_items'), className: `flex-1 flex flex-col items-center justify-center gap-1 transition-colors ${view === 'admin_items' ? 'text-[#ff3131]' : 'text-zinc-500'}` }, React.createElement(Lucide.Settings, { size: 20 }), React.createElement('span', { className: "text-[10px] font-bold" }, "دەستکاری"))
-                ),
-                view === 'menu' ? React.createElement(React.Fragment, null,
-                    React.createElement('header', { className: "relative h-48 flex items-center justify-center overflow-hidden border-b-4 border-[#ff3131]" },
-                        React.createElement('img', { src: "https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1470&auto=format&fit=crop", className: "absolute inset-0 w-full h-full object-cover brightness-[0.3]" }),
-                        React.createElement('div', { className: "relative z-10 text-center" },
-                            React.createElement('h1', { className: "text-5xl font-black text-[#ffc107] drop-shadow-[0_2px_10px_rgba(0,0,0,1)] tracking-tighter" }, "BOOM'S PIZZA"),
-                            React.createElement('p', { className: "text-white font-bold mt-2 text-lg" }, "چێژێکی بێ وێنە لەگەڵ بوم پیتزا")
-                        )
-                    ),
-                    canSpin && React.createElement('button', { onClick: () => setShowWheel(true), className: "fixed bottom-28 left-4 z-40 bg-[#ffc107] text-black px-4 py-2 rounded-full font-bold shadow-xl animate-pulse-gold border-2 border-white/20" }, "🎰 چەرخی بەخت"),
-                    React.createElement('div', { className: "flex overflow-x-auto p-4 gap-4 no-scrollbar bg-zinc-900/50" },
-                        CATEGORIES.map(cat => React.createElement('button', { key: cat.id, onClick: () => setActiveCategory(cat.id), className: `flex flex-col items-center min-w-[80px] transition-transform active:scale-90 ${activeCategory === cat.id ? 'scale-110' : 'opacity-60'}` },
-                            React.createElement('div', { className: `w-16 h-16 rounded-full overflow-hidden border-2 mb-2 ${activeCategory === cat.id ? 'border-[#ff3131] shadow-[0_0_15px_rgba(255,49,49,0.5)]' : 'border-zinc-700'}` }, React.createElement('img', { src: cat.img, className: "w-full h-full object-cover" })),
-                            React.createElement('span', { className: `text-xs font-bold ${activeCategory === cat.id ? 'text-[#ff3131]' : 'text-zinc-400'}` }, cat.name)
-                        ))
-                    ),
-                    React.createElement('div', { className: "grid grid-cols-2 gap-4 p-4" },
-                        menuItems.map(item => {
-                            const finalPrice = item.price - (item.discount || 0);
-                            return React.createElement('div', { key: item.id, className: "bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 flex flex-col shadow-lg" },
-                                React.createElement('div', { className: "relative h-32 overflow-hidden" }, React.createElement('img', { src: item.img, className: "w-full h-full object-cover transition-transform hover:scale-110 duration-500" }), item.discount > 0 && React.createElement('span', { className: "absolute top-2 right-2 bg-[#ff3131] text-white text-[10px] px-2 py-1 rounded-full font-bold" }, "داشکان!")),
-                                React.createElement('div', { className: "p-3 text-center flex-grow" }, React.createElement('h3', { className: "font-bold text-sm text-white mb-1 line-clamp-1" }, item.name), React.createElement('div', { className: "flex flex-col items-center" }, item.discount > 0 ? React.createElement(React.Fragment, null, React.createElement('span', { className: "text-zinc-500 line-through text-[10px]" }, item.price.toLocaleString()), React.createElement('span', { className: "text-[#ff3131] font-bold text-sm" }, `${finalPrice.toLocaleString()} د.ع`)) : React.createElement('span', { className: "text-white font-bold text-sm" }, `${item.price.toLocaleString()} د.ع`))),
-                                React.createElement('button', { onClick: () => addToCart(item), className: "w-full bg-[#ff3131] hover:bg-red-700 text-white py-3 font-bold text-xs flex items-center justify-center gap-2" }, React.createElement(Lucide.Plus, { size: 14 }), "زیادکردن")
-                            );
-                        })
-                    ),
-                    Object.keys(cart).length > 0 && React.createElement('div', { className: "p-4 mx-4 mb-8 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl" },
-                        React.createElement('h3', { className: "text-[#ffc107] font-bold flex items-center gap-2 mb-4" }, React.createElement(Lucide.ShoppingCart, { size: 18 }), "سەبەتەکەت"),
-                        Object.values(cart).map(item => React.createElement('div', { key: item.name, className: "flex justify-between items-center text-sm bg-zinc-800/50 p-3 rounded-xl mb-3" },
-                            React.createElement('div', null, React.createElement('p', { className: "font-bold text-white" }, item.name), React.createElement('p', { className: "text-xs text-zinc-500" }, `${(item.price * item.qty).toLocaleString()} د.ع`)),
-                            React.createElement('div', { className: "flex items-center gap-3" },
-                                React.createElement('button', { onClick: () => removeFromCart(item.name), className: "p-1 text-red-500 bg-red-500/10 rounded-md" }, React.createElement(Lucide.Minus, { size: 16 })),
-                                React.createElement('span', { className: "font-bold text-white" }, item.qty),
-                                React.createElement('button', { onClick: () => addToCart({ name: item.name, price: item.price }), className: "p-1 text-green-500 bg-green-500/10 rounded-md" }, React.createElement(Lucide.Plus, { size: 16 }))
-                            )
-                        )),
-                        prizes.length > 0 && React.createElement('div', { className: "mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl" }, React.createElement('p', { className: "text-xs font-bold text-[#ffc107] mb-2" }, "🎁 خەڵاتەکانت:"), React.createElement('div', { className: "flex flex-wrap gap-2" }, prizes.map((p, i) => React.createElement('span', { key: i, className: "bg-zinc-800 text-white text-[10px] px-2 py-1 rounded-full" }, `✨ ${p}`)))),
-                        React.createElement('textarea', { className: "w-full bg-zinc-800 border border-zinc-700 p-3 rounded-xl text-white text-sm outline-none mb-4", rows: 2, placeholder: "تێبینی یان ناونیشان بنووسە...", value: orderNote, onChange: e => setOrderNote(e.target.value) }),
-                        React.createElement('div', { className: "my-4 flex justify-between items-center" }, React.createElement('span', { className: "text-zinc-400 font-bold" }, "کۆی گشتی:"), React.createElement('span', { className: "text-2xl font-black text-white" }, `${totalAmount.toLocaleString()} د.ع`)),
-                        React.createElement('button', { onClick: handleSendOrder, disabled: isSending, className: `w-full bg-[#25D366] text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-3 shadow-lg ${isSending ? 'opacity-70 animate-pulse' : ''}` }, isSending ? '⏳ لۆکەیشن...' : '✅ ناردنی داواکاری بۆ واتسئەپ')
-                    )
-                ) : React.createElement(AdminPanel),
-                showWheel && React.createElement(LuckyWheel, { onWin: (p) => { setPrizes(prev => [...prev, p]); localStorage.setItem('boomSpinCount', '1'); localStorage.setItem('canSpinBoom', 'false'); setShowWheel(false); }, onClose: () => setShowWheel(false) })
-            );
+            return html`
+                <div className="min-h-screen bg-[#0a0a0a] pb-24 relative overflow-x-hidden">
+                    <nav className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-zinc-800 flex items-center justify-around h-16">
+                        <button onClick=${() => setView('menu')} className=${`flex-1 flex flex-col items-center justify-center gap-1 transition-colors ${view === 'menu' ? 'text-[#ff3131]' : 'text-zinc-500'}`}>
+                            <${Icon} name="LayoutGrid" size=${20} />
+                            <span className="text-[10px] font-bold">مێنۆ</span>
+                        </button>
+                        <button onClick=${() => handleAdminAccess('admin_orders')} className=${`flex-1 flex flex-col items-center justify-center gap-1 transition-colors ${view === 'admin_orders' ? 'text-[#ff3131]' : 'text-zinc-500'}`}>
+                            <${Icon} name="ClipboardList" size=${20} />
+                            <span className="text-[10px] font-bold">داواکارییەکان</span>
+                        </button>
+                        <button onClick=${() => handleAdminAccess('admin_items')} className=${`flex-1 flex flex-col items-center justify-center gap-1 transition-colors ${view === 'admin_items' ? 'text-[#ff3131]' : 'text-zinc-500'}`}>
+                            <${Icon} name="Settings" size=${20} />
+                            <span className="text-[10px] font-bold">دەستکاری</span>
+                        </button>
+                    </nav>
+
+                    ${view === 'menu' ? html`
+                        <div>
+                            <header className="relative h-48 flex items-center justify-center overflow-hidden border-b-4 border-[#ff3131]">
+                                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1470&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover brightness-[0.3]" />
+                                <div className="relative z-10 text-center">
+                                    <h1 className="text-5xl font-black text-[#ffc107] drop-shadow-[0_2px_10px_rgba(0,0,0,1)] tracking-tighter">BOOM'S PIZZA</h1>
+                                    <p className="text-white font-bold mt-2 text-lg">چێژێکی بێ وێنە لەگەڵ بوم پیتزا</p>
+                                </div>
+                            </header>
+
+                            ${canSpin && html`<button onClick=${() => setShowWheel(true)} className="fixed bottom-28 left-4 z-40 bg-[#ffc107] text-black px-4 py-2 rounded-full font-bold shadow-xl animate-pulse-gold border-2 border-white/20">🎰 چەرخی بەخت</button>`}
+                            
+                            <div className="flex overflow-x-auto p-4 gap-4 no-scrollbar bg-zinc-900/50">
+                                ${CATEGORIES.map(cat => html`
+                                    <button key=${cat.id} onClick=${() => setActiveCategory(cat.id)} className=${`flex flex-col items-center min-w-[80px] transition-transform active:scale-90 ${activeCategory === cat.id ? 'scale-110' : 'opacity-60'}`}>
+                                        <div className=${`w-16 h-16 rounded-full overflow-hidden border-2 mb-2 ${activeCategory === cat.id ? 'border-[#ff3131] shadow-[0_0_15px_rgba(255,49,49,0.5)]' : 'border-zinc-700'}`}>
+                                            <img src=${cat.img} className="w-full h-full object-cover" />
+                                        </div>
+                                        <span className=${`text-xs font-bold ${activeCategory === cat.id ? 'text-[#ff3131]' : 'text-zinc-400'}`}>${cat.name}</span>
+                                    </button>
+                                `)}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 p-4">
+                                ${menuItems.map(item => {
+                                    const finalPrice = item.price - (item.discount || 0);
+                                    return html`
+                                        <div key=${item.id} className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 flex flex-col shadow-lg">
+                                            <div className="relative h-32 overflow-hidden">
+                                                <img src=${item.img || 'https://via.placeholder.com/150'} className="w-full h-full object-cover transition-transform hover:scale-110 duration-500" />
+                                                ${item.discount > 0 && html`<span className="absolute top-2 right-2 bg-[#ff3131] text-white text-[10px] px-2 py-1 rounded-full font-bold">داشکان!</span>`}
+                                            </div>
+                                            <div className="p-3 text-center flex-grow">
+                                                <h3 className="font-bold text-sm text-white mb-1 line-clamp-1">${item.name}</h3>
+                                                <div className="flex flex-col items-center">
+                                                    ${item.discount > 0 ? html`
+                                                        <span className="text-zinc-500 line-through text-[10px]">${item.price.toLocaleString()}</span>
+                                                        <span className="text-[#ff3131] font-bold text-sm">${finalPrice.toLocaleString()} د.ع</span>
+                                                    ` : html`
+                                                        <span className="text-white font-bold text-sm">${item.price.toLocaleString()} د.ع</span>
+                                                    `}
+                                                </div>
+                                            </div>
+                                            <button onClick=${() => addToCart(item)} className="w-full bg-[#ff3131] hover:bg-red-700 text-white py-3 font-bold text-xs flex items-center justify-center gap-2">
+                                                <${Icon} name="Plus" size=${14} /> زیادکردن
+                                            </button>
+                                        </div>
+                                    `;
+                                })}
+                            </div>
+
+                            ${Object.keys(cart).length > 0 && html`
+                                <div className="p-4 mx-4 mb-8 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl">
+                                    <h3 className="text-[#ffc107] font-bold flex items-center gap-2 mb-4">
+                                        <${Icon} name="ShoppingCart" size=${18} /> سەبەتەکەت
+                                    </h3>
+                                    ${Object.values(cart).map(item => html`
+                                        <div key=${item.name} className="flex justify-between items-center text-sm bg-zinc-800/50 p-3 rounded-xl mb-3 border border-zinc-700">
+                                            <div>
+                                                <p className="font-bold text-white">${item.name}</p>
+                                                <p className="text-xs text-zinc-500">${(item.price * item.qty).toLocaleString()} د.ع</p>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <button onClick=${() => removeFromCart(item.name)} className="p-1 text-red-500 bg-red-500/10 rounded-md"><${Icon} name="Minus" size=${16} /></button>
+                                                <span className="font-bold text-white w-4 text-center">${item.qty}</span>
+                                                <button onClick=${() => addToCart({ name: item.name, price: item.price })} className="p-1 text-green-500 bg-green-500/10 rounded-md"><${Icon} name="Plus" size=${16} /></button>
+                                            </div>
+                                        </div>
+                                    `)}
+
+                                    ${prizes.length > 0 && html`
+                                        <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+                                            <p className="text-xs font-bold text-[#ffc107] mb-2">🎁 خەڵاتەکانت:</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                ${prizes.map((p, i) => html`<span key=${i} className="bg-zinc-800 text-white text-[10px] px-2 py-1 rounded-full border border-zinc-700">✨ ${p}</span>`)}
+                                            </div>
+                                        </div>
+                                    `}
+
+                                    <textarea 
+                                        className="w-full bg-zinc-800 border border-zinc-700 p-3 rounded-xl text-white text-sm outline-none mb-4 focus:border-[#ff3131]" 
+                                        rows=${2} 
+                                        placeholder="تێبینی یان ناونیشان بنووسە..." 
+                                        value=${orderNote} 
+                                        onChange=${e => setOrderNote(e.target.value)} 
+                                    />
+                                    <div className="my-4 flex justify-between items-center px-2">
+                                        <span className="text-zinc-400 font-bold">کۆی گشتی:</span>
+                                        <span className="text-2xl font-black text-white">${totalAmount.toLocaleString()} د.ع</span>
+                                    </div>
+                                    <button 
+                                        onClick=${handleSendOrder} 
+                                        disabled=${isSending} 
+                                        className=${`w-full bg-[#25D366] hover:bg-green-600 text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-green-500/20 transition-all ${isSending ? 'opacity-70 animate-pulse' : ''}`}
+                                    >
+                                        ${isSending ? '⏳ لۆکەیشن...' : html`<span className="flex items-center gap-2">✅ ناردنی داواکاری بۆ واتسئەپ</span>`}
+                                    </button>
+                                </div>
+                            `}
+                        </div>
+                    ` : html`<${AdminPanel} />`}
+
+                    ${showWheel && html`
+                        <${LuckyWheel} 
+                            onWin=${(p) => { 
+                                setPrizes(prev => [...prev, p]); 
+                                localStorage.setItem('boomSpinCount', '1'); 
+                                localStorage.setItem('canSpinBoom', 'false'); 
+                                setShowWheel(false); 
+                            }} 
+                            onClose=${() => setShowWheel(false)} 
+                        />
+                    `}
+                </div>
+            `;
         };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
+        const container = document.getElementById('root');
+        const root = createRoot(container);
         root.render(React.createElement(React.StrictMode, null, React.createElement(App)));
     </script>
+<script type="module" src="/index.tsx"></script>
 </body>
 </html>
