@@ -23,7 +23,6 @@
         .contact-item { display: flex; align-items: center; gap: 5px; background: #222; color: white; padding: 7px 15px; border-radius: 50px; text-decoration: none; font-size: 0.85rem; border: 1px solid #333; }
         .share-btn { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; margin: 15px auto; font-family: 'Vazirmatn'; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,123,255,0.3); }
         
-        /* Wheel UI Improvements */
         .wheel-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 5000; display: none; justify-content: center; align-items: center; flex-direction: column; }
         .wheel-wrap { position: relative; width: 320px; height: 320px; margin-bottom: 20px; border: 5px solid #333; border-radius: 50%; padding: 5px; background: #222; }
         .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--primary-red); z-index: 20; }
@@ -35,8 +34,12 @@
         .cat-card.active img { border-color: var(--primary-red); transform: scale(1.1); box-shadow: 0 0 15px var(--primary-red); }
 
         .menu-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
-        .item-card { background: var(--card-bg); border-radius: 20px; overflow: hidden; border: 1px solid #222; display: flex; flex-direction: column; }
+        .item-card { background: var(--card-bg); border-radius: 20px; overflow: hidden; border: 1px solid #222; display: flex; flex-direction: column; position: relative; }
         .item-card img { width: 100%; height: 130px; object-fit: cover; }
+        
+        /* Discount Badge Style */
+        .discount-badge { position: absolute; top: 10px; right: 10px; background: var(--primary-red); color: white; padding: 4px 8px; border-radius: 8px; font-weight: bold; font-size: 0.75rem; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+
         .item-info { padding: 10px; text-align: center; }
         .add-btn { background: var(--primary-red); color: #fff; border: none; padding: 10px; border-radius: 12px; font-weight: bold; margin: 10px; cursor: pointer; }
 
@@ -68,7 +71,7 @@
     </header>
 
     <div class="contact-strip">
-        <a href="http://googleusercontent.com/maps.google.com/3" target="_blank" class="contact-item">📍 شوێنی ئێمە</a>
+        <a href="http://maps.google.com/?q=BoomPizza" target="_blank" class="contact-item">📍 شوێنی ئێمە</a>
         <a href="tel:07504629237" class="contact-item">📞 07504629237</a>
     </div>
 
@@ -107,9 +110,10 @@
 
 <div id="edit-site" class="page" style="padding:20px;">
     <div style="background:#111; padding:20px; border-radius:20px; border:1px solid #333;">
-        <h3>➕ زیادکردنی ئایتمی نوێ</h3>
+        <h3>➕ زیادکردنی ئایتمی نوێ یان داشکان</h3>
         <input type="text" id="admin-item-name" class="order-input" placeholder="ناوی خواردن">
-        <input type="number" id="admin-item-price" class="order-input" placeholder="نرخ بە دینار">
+        <input type="number" id="admin-item-price" class="order-input" placeholder="نرخی کۆن">
+        <input type="number" id="admin-item-discount" class="order-input" placeholder="نرخی نوێ (داشکان)">
         <select id="admin-item-cat" class="order-input">
             <option value="pizza">پیتزا</option>
             <option value="burger">بەرگر</option>
@@ -126,7 +130,8 @@
         <div class="wheel-pointer"></div>
         <div id="theWheel" class="main-wheel">
             <svg viewBox="0 0 200 200" style="width: 100%; height: 100%;">
-                <g transform="rotate(-30 100 100)"> <path d="M100,100 L100,0 A100,100 0 0,1 186.6,50 Z" fill="#ffffff" /><text x="115" y="45" fill="black" font-size="8" transform="rotate(30 115 45)">داشکان 0%</text>
+                <g transform="rotate(-30 100 100)">
+                    <path d="M100,100 L100,0 A100,100 0 0,1 186.6,50 Z" fill="#ffffff" /><text x="115" y="45" fill="black" font-size="8" transform="rotate(30 115 45)">داشکان 0%</text>
                     <path d="M100,100 L186.6,50 A100,100 0 0,1 186.6,150 Z" fill="#ff3131" /><text x="140" y="105" fill="white" font-size="8" transform="rotate(90 140 105)">داشکان 10%</text>
                     <path d="M100,100 L186.6,150 A100,100 0 0,1 100,200 Z" fill="#ffc107" /><text x="115" y="160" fill="black" font-size="8" transform="rotate(150 115 160)">داشکان 20%</text>
                     <path d="M100,100 L100,200 A100,100 0 0,1 13.4,150 Z" fill="#25D366" /><text x="50" y="160" fill="white" font-size="8" transform="rotate(210 50 160)">داشکان 50%</text>
@@ -136,7 +141,7 @@
             </svg>
         </div>
     </div>
-    <button class="add-btn" style="width:200px; padding:15px; font-size:1.2rem;" onclick="startSpin()">بسوڕێنە! 🎰</button>
+    <button class="add-btn" style="width:200px; padding:15px;" onclick="startSpin()">بسوڕێنە! 🎰</button>
     <button onclick="closeWheel()" style="background:none; color:white; margin-top:15px; border:none; cursor:pointer;">داخستن</button>
 </div>
 
@@ -164,11 +169,7 @@
 
     function shareSite() {
         if (navigator.share) {
-            navigator.share({
-                title: "Boom's Pizza | بوم پیتزا",
-                text: "باشترین و بەتامترین پیتزا لە بوم پیتزا، ئێستا داوا بکە!",
-                url: window.location.href
-            }).catch((error) => console.log('Error sharing', error));
+            navigator.share({ title: "Boom's Pizza", text: "مێنیوی بوم پیتزا", url: window.location.href });
         } else {
             navigator.clipboard.writeText(window.location.href);
             alert("لینکەکە کۆپی کرا!");
@@ -184,11 +185,8 @@
 
     function handleAdminAccess(pageId, btn) {
         const pass = prompt("وشەی نهێنی (Admin Password):");
-        if(pass === "1998a") {
-            switchPage(pageId, btn);
-        } else {
-            alert("هەڵەیە!");
-        }
+        if(pass === "1998a") switchPage(pageId, btn);
+        else alert("هەڵەیە!");
     }
 
     let cart = [];
@@ -198,45 +196,20 @@
     function openWheel() { document.getElementById('wheelOverlay').style.display = 'flex'; }
     function closeWheel() { document.getElementById('wheelOverlay').style.display = 'none'; }
 
-    // --- چاککردنی چەرخی بەخت بەو ئەگەرانەی داوات کردبوو ---
     function startSpin() {
         if (isSpinning) return;
         isSpinning = true;
-        
         const wheel = document.getElementById('theWheel');
         let randomChoice = Math.random() * 100; 
-        let degree = 0;
-        let resultText = "";
+        let degree = 0; let resultText = "";
 
-        // لۆجیکی ئەگەرەکان
-        if (randomChoice < 60) { 
-            // 60% ئەگەر: داشکانی 0% یان خواردنەوە
-            degree = 2160 + 0; 
-            resultText = "بێبەخت بوویت! خواردنەوەیەک یان 0% داشکان 🥤";
-        } 
-        else if (randomChoice < 90) { 
-            // 30% ئەگەر: داشکانی 10%
-            degree = 2160 + 300; // شوێنی 10%
-            resultText = "پیرۆزە! 10% داشکانت بۆ دەرچوو 🍕";
-        }
-        else if (randomChoice < 98) { 
-            // 8% ئەگەر: داشکانی 20%
-            degree = 2160 + 240; // شوێنی 20%
-            resultText = "نایابە! 20% داشکانت بۆ دەرچوو! 🍔";
-        }
-        else { 
-            // تەنها 2% ئەگەر: داشکانی 50%
-            degree = 2160 + 180; // شوێنی 50%
-            resultText = "باوەڕپێنەکراوە! 50% داشکانی تەواو! 🔥";
-        }
+        if (randomChoice < 60) { degree = 2160 + 0; resultText = "خواردنەوەیەکی بێبەرامبەر یان 0% داشکان 🥤"; } 
+        else if (randomChoice < 90) { degree = 2160 + 300; resultText = "10% داشکانت بۆ دەرچوو 🍕"; }
+        else if (randomChoice < 98) { degree = 2160 + 240; resultText = "20% داشکانت بۆ دەرچوو! 🍔"; }
+        else { degree = 2160 + 180; resultText = "50% داشکانی تەواو! 🔥"; }
 
         wheel.style.transform = `rotate(${degree}deg)`;
-
-        setTimeout(() => {
-            isSpinning = false;
-            alert(resultText);
-            closeWheel();
-        }, 4000);
+        setTimeout(() => { isSpinning = false; alert(resultText); closeWheel(); }, 4000);
     }
 
     function openFolder(category, element) {
@@ -245,13 +218,38 @@
         document.getElementById('folder-title').innerText = folderNames[category];
         const display = document.getElementById('menu-display');
         display.innerHTML = '';
+
         menuItems.filter(i => i.category === category).forEach(item => {
-            display.innerHTML += `<div class="item-card"><img src="${item.img}"><div class="item-info"><h3>${item.name}</h3><div style="color:var(--text-gold); font-weight:bold;">${item.price.toLocaleString()} دینار</div></div><button class="add-btn" onclick="addToCart(${item.id})">زیادکردن +</button></div>`;
+            let priceHTML = "";
+            let badgeHTML = "";
+
+            if (item.discount && item.discount < item.price) {
+                const percent = Math.round(((item.price - item.discount) / item.price) * 100);
+                badgeHTML = `<div class="discount-badge">%${percent} داشکان</div>`;
+                priceHTML = `<div style="color:#888; text-decoration:line-through; font-size:0.8rem;">${item.price.toLocaleString()}</div>
+                             <div style="color:var(--text-gold); font-weight:bold;">${item.discount.toLocaleString()} دینار</div>`;
+            } else {
+                priceHTML = `<div style="color:var(--text-gold); font-weight:bold; padding-top:10px;">${item.price.toLocaleString()} دینار</div>`;
+            }
+
+            display.innerHTML += `
+                <div class="item-card">
+                    ${badgeHTML}
+                    <img src="${item.img}">
+                    <div class="item-info">
+                        <h3>${item.name}</h3>
+                        ${priceHTML}
+                    </div>
+                    <button class="add-btn" onclick="addToCart(${item.id})">زیادکردن +</button>
+                </div>`;
         });
     }
 
     function addToCart(id) {
-        cart.push(menuItems.find(i => i.id === id));
+        const item = menuItems.find(i => i.id === id);
+        // بەکارهێنانی نرخی داشکان ئەگەر هەبێت
+        const finalPrice = item.discount ? item.discount : item.price;
+        cart.push({ ...item, actualPrice: finalPrice });
         renderCart();
     }
 
@@ -259,9 +257,18 @@
         const cartDiv = document.getElementById('cart-items');
         let total = 0; cartDiv.innerHTML = '';
         const grouped = {};
-        cart.forEach(i => { total += i.price; grouped[i.name] = (grouped[i.name] || 0) + 1; });
-        for (const [name, count] of Object.entries(grouped)) {
-            cartDiv.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #222;"><span>${count}x ${name}</span><button onclick="removeFromCart('${name}')" style="color:#ff5555; background:none; border:none; cursor:pointer;">لادان</button></div>`;
+        
+        cart.forEach(i => { 
+            total += i.actualPrice; 
+            grouped[i.name] = (grouped[i.name] || {qty:0, p: i.actualPrice});
+            grouped[i.name].qty++;
+        });
+
+        for (const [name, data] of Object.entries(grouped)) {
+            cartDiv.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #222;">
+                <span>${data.qty}x ${name}</span>
+                <span>${(data.qty * data.p).toLocaleString()} د.ع <button onclick="removeFromCart('${name}')" style="color:red; background:none; border:none;">X</button></span>
+            </div>`;
         }
         document.getElementById('total-amount').innerText = total.toLocaleString();
         document.getElementById('floating-cart').style.display = cart.length > 0 ? 'flex' : 'none';
@@ -279,66 +286,49 @@
 
     function sendToWhatsApp() {
         if(cart.length === 0) return alert("سەبەتەکە بەتاڵە!");
-        
         const sendBtn = document.getElementById('sendBtn');
-        sendBtn.innerText = "⏳ کەمێک چاوەڕێ بکە...";
-        sendBtn.disabled = true;
+        sendBtn.innerText = "⏳ چاوەڕێ بکە..."; sendBtn.disabled = true;
 
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    const mapUrl = `http://maps.google.com/?q=${lat},${lon}`;
-                    processOrder(mapUrl);
-                },
-                (error) => {
-                    alert("تکایە ڕێگە بە لۆکەیشن بدە.");
-                    sendBtn.innerText = "ناردنی داواکاری و لۆکەیشن (WhatsApp)";
-                    sendBtn.disabled = false;
-                }
-            );
-        } else {
-            processOrder("📍 لۆکەیشن پشتگیری ناکرێت");
-        }
+            navigator.geolocation.getCurrentPosition((position) => {
+                const loc = `http://maps.google.com/?q=${position.coords.latitude},${position.coords.longitude}`;
+                processOrder(loc);
+            }, () => processOrder("📍 لۆکەیشن دیاری نەکراوە"));
+        } else processOrder("📍 لۆکەیشن پشتگیری ناکرێت");
     }
 
     function processOrder(locationLink) {
         const orderID = Math.floor(1000 + Math.random() * 9000);
-        const note = document.getElementById('order-note').value || "تێبینی نییە";
+        const note = document.getElementById('order-note').value || "نییە";
         const total = document.getElementById('total-amount').innerText;
-        const time = new Date().toLocaleString('ku-IQ');
-
+        
         const orderData = {
             orderID: orderID,
             items: cart.map(i => i.name).join(', '),
             total: total,
             location: locationLink,
             note: note,
-            time: time
+            time: new Date().toLocaleString('ku-IQ')
         };
 
         database.ref('orders/' + orderID).set(orderData).then(() => {
-            let txt = `🆔 *داواکاری: #${orderID}*\n💰 *کۆ:* ${total} دینار\n🍴 *خواردن:* ${orderData.items}\n📍 *شوێن:* ${locationLink}\n📝 *تێبینی:* ${note}`;
+            let txt = `🆔 *#${orderID}*\n💰 *کۆ:* ${total} دینار\n🍴 *خواردن:* ${orderData.items}\n📍 *لۆکەیشن:* ${locationLink}\n📝 *تێبینی:* ${note}`;
             window.location.href = `https://wa.me/9647504629237?text=${encodeURIComponent(txt)}`;
-            
-            const sendBtn = document.getElementById('sendBtn');
-            sendBtn.innerText = "ناردنی داواکاری و لۆکەیشن (WhatsApp)";
-            sendBtn.disabled = false;
+            document.getElementById('sendBtn').innerText = "ناردنی داواکاری و لۆکەیشن (WhatsApp)";
+            document.getElementById('sendBtn').disabled = false;
         });
     }
 
     database.ref('orders').on('value', (snapshot) => {
-        const list = document.getElementById('firebase-orders-list');
-        list.innerHTML = '';
+        const list = document.getElementById('firebase-orders-list'); list.innerHTML = '';
         const data = snapshot.val();
         for (let id in data) {
             list.innerHTML += `<div class="admin-card">
-                <b>داواکاری #${data[id].orderID}</b> <small>${data[id].time}</small><br>
+                <b>#${data[id].orderID}</b> - ${data[id].time}<br>
                 🥗 ${data[id].items}<br>
                 💵 کۆی گشتی: ${data[id].total} دینار<br>
-                📍 <a href="${data[id].location}" target="_blank" style="color:#007bff; font-weight:bold;">بینینی شوێن</a><br>
-                <button onclick="database.ref('orders/${id}').remove()" style="color:red; background:none; border:none; margin-top:10px;">سڕینەوە 🗑️</button>
+                📍 <a href="${data[id].location}" target="_blank" style="color:cyan;">بینینی شوێن</a><br>
+                <button onclick="database.ref('orders/${id}').remove()" style="color:red; background:none; border:none; margin-top:10px;">🗑️ سڕینەوە</button>
             </div>`;
         }
     });
@@ -346,22 +336,25 @@
     function addItemToFirebase() {
         const name = document.getElementById('admin-item-name').value;
         const price = document.getElementById('admin-item-price').value;
+        const disc = document.getElementById('admin-item-discount').value;
         const cat = document.getElementById('admin-item-cat').value;
         if(name && price) {
-            database.ref('menu/' + cat).push({ name, price: parseInt(price) });
+            database.ref('menu/' + cat).push({ 
+                name: name, 
+                price: parseInt(price), 
+                discount: disc ? parseInt(disc) : null 
+            });
             alert("سەرکەوتوو بوو!");
         }
     }
 
     setInterval(() => {
-        const s = document.createElement('div');
-        s.className = 'snowflake';
+        const s = document.createElement('div'); s.className = 'snowflake';
         s.style.left = Math.random() * 100 + 'vw';
         s.style.animationDuration = (Math.random() * 3 + 2) + 's';
-        s.innerHTML = '❄';
-        document.body.appendChild(s);
+        s.innerHTML = '❄'; document.body.appendChild(s);
         setTimeout(() => s.remove(), 5000);
-    }, 400);
+    }, 450);
 
     window.onload = () => openFolder('pizza', document.querySelector('.cat-card'));
 </script>
