@@ -8,37 +8,52 @@
     <style>
         :root { --primary-red: #ff3131; --dark-bg: #0a0a0a; --card-bg: #161616; --text-gold: #ffc107; --whatsapp-green: #25D366; }
         body { font-family: 'Vazirmatn', sans-serif; margin: 0; background-color: var(--dark-bg); color: #ffffff; direction: rtl; overflow-x: hidden; }
-        header { background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), var(--dark-bg)), url('https://i.postimg.cc/02R8rCjV/99999999.jpg'); background-size: cover; background-position: center; height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 4px solid var(--primary-red); }
-        header h1 { font-size: 3rem; color: var(--text-gold); text-shadow: 3px 3px 15px #000; margin: 0; }
         
+        header { 
+            background-image: linear-gradient(to bottom, rgba(0,0,0,0.4), var(--dark-bg)), url('https://i.postimg.cc/02R8rCjV/99999999.jpg'); 
+            background-size: cover; background-position: center; height: 280px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            border-bottom: 5px solid var(--primary-red); text-align: center;
+        }
+        header h1 { font-size: 3.5rem; color: var(--text-gold); text-shadow: 3px 3px 15px #000; margin: 0; }
+        
+        /* بەشی فێرکاری سێ هەنگاوەکە */
+        .steps-container {
+            background: #111; margin: 15px; padding: 15px; border-radius: 15px;
+            display: flex; justify-content: space-around; align-items: center;
+            border: 1px solid #333; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .step-box { text-align: center; font-size: 0.8rem; flex: 1; }
+        .step-icon { font-size: 1.6rem; margin-bottom: 5px; display: block; }
+
         .share-btn {
             background: #007bff; color: white; border: none; padding: 10px 20px; 
             border-radius: 50px; font-weight: bold; cursor: pointer; 
-            display: flex; align-items: center; gap: 8px; margin: 15px auto;
+            display: flex; align-items: center; gap: 8px; margin: 5px;
             font-family: 'Vazirmatn'; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,123,255,0.3);
         }
 
-        /* ستایلی چەرخی بەخت */
+        /* چەرخی بەخت تەنها بۆ داشکاندن */
         .wheel-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); z-index: 5000; display: none;
             justify-content: center; align-items: center; flex-direction: column;
         }
-        .wheel-wrap { position: relative; width: 280px; height: 280px; margin-bottom: 20px; border: 5px solid #333; border-radius: 50%; }
+        .wheel-wrap { position: relative; width: 280px; height: 280px; margin-bottom: 20px; border: 8px solid #222; border-radius: 50%; box-shadow: 0 0 30px var(--text-gold); }
         .wheel-pointer {
-            position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+            position: absolute; top: -25px; left: 50%; transform: translateX(-50%);
             width: 0; height: 0; border-left: 15px solid transparent;
-            border-right: 15px solid transparent; border-top: 30px solid var(--primary-red); z-index: 20;
+            border-right: 15px solid transparent; border-top: 35px solid var(--primary-red); z-index: 20;
         }
         .main-wheel {
             width: 100%; height: 100%; border-radius: 50%;
-            background: conic-gradient(#ff3131 0deg 60deg, #ffc107 60deg 120deg, #25D366 120deg 180deg, #007bff 180deg 240deg, #e91e63 240deg 300deg, #ffffff 300deg 360deg);
+            background: conic-gradient(#ff3131 0deg 90deg, #ffc107 90deg 180deg, #25D366 180deg 270deg, #007bff 270deg 360deg);
             transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
         }
         .spin-btn-main {
             background: linear-gradient(45deg, var(--primary-red), var(--text-gold));
-            color: white; border: none; padding: 12px 30px; border-radius: 50px;
-            font-weight: bold; cursor: pointer; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(255,49,49,0.4);
+            color: white; border: none; padding: 15px 40px; border-radius: 50px;
+            font-weight: bold; cursor: pointer; font-size: 1.2rem; box-shadow: 0 5px 20px rgba(255,49,49,0.5);
         }
 
         .category-container { display: flex; overflow-x: auto; padding: 20px; gap: 15px; background: var(--dark-bg); position: sticky; top: 0; z-index: 1000; }
@@ -60,25 +75,39 @@
 <body>
 
 <audio id="orderSound" src="https://www.soundjay.com/buttons/button-20.mp3"></audio>
+
 <header>
     <h1>Boom's Pizza</h1>
-    <p style="background:var(--primary-red); padding:4px 15px; border-radius:20px; font-weight:bold;">کوالێتی نایاب و تامێکی لەبیرنەکراو</p>
+    <div style="background:rgba(255,49,49,0.9); padding:5px 15px; border-radius:20px; font-weight:bold; margin-top:10px;">چیتر تەلەفۆن مەکە! لێرە ئاسانترە 🚀</div>
 </header>
 
-<div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+<div class="steps-container">
+    <div class="step-box"><span class="step-icon">🍕</span> هەڵبژێرە</div>
+    <div style="color:var(--text-gold)">⬅️</div>
+    <div class="step-box"><span class="step-icon">🎡</span> داشکاندن بەرە</div>
+    <div style="color:var(--text-gold)">⬅️</div>
+    <div class="step-box"><span class="step-icon">📱</span> بنێرە</div>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 5px; flex-wrap: wrap; margin-bottom: 10px;">
     <button class="share-btn" onclick="shareSite()">📤 بڵاوکردنەوە</button>
-    <button class="share-btn" style="background: var(--text-gold); color: black;" onclick="openWheel()">🎡 چەرخی بەخت</button>
+    <button class="share-btn" style="background: linear-gradient(45deg, #ffc107, #ff9800); color: black;" onclick="openWheel()">🎡 چەرخی بەخت (داشکاندن)</button>
 </div>
 
 <div id="wheelOverlay" class="wheel-overlay">
-    <h2 style="color:var(--text-gold); margin-bottom:20px;">بەختت تاقی بکەرەوە! 🎁</h2>
+    <h2 style="color:var(--text-gold); margin-bottom:10px;">بەختت تاقی بکەرەوە! 🎰</h2>
+    <p style="color:#ccc; margin-bottom:20px;">یەکێک لە داشکاندنەکان بەرە</p>
     <div class="wheel-wrap">
         <div class="wheel-pointer"></div>
         <div id="theWheel" class="main-wheel"></div>
+        <div style="position:absolute; top:20%; left:50%; transform:translateX(-50%); color:white; font-weight:bold; z-index:5;">5%</div>
+        <div style="position:absolute; right:20%; top:50%; transform:translateY(-50%); color:black; font-weight:bold; z-index:5;">10%</div>
+        <div style="position:absolute; bottom:20%; left:50%; transform:translateX(-50%); color:white; font-weight:bold; z-index:5;">15%</div>
+        <div style="position:absolute; left:20%; top:50%; transform:translateY(-50%); color:white; font-weight:bold; z-index:5;">20%</div>
     </div>
     <button id="spinBtn" class="spin-btn-main" onclick="startSpin()">بسوڕێنە! 🚀</button>
-    <p id="wheelStatus" style="color:white; margin-top:15px; font-weight:bold;"></p>
-    <span onclick="closeWheel()" style="color:#666; cursor:pointer; margin-top:10px; text-decoration: underline;">داخستن</span>
+    <p id="wheelStatus" style="color:white; margin-top:15px; font-size:1.2rem; font-weight:bold; height:30px;"></p>
+    <span onclick="closeWheel()" style="color:#666; cursor:pointer; margin-top:15px; text-decoration: underline;">دواتر تاقی دەکەمەوە</span>
 </div>
 
 <div class="category-container">
@@ -95,10 +124,11 @@
     <div id="cart-section">
         <h3 style="color:var(--text-gold);">🛒 سەبەتەی داواکارییەکان</h3>
         <div id="cart-items"></div>
+        <div id="discount-label" style="text-align:center; color:var(--whatsapp-green); font-weight:bold; display:none; margin-top:10px;"></div>
         <div style="text-align:center; margin:20px 0;">
             <span style="font-size:1.5rem; color:var(--text-gold); font-weight:bold;">کۆی گشتی: <span id="total-amount">0</span> دینار</span>
         </div>
-        <button class="whatsapp-btn" onclick="sendToWhatsApp()">ناردنی داواکاری و لۆکەیشن (WhatsApp)</button>
+        <button class="whatsapp-btn" onclick="sendToWhatsApp()">ناردنی داواکاری بۆ واتسئەپ</button>
     </div>
 </div>
 
@@ -112,11 +142,17 @@
 
 <script>
     let cart = [];
+    let discountRate = 0; // ڕێژەی داشکاندن لێرە خەزن دەبێت
     const folderNames = { 'pizza': '🍕 جۆرەکانی پیزا', 'burger': '🍔 جۆرەکانی بەرگر', 'shawarma': '🌯 جۆرەکانی شاوەرمە', 'finger': '🍟 فینگەر', 'drink': '🥤 خواردنەوەکان' };
 
-    // فەنکشنەکانی چەرخی بەخت
+    // فەنکشنەکانی چەرخی بەخت (تەنها داشکاندن)
     let isSpinning = false;
-    const prizes = ["داشکاندنی ١٠٪", "سۆسی خۆڕایی", "گەیاندنی خۆڕایی", "پیتزای بچووک", "کۆکا کۆلا", "بەختێکی تر"];
+    const prizes = [
+        { label: "5%", val: 0.05 },
+        { label: "10%", val: 0.10 },
+        { label: "15%", val: 0.15 },
+        { label: "20%", val: 0.20 }
+    ];
 
     function openWheel() { document.getElementById('wheelOverlay').style.display = 'flex'; }
     function closeWheel() { document.getElementById('wheelOverlay').style.display = 'none'; }
@@ -126,30 +162,35 @@
         isSpinning = true;
         const wheel = document.getElementById('theWheel');
         const status = document.getElementById('wheelStatus');
-        const deg = Math.floor(Math.random() * 360) + 1800; // ٥ جار سوڕانەوە
+        const deg = Math.floor(Math.random() * 360) + 2160; // سوڕانەوە بۆ ماوەیەک
         
         wheel.style.transform = `rotate(${deg}deg)`;
-        status.innerText = "خەریکە دەوەستێت... ✨";
+        status.innerText = "بەختت تاقی دەکرێتەوە... ✨";
 
         setTimeout(() => {
             const finalDeg = deg % 360;
-            const prizeIdx = Math.floor((360 - finalDeg) / 60) % 6;
+            // دابەشکردنی ٤ بەش (هەر بەشەی ٩٠ پلە)
+            const prizeIdx = Math.floor((360 - finalDeg) / 90) % 4;
             const result = prizes[prizeIdx];
-            status.innerText = "🎉 پیرۆزە: " + result;
             
+            discountRate = result.val; // جێگیرکردنی داشکاندنەکە
+            status.innerText = "🎉 پیرۆزە: داشکاندنی " + result.label;
+            
+            renderCart(); // نوێکردنەوەی نرخەکان یەکسەر
+
             setTimeout(() => {
-                alert("خەڵاتەکەت: " + result + "\nوێنەی شاشەکە بگرە و بۆمان بنێرە لە واتسئەپ!");
+                alert("پیرۆزە! داشکاندنی " + result.label + " بۆت چالاک بوو.\nنرخەکان لە سەبەتەکەدا کەم کرانەوە.");
                 isSpinning = false;
                 closeWheel();
-            }, 1000);
+            }, 1200);
         }, 4000);
     }
 
     function shareSite() {
         if (navigator.share) {
-            navigator.share({ title: "Boom's Pizza", text: "خۆشترین پیتزا و بەرگر لێرە داوا بکە! 🔥", url: window.location.href });
+            navigator.share({ title: "Boom's Pizza", text: "خۆشترین پیتزا لێرە داوا بکە و داشکاندن بەرە! 🔥", url: window.location.href });
         } else {
-            alert("لینکی سایتەکە کۆپی کرا! 🚀");
+            alert("سایتەکە بڵاو بکەرەوە بۆ هاوڕێکانت! 🚀");
         }
     }
 
@@ -181,16 +222,35 @@
 
     function renderCart() {
         const cartDiv = document.getElementById('cart-items');
+        const discLabel = document.getElementById('discount-label');
         let total = 0; cartDiv.innerHTML = '';
         const grouped = {};
+        
         cart.forEach(i => { total += i.price; grouped[i.name] = (grouped[i.name] || 0) + 1; });
+        
         for (const [name, count] of Object.entries(grouped)) {
             cartDiv.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #222;"><span>${count}x ${name}</span><button onclick="removeFromCart('${name}')" style="color:#ff5555; background:none; border:1px solid #ff5555; border-radius:5px; padding:2px 8px; cursor:pointer;">لادان</button></div>`;
         }
-        document.getElementById('total-amount').innerText = total.toLocaleString();
+
+        // جێبەجێکردنی داشکاندنی چەرخەکە
+        if (discountRate > 0 && total > 0) {
+            const discAmount = total * discountRate;
+            const newTotal = total - discAmount;
+            discLabel.style.display = 'block';
+            discLabel.innerText = `🎁 داشکاندنی ${discountRate * 100}% جێبەجێ کرا!`;
+            document.getElementById('total-amount').innerHTML = `<small style="text-decoration:line-through; color:#888; margin-left:10px;">${total.toLocaleString()}</small> ${Math.round(newTotal).toLocaleString()}`;
+            total = newTotal;
+        } else {
+            discLabel.style.display = 'none';
+            document.getElementById('total-amount').innerText = total.toLocaleString();
+        }
+
         const fb = document.getElementById('floating-cart');
-        if(cart.length > 0) { fb.style.display = 'flex'; document.getElementById('floating-count').innerText = cart.length + " دانە"; document.getElementById('floating-total').innerText = total.toLocaleString() + " دینار"; }
-        else { fb.style.display = 'none'; }
+        if(cart.length > 0) { 
+            fb.style.display = 'flex'; 
+            document.getElementById('floating-count').innerText = cart.length + " دانە"; 
+            document.getElementById('floating-total').innerText = Math.round(total).toLocaleString() + " دینار"; 
+        } else { fb.style.display = 'none'; }
     }
 
     function removeFromCart(name) {
@@ -205,10 +265,16 @@
         const grouped = {};
         cart.forEach(i => grouped[i.name] = (grouped[i.name] || 0) + 1);
         for (const [n, c] of Object.entries(grouped)) txt += `🔹 ${c}x ${n}\n`;
-        txt += `\n💰 *کۆی گشتی:* ${document.getElementById('total-amount').innerText} دینار`;
+        
+        if (discountRate > 0) {
+            txt += `\n🎁 *داشکاندنی چەرخی بەخت:* ${discountRate * 100}%\n`;
+        }
+        
+        txt += `\n💰 *کۆی گشتی کۆتایی:* ${document.getElementById('total-amount').innerText} دینار`;
         window.location.href = `https://wa.me/9647504629237?text=${encodeURIComponent(txt)}`;
     }
 
+    // بەفرەکە
     setInterval(() => {
         const s = document.createElement('div');
         s.className = 'snowflake';
