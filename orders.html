@@ -1,75 +1,40 @@
-<!DOCTYPE html>
-<html lang="ku" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوم پیتزا - کەرەستەی کار</title>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;500;800&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-    <style>
-        :root { --accent: #ff3131; --bg: #050505; --card: #111111; }
-        body { font-family: 'Vazirmatn', sans-serif; background: var(--bg); color: white; margin: 0; }
-        .nav { background: #000; padding: 20px; text-align: center; border-bottom: 3px solid var(--accent); position: sticky; top: 0; z-index: 100; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
-        .s-card { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #222; }
-        .s-card span { font-size: 0.8rem; color: #888; display: block; }
-        .s-card b { font-size: 1.2rem; color: var(--accent); }
-        .container { padding: 15px; }
-        .order { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 15px; border-left: 6px solid var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        .head { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .id { color: #ffc107; font-weight: bold; }
-        .items { background: #1a1a1a; padding: 10px; border-radius: 10px; margin: 10px 0; border: 1px solid #333; }
-        .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-        .call { background: #25D366; color: white; padding: 10px 20px; border-radius: 12px; text-decoration: none; font-weight: bold; }
-    </style>
-</head>
-<body>
-    <div class="nav"><h1>🍕 BOOM PIZZA ADMIN</h1></div>
-    <div class="stats-grid">
-        <div class="s-card"><span>داواکارییەکان</span><b id="count">0</b></div>
-        <div class="s-card"><span>کۆی داهات</span><b id="sum">0</b></div>
-    </div>
-    <div class="container" id="list">چاوەڕوان بە...</div>
+// هێنانەوەی داتا و ڕیزکردنی بەپێی کات (نوێترین بۆ کۆنترین)
+db.ref('orders').on('value', (snapshot) => {
+    const listDiv = document.getElementById('list');
+    const data = snapshot.val();
+    listDiv.innerHTML = '';
+    
+    let totalSum = 0;
+    let count = 0;
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDqoOjm4m1Fxp760mJPy0sv5_NjaJfkm7g",
-            authDomain: "boompizza-5d048.firebaseapp.com",
-            databaseURL: "https://boompizza-5d048-default-rtdb.firebaseio.com",
-            projectId: "boompizza-5d048",
-            storageBucket: "boompizza-5d048.firebasestorage.app",
-            messagingSenderId: "636068289590",
-            appId: "1:636068289590:web:41fe758906140c700ecc97"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+    if (data) {
+        // گۆڕینی داتاکان بۆ لیست و پێچەوانەکردنەوەیان بۆ ئەوەی نوێترین لە سەرەوە بێت
+        const sortedKeys = Object.keys(data).reverse(); 
+        count = sortedKeys.length;
+        
+        sortedKeys.forEach(key => {
+            const o = data[key];
+            let priceValue = o.total ? o.total.toString().replace(/[^0-9]/g, '') : 0;
+            totalSum += parseInt(priceValue) || 0;
 
-        db.ref('orders').on('value', (s) => {
-            const list = document.getElementById('list');
-            const data = s.val();
-            list.innerHTML = '';
-            let total = 0, count = 0;
-            if (data) {
-                Object.keys(data).reverse().forEach(k => {
-                    const o = data[k];
-                    count++;
-                    total += parseInt(o.total?.toString().replace(/[^0-9]/g, '') || 0);
-                    list.innerHTML += `
-                        <div class="order">
-                            <div class="head"><span class="id">#${o.id}</span><small style="color:#666">${o.time || ''}</small></div>
-                            <div class="items">🍴 ${Array.isArray(o.items) ? o.items.join(' + ') : o.items}</div>
-                            ${o.note && o.note !== 'نییە' ? `<div style="color:#ffc107; font-size:0.8rem">💬 ${o.note}</div>` : ''}
-                            <div class="foot">
-                                <b>${o.total} IQD</b>
-                                <a href="tel:${o.phone}" class="call">پەیوەندی 📞</a>
-                            </div>
-                        </div>`;
-                });
-            }
-            document.getElementById('count').innerText = count;
-            document.getElementById('sum').innerText = total.toLocaleString() + " د.ع";
+            listDiv.innerHTML += `
+                <div class="order">
+                    <div class="head">
+                        <span class="id">#${o.id}</span>
+                        <small style="color:#888">${o.time || 'کات نادیارە'}</small>
+                    </div>
+                    <div class="items">🍴 ${Array.isArray(o.items) ? o.items.join(' + ') : o.items}</div>
+                    ${o.note && o.note !== 'نییە' ? `<div style="color:#ffc107; font-size:0.85rem; margin-bottom:10px;">💬 ${o.note}</div>` : ''}
+                    <div class="foot">
+                        <b style="font-size:1.1rem;">${o.total} د.ع</b>
+                        <a href="tel:${o.phone}" class="call">پەیوەندی 📞</a>
+                    </div>
+                </div>`;
         });
-    </script>
-</body>
-</html>
+    } else {
+        listDiv.innerHTML = '<p style="text-align:center; color:#666;">هیچ داواکارییەک نەدۆزرایەوە</p>';
+    }
+    
+    document.getElementById('count').innerText = count;
+    document.getElementById('sum').innerText = totalSum.toLocaleString() + " د.ع";
+});
