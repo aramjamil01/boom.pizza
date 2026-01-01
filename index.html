@@ -67,7 +67,7 @@
     </header>
 
     <div class="contact-strip">
-        <a href="https://maps.google.com" target="_blank" class="contact-item">📍 شوێنی ئێمە</a>
+        <a href="https://www.google.com/maps" target="_blank" class="contact-item">📍 شوێنی ئێمە</a>
         <a href="tel:07504629237" class="contact-item">📞 07504629237</a>
     </div>
 
@@ -137,7 +137,7 @@
         </div>
     </div>
     <button onclick="startSpin()">بسوڕێنە!</button>
-    <span onclick="closeWheel()">داخستن</span>
+    <button onclick="closeWheel()" style="background:#444; color:white; margin-top:10px; border:none; padding:10px 20px; border-radius:10px;">داخستن</button>
 </div>
 
 <div class="bottom-bar" id="floating-cart" onclick="document.getElementById('cart-section').scrollIntoView({behavior:'smooth'})">
@@ -161,6 +161,21 @@
 
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
+
+    // --- FIX: SHARE FUNCTION ---
+    function shareSite() {
+        if (navigator.share) {
+            navigator.share({
+                title: "Boom's Pizza | بوم پیتزا",
+                text: "باشترین و بەتامترین پیتزا لە بوم پیتزا، ئێستا داوا بکە!",
+                url: window.location.href
+            }).then(() => console.log('بڵاوکرایەوە'))
+              .catch((error) => console.log('هەڵە:', error));
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            alert("لینکەکە کۆپی کرا بۆ مۆبایلەکەت!");
+        }
+    }
 
     function switchPage(pageId, btn) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -232,7 +247,6 @@
         renderCart();
     }
 
-    // --- چاککردنی سیستەمی لۆکەیشن بە شێوەی ئۆتۆماتیکی ---
     function sendToWhatsApp() {
         if(cart.length === 0) return alert("سەبەتەکە بەتاڵە!");
         
