@@ -1,8 +1,5 @@
-
 {
-  "name": "Boom's Pizza Kurdish",
-  "description": "A premium pizza ordering application localized in Kurdish with a lucky wheel, cart management, and admin dashboard.",
-  "requestFramePermissions": [
-    "geolocation"
-  ]
+  "name": "سیستەمی بەڕێوەبردنی چێشتخانە (Kurdish Restaurant Management)",
+  "description": "A comprehensive restaurant management system with multi-language support (Kurdish), menu management, real-time POS, kitchen tracking, and AI-powered dish generation.",
+  "requestFramePermissions": []
 }
