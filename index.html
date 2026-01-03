@@ -1,723 +1,190 @@
-
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Boom's Pizza | بوم پیتزا</title>
-    
-    <!-- PWA Meta Tags -->
-    <link rel="manifest" href="manifest.json" />
-    <meta name="theme-color" content="#ff3131" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Boom Pizza" />
-    <link rel="apple-touch-icon" href="https://i.postimg.cc/02R8rCjV/99999999.jpg" />
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Boom's Pizza</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #0a0a0a;
-            color: #ffffff;
-            overflow-x: hidden;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0a0a0a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #ff3131;
-            border-radius: 10px;
-        }
-        @keyframes pulse-gold {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
-            50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(255, 193, 7, 0); }
-        }
-        .animate-pulse-gold {
-            animation: pulse-gold 2s infinite;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .lucky-wheel-canvas {
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
-        }
+        body { font-family: 'Unbounded', sans-serif; background-color: black; color: white; overflow-x: hidden; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
-    <script type="importmap">
-    {
-        "imports": {
-            "react": "https://esm.sh/react@18.2.0",
-            "react-dom": "https://esm.sh/react-dom@18.2.0",
-            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-            "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-            "firebase/database": "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js",
-            "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
-            "htm": "https://esm.sh/htm@3.1.1"
-        }
-    }
-    </script>
-<link rel="stylesheet" href="/index.css">
 </head>
 <body>
     <div id="root"></div>
 
     <script type="module">
-        import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-        import { createRoot } from 'react-dom/client';
-        import { initializeApp } from 'firebase/app';
-        import { getDatabase, ref, onValue, push, set, update, remove, query, orderByChild, equalTo } from 'firebase/database';
-        import * as Lucide from 'lucide-react';
-        import htm from 'htm';
+        import React, { useState, useEffect, useMemo } from 'https://esm.sh/react@18.2.0';
+        import { createRoot } from 'https://esm.sh/react-dom@18.2.0/client';
+        import htm from 'https://esm.sh/htm';
+        import { initializeApp } from 'https://esm.sh/firebase@10.7.1/app';
+        import { getDatabase, ref, push, onValue } from 'https://esm.sh/firebase@10.7.1/database';
+        import * as LucideIcons from 'https://esm.sh/lucide-react@0.294.0';
 
         const html = htm.bind(React.createElement);
 
-        // Register Service Worker
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js').then(reg => {
-              console.log('SW Registered!', reg);
-            }).catch(err => {
-              console.log('SW Registration failed!', err);
-            });
-          });
-        }
-
-        // --- Firebase Setup ---
+        // --- Firebase Configuration (Add your config here) ---
         const firebaseConfig = {
-            apiKey: "AIzaSyDqoOjm4m1Fxp760mJPy0sv5_NjaJfkm7g",
-            authDomain: "boompizza-5d048.firebaseapp.com",
-            databaseURL: "https://boompizza-5d048-default-rtdb.firebaseio.com",
-            projectId: "boompizza-5d048",
-            storageBucket: "boompizza-5d048.firebasestorage.app",
-            messagingSenderId: "636068289590",
-            appId: "1:636068289590:web:41fe758906140c700ecc97"
+            databaseURL: "YOUR_FIREBASE_URL" 
         };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
         const Icon = ({ name, ...props }) => {
-            const LucideIcon = Lucide[name];
-            return LucideIcon ? html`<${LucideIcon} ...${props} />` : null;
-        };
-
-        const DigitalReceipt = ({ order, onClose }) => {
-            return html`
-                <div className="fixed inset-0 z-[7000] bg-black/95 flex items-center justify-center p-4">
-                    <div className="bg-white text-black w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl flex flex-col items-center p-6 relative">
-                        <div className="absolute top-0 left-0 w-full h-2 bg-[#ff3131]"></div>
-                        <div className="bg-green-100 text-green-600 p-3 rounded-full mb-4">
-                            <${Icon} name="CheckCircle" size=${32} />
-                        </div>
-                        <h2 className="text-2xl font-black mb-1">وەسڵی دیجیتاڵی</h2>
-                        <p className="text-gray-500 text-sm mb-6">سوپاس بۆ متمانەکەت!</p>
-                        <div className="w-full border-t border-dashed border-gray-300 py-4 space-y-3">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500 font-bold">کۆدی داواکاری:</span>
-                                <span className="font-bold">#${order.orderID}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500 font-bold">کات:</span>
-                                <span className="font-bold">${order.time}</span>
-                            </div>
-                            <div className="flex flex-col gap-1 mt-2">
-                                <span className="text-gray-500 text-sm font-bold">داواکارییەکان:</span>
-                                <span className="font-bold text-sm bg-gray-50 p-2 rounded-lg">${order.items}</span>
-                            </div>
-                            <div className="flex justify-between items-center pt-4 border-t border-gray-200 mt-4">
-                                <span className="text-lg font-bold">کۆی گشتی:</span>
-                                <span className="text-2xl font-black text-[#ff3131]">${order.total} د.ع</span>
-                            </div>
-                        </div>
-                        <div className="w-full mt-6 space-y-3 text-center">
-                             <p className="text-[10px] text-zinc-400 mb-2">بە وێنەی شاشە (Screenshot) ئەم وەسڵە لای خۆت بپارێزە</p>
-                            <button 
-                                onClick=${() => {
-                                    const msg = `🆔 # ${order.orderID}\n🍴 ${order.items}\n💰 ${order.total} د.ع\n📍 ${order.location}\n📝 ${order.note || "بەبێ تێبینی"}`;
-                                    window.location.href = `https://wa.me/9647504629237?text=${encodeURIComponent(msg)}`;
-                                }}
-                                className="w-full bg-[#25D366] text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2"
-                            >
-                                <${Icon} name="MessageCircle" size=${18} /> ناردنی کۆتایی بۆ واتسئەپ
-                            </button>
-                            <button onClick=${onClose} className="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-xl">گەڕانەوە بۆ مێنۆ</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        };
-
-        const LuckyWheel = ({ onWin, onClose, prizes }) => {
-            const [isSpinning, setIsSpinning] = useState(false);
-            const canvasRef = useRef(null);
-            const [rotation, setRotation] = useState(0);
-
-            const activePrizes = useMemo(() => prizes && prizes.length > 0 ? prizes : [
-                { label: "%5 داشکان", color: "#ff3131", prob: 100 }
-            ], [prizes]);
-
-            useEffect(() => {
-                const canvas = canvasRef.current;
-                if (!canvas) return;
-                const ctx = canvas.getContext('2d');
-                const arc = (2 * Math.PI) / activePrizes.length;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                activePrizes.forEach((p, i) => {
-                    ctx.beginPath();
-                    ctx.fillStyle = p.color || "#444";
-                    ctx.moveTo(175, 175);
-                    ctx.arc(175, 175, 170, i * arc, (i + 1) * arc);
-                    ctx.fill();
-                    ctx.strokeStyle = '#333';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-
-                    ctx.save();
-                    ctx.translate(175, 175);
-                    ctx.rotate(i * arc + arc / 2);
-                    ctx.textAlign = "right";
-                    ctx.fillStyle = "white";
-                    ctx.font = "bold 14px Vazirmatn";
-                    ctx.fillText(p.label, 150, 5);
-                    ctx.restore();
-                });
-            }, [activePrizes]);
-
-            const spin = () => {
-                if (isSpinning) return;
-                setIsSpinning(true);
-
-                const totalProb = activePrizes.reduce((acc, p) => acc + Number(p.prob), 0);
-                const rand = Math.random() * totalProb;
-                let cumulative = 0;
-                let winnerIndex = 0;
-                for (let i = 0; i < activePrizes.length; i++) {
-                    cumulative += Number(activePrizes[i].prob);
-                    if (rand <= cumulative) {
-                        winnerIndex = i;
-                        break;
-                    }
-                }
-
-                const degPerSlice = 360 / activePrizes.length;
-                const targetAngle = 270 - (winnerIndex * degPerSlice + degPerSlice / 2);
-                const extraSpins = 10 * 360;
-                const newRotation = rotation + extraSpins + (targetAngle - (rotation % 360));
-
-                setRotation(newRotation);
-
-                setTimeout(() => {
-                    setIsSpinning(false);
-                    onWin(activePrizes[winnerIndex].label);
-                }, 5000);
-            };
-
-            return html`
-                <div className="fixed inset-0 z-[6000] bg-black/90 flex flex-col items-center justify-center p-4">
-                    <button onClick=${onClose} className="absolute top-6 right-6 text-white text-3xl hover:text-red-500 transition-colors">✕</button>
-                    <div className="relative mb-8">
-                        <div className="absolute top-[-15px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[30px] border-t-red-500 z-10 drop-shadow-lg"></div>
-                        <canvas 
-                            ref=${canvasRef} 
-                            width="350" 
-                            height="350" 
-                            className="rounded-full border-[8px] border-[#333] shadow-2xl transition-transform duration-[5000ms] lucky-wheel-canvas"
-                            style=${{ transitionTimingFunction: 'cubic-bezier(0.15, 0, 0.15, 1)', transform: `rotate(${rotation}deg)` }}
-                        />
-                    </div>
-                    <button onClick=${spin} disabled=${isSpinning} className=${`px-12 py-4 rounded-full font-bold text-xl text-white transition-all ${isSpinning ? 'bg-gray-600' : 'bg-[#ff3131] hover:scale-110 shadow-lg shadow-red-500/20'}`}>
-                        ${isSpinning ? 'دەسوڕێتەوە...' : 'بسوڕێنە! 🎰'}
-                    </button>
-                </div>
-            `;
-        };
-
-        const AdminPanel = ({ categories, wheelPrizes }) => {
-            const [activeTab, setActiveTab] = useState('orders');
-            const [menuItems, setMenuItems] = useState([]);
-            const [orders, setOrders] = useState([]);
-            
-            const [editingItem, setEditingItem] = useState({ name: '', price: 0, discount: 0, img: '', category: categories[0]?.id || '' });
-            const [editingCategory, setEditingCategory] = useState({ id: '', name: '', img: '' });
-            const [editingPrize, setEditingPrize] = useState({ label: '', color: '#ff3131', prob: 20 });
-
-            useEffect(() => {
-                onValue(ref(db, 'menu_items'), (snapshot) => {
-                    const data = snapshot.val();
-                    setMenuItems(data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : []);
-                });
-                onValue(ref(db, 'orders'), (snapshot) => {
-                    const data = snapshot.val();
-                    const list = data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : [];
-                    setOrders(list.reverse());
-                });
-            }, []);
-
-            const handleImageUpload = (e, callback) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    callback(reader.result);
-                };
-                reader.readAsDataURL(file);
-            };
-
-            const seedData = async () => {
-                if(!confirm("ئایا دڵنیای لە گەڕاندنەوەی زانیارییە بنەڕەتییەکان؟")) return;
-                const defaultCats = {
-                    pizza: { name: 'پیتزا', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=150' },
-                    burger: { name: 'بەرگر', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=150' },
-                    shawarma: { name: 'شاوەرمە', img: 'https://i.postimg.cc/Pr91C9Z7/arabic-chicken-shawarma-sandwich-recipe-1747792750.jpg' },
-                    finger: { name: 'پەنجەکان', img: 'https://i.postimg.cc/FHWp2K1z/fried-chicken-fingers.jpg' },
-                    drink: { name: 'خواردنەوە', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=150' }
-                };
-                await set(ref(db, 'categories'), defaultCats);
-                alert("زانیارییەکان گەڕێنرانەوە! تکایە لاپەڕەکە نوێ بکەرەوە.");
-            };
-
-            const saveItem = async (e) => {
-                e.preventDefault();
-                if (!editingItem.name || !editingItem.price) return alert("خانەکان پڕبکەرەوە");
-                editingItem.id ? await update(ref(db, `menu_items/${editingItem.id}`), editingItem) : await push(ref(db, 'menu_items'), editingItem);
-                setEditingItem({ name: '', price: 0, discount: 0, img: '', category: categories[0]?.id || '' });
-            };
-
-            const saveCategory = async (e) => {
-                e.preventDefault();
-                if (!editingCategory.id || !editingCategory.name) return alert("ID و ناو پێویستە");
-                await set(ref(db, `categories/${editingCategory.id}`), { name: editingCategory.name, img: editingCategory.img });
-                setEditingCategory({ id: '', name: '', img: '' });
-            };
-
-            const savePrize = async (e) => {
-                e.preventDefault();
-                if (!editingPrize.label) return alert("ناو پێویستە");
-                editingPrize.id ? await update(ref(db, `prizes/${editingPrize.id}`), editingPrize) : await push(ref(db, 'prizes'), editingPrize);
-                setEditingPrize({ label: '', color: '#ff3131', prob: 20 });
-            };
-
-            const deleteEntry = async (path, id) => {
-                if(confirm("دڵنیای لە سڕینەوە؟")) await remove(ref(db, `${path}/${id}`));
-            };
-
-            return html`
-                <div className="p-4 max-w-5xl mx-auto pb-24">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-8 bg-zinc-900 p-2 rounded-xl border border-zinc-800">
-                        ${['orders', 'items', 'categories', 'wheel'].map(tab => html`
-                            <button key=${tab} onClick=${() => setActiveTab(tab)} className=${`py-2 rounded-lg text-xs font-bold transition-all ${activeTab === tab ? 'bg-[#ff3131] text-white shadow-lg' : 'text-zinc-400 hover:bg-zinc-800'}`}>
-                                ${tab === 'orders' ? 'داواکاری' : tab === 'items' ? 'خواردن' : tab === 'categories' ? 'کاتیگۆری' : '🎰 چەرخ'}
-                            </button>
-                        `)}
-                    </div>
-
-                    ${activeTab === 'orders' && html`
-                        <div className="space-y-4">
-                            <h2 className="text-xl font-bold text-[#ffc107]">📥 داواکارییەکان</h2>
-                            ${orders.length === 0 ? html`<div className="text-center py-20 text-zinc-500">داواکاری نییە</div>` :
-                            orders.map(o => html`
-                                <div key=${o.id} className="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl mb-4">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div className="text-xs text-zinc-500">#${o.orderID} • ${o.time}</div>
-                                        <button onClick=${() => remove(ref(db, `orders/${o.id}`))} className="text-green-500"><${Icon} name="CheckCircle" size=${22} /></button>
-                                    </div>
-                                    <div className="text-sm font-bold text-white mb-2">${o.items}</div>
-                                    <div className="text-lg font-black text-[#ffc107]">${o.total} د.ع</div>
-                                    <div className="text-xs text-zinc-400 mt-2">${o.note || "بەبێ تێبینی"}</div>
-                                    <a href=${o.location} target="_blank" className="mt-4 flex bg-blue-600/20 text-blue-400 border border-blue-600/30 py-2 rounded-lg items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider">
-                                        <${Icon} name="MapPin" size=${14} /> بینینی لۆکەیشن
-                                    </a>
-                                </div>
-                            `)}
-                        </div>
-                    `}
-
-                    ${activeTab === 'items' && html`
-                        <div className="space-y-8">
-                            <form onSubmit=${saveItem} className="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
-                                <h3 className="font-bold text-white">${editingItem.id ? 'دەستکاری خواردن' : 'زیادکردنی خواردن'}</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <input type="text" placeholder="ناو" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingItem.name} onChange=${e => setEditingItem({...editingItem, name: e.target.value})} />
-                                    <input type="number" placeholder="نرخ" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingItem.price || ''} onChange=${e => setEditingItem({...editingItem, price: parseInt(e.target.value)})} />
-                                    <input type="number" placeholder="داشکان" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingItem.discount || ''} onChange=${e => setEditingItem({...editingItem, discount: parseInt(e.target.value)})} />
-                                    <select className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingItem.category} onChange=${e => setEditingItem({...editingItem, category: e.target.value})}>
-                                        ${categories.map(c => html`<option key=${c.id} value=${c.id}>${c.name}</option>`)}
-                                    </select>
-                                    <div className="col-span-2 space-y-2">
-                                        <label className="text-[10px] text-zinc-500 block">بارکردنی وێنە:</label>
-                                        <input type="file" accept="image/*" onChange=${e => handleImageUpload(e, (res) => setEditingItem({...editingItem, img: res}))} className="text-[10px] text-zinc-400" />
-                                        ${editingItem.img && html`<img src=${editingItem.img} className="h-20 rounded border border-zinc-700 mt-2" />`}
-                                    </div>
-                                </div>
-                                <button className="w-full bg-green-600 text-white font-bold py-2 rounded text-xs">پاشەکەوتکردن</button>
-                            </form>
-                            <div className="space-y-2">
-                                ${menuItems.map(item => html`
-                                    <div key=${item.id} className="bg-zinc-900 border border-zinc-800 p-3 rounded flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <img src=${item.img || 'https://via.placeholder.com/150'} className="w-8 h-8 rounded-full object-cover" />
-                                            <span className="text-xs font-bold">${item.name}</span>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button onClick=${() => { setEditingItem(item); window.scrollTo(0,0); }} className="text-blue-400"><${Icon} name="Edit" size=${16} /></button>
-                                            <button onClick=${() => deleteEntry('menu_items', item.id)} className="text-red-500"><${Icon} name="Trash2" size=${16} /></button>
-                                        </div>
-                                    </div>
-                                `)}
-                            </div>
-                        </div>
-                    `}
-
-                    ${activeTab === 'categories' && html`
-                        <div className="space-y-8">
-                            <div className="flex justify-between items-center bg-yellow-500/10 p-3 rounded-xl border border-yellow-500/20">
-                                <span className="text-xs text-yellow-500 font-bold">زانیارییەکان ون بوون؟</span>
-                                <button onClick=${seedData} className="bg-yellow-500 text-black text-[10px] px-3 py-1 rounded-full font-bold">گەڕاندنەوەی سەرەتا</button>
-                            </div>
-                            <form onSubmit=${saveCategory} className="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
-                                <h3 className="font-bold text-white">بەڕێوەبردنی کاتیگۆری</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <input type="text" placeholder="ID (ئینگلیزی - pizza)" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingCategory.id} onChange=${e => setEditingCategory({...editingCategory, id: e.target.value})} />
-                                    <input type="text" placeholder="ناو (کوردی - پیتزا)" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingCategory.name} onChange=${e => setEditingCategory({...editingCategory, name: e.target.value})} />
-                                    <div className="col-span-2 space-y-2">
-                                        <label className="text-[10px] text-zinc-500 block">بارکردنی وێنەی کاتیگۆری:</label>
-                                        <input type="file" accept="image/*" onChange=${e => handleImageUpload(e, (res) => setEditingCategory({...editingCategory, img: res}))} className="text-[10px] text-zinc-400" />
-                                        ${editingCategory.img && html`<img src=${editingCategory.img} className="h-20 rounded border border-zinc-700 mt-2" />`}
-                                    </div>
-                                </div>
-                                <button className="w-full bg-green-600 text-white font-bold py-2 rounded text-xs">پاشەکەوت</button>
-                            </form>
-                            <div className="space-y-2">
-                                ${categories.map(c => html`
-                                    <div key=${c.id} className="bg-zinc-900 border border-zinc-800 p-3 rounded flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <img src=${c.img || 'https://via.placeholder.com/150'} className="w-8 h-8 rounded-full object-cover" />
-                                            <span className="text-xs font-bold">${c.name} (${c.id})</span>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button onClick=${() => setEditingCategory({id: c.id, ...c})} className="text-blue-400"><${Icon} name="Edit" size=${16} /></button>
-                                            <button onClick=${() => deleteEntry('categories', c.id)} className="text-red-500"><${Icon} name="Trash2" size=${16} /></button>
-                                        </div>
-                                    </div>
-                                `)}
-                            </div>
-                        </div>
-                    `}
-
-                    ${activeTab === 'wheel' && html`
-                        <div className="space-y-8">
-                            <form onSubmit=${savePrize} className="bg-zinc-900 p-4 rounded-xl border border-zinc-800 space-y-3">
-                                <h3 className="font-bold text-white">بەڕێوەبردنی خەڵاتەکان</h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <input type="text" placeholder="ناوی خەڵات" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingPrize.label} onChange=${e => setEditingPrize({...editingPrize, label: e.target.value})} />
-                                    <input type="number" placeholder="ڕێژەی بردنەوە (1-100)" className="bg-zinc-800 border-none p-2 rounded text-xs text-white" value=${editingPrize.prob} onChange=${e => setEditingPrize({...editingPrize, prob: e.target.value})} />
-                                    <input type="color" className="bg-zinc-800 border-none h-10 w-full rounded p-1" value=${editingPrize.color} onChange=${e => setEditingPrize({...editingPrize, color: e.target.value})} />
-                                </div>
-                                <button className="w-full bg-green-600 text-white font-bold py-2 rounded text-xs">پاشەکەوت</button>
-                            </form>
-                            <div className="space-y-2">
-                                ${wheelPrizes.map(p => html`
-                                    <div key=${p.id} className="bg-zinc-900 border border-zinc-800 p-3 rounded flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <div style=${{ backgroundColor: p.color }} className="w-4 h-4 rounded-full border border-zinc-700"></div>
-                                            <span className="text-xs font-bold text-white">${p.label} (${p.prob}%)</span>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button onClick=${() => setEditingPrize(p)} className="text-blue-400"><${Icon} name="Edit" size=${16} /></button>
-                                            <button onClick=${() => deleteEntry('prizes', p.id)} className="text-red-500"><${Icon} name="Trash2" size=${16} /></button>
-                                        </div>
-                                    </div>
-                                `)}
-                            </div>
-                        </div>
-                    `}
-                </div>
-            `;
+            const IconComponent = LucideIcons[name];
+            return IconComponent ? React.createElement(IconComponent, props) : null;
         };
 
         const App = () => {
             const [view, setView] = useState('menu');
-            const [activeCategory, setActiveCategory] = useState('');
-            const [allMenuItems, setAllMenuItems] = useState([]);
-            const [categories, setCategories] = useState([]);
-            const [wheelPrizes, setWheelPrizes] = useState([]);
             const [cart, setCart] = useState({});
-            const [showWheel, setShowWheel] = useState(false);
-            const [prizesWon, setPrizesWon] = useState([]);
+            const [activeCategory, setActiveCategory] = useState('pizza');
             const [orderNote, setOrderNote] = useState('');
-            const [manualAddress, setManualAddress] = useState('');
             const [isSending, setIsSending] = useState(false);
             const [lastOrder, setLastOrder] = useState(null);
-            const [showManualInput, setShowManualInput] = useState(false);
 
-            useEffect(() => {
-                onValue(ref(db, 'categories'), (snap) => {
-                    const data = snap.val();
-                    const list = data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : [];
-                    setCategories(list);
-                    if (list.length > 0 && !activeCategory) setActiveCategory(list[0].id);
-                });
-                onValue(ref(db, 'prizes'), (snap) => {
-                    const data = snap.val();
-                    setWheelPrizes(data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : []);
-                });
-                onValue(ref(db, 'menu_items'), (snapshot) => {
-                    const data = snapshot.val();
-                    setAllMenuItems(data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : []);
-                });
-            }, []);
+            const categories = [
+                { id: 'pizza', name: 'پیتزا', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200' },
+                { id: 'burger', name: 'بەرگر', img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200' },
+                { id: 'drinks', name: 'خواردنەوە', img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200' }
+            ];
 
-            const filteredMenuItems = useMemo(() => {
-                return allMenuItems.filter(item => item.category === activeCategory);
-            }, [allMenuItems, activeCategory]);
+            const menuItems = [
+                { id: 1, category: 'pizza', name: 'مارگریتا', price: 8000, img: 'https://images.unsplash.com/photo-1574071318508-1cdbad80ad50?w=400' },
+                { id: 2, category: 'pizza', name: 'پێپەرۆنی', price: 10000, img: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400' },
+                { id: 3, category: 'burger', name: 'چیزبەرگر', price: 6000, img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400' }
+            ];
 
-            const canSpin = localStorage.getItem('canSpinBoom') === 'true' || !localStorage.getItem('boomSpinCount');
+            const filteredMenuItems = menuItems.filter(item => item.category === activeCategory);
+            const totalAmount = Object.values(cart).reduce((acc, item) => acc + (item.price * item.qty), 0);
 
-            const addToCart = (item) => {
-                const finalPrice = item.price - (item.discount || 0);
-                setCart(prev => {
-                    const existing = prev[item.name];
-                    return { ...prev, [item.name]: { name: item.name, price: finalPrice, qty: (existing?.qty || 0) + 1 } };
-                });
-            };
+            const addToCart = (item, size = 'M') => {
+                let finalPrice = item.price;
+                let displayName = item.name;
 
-            const removeFromCart = (name) => {
-                setCart(prev => {
-                    const existing = prev[name];
-                    if (!existing) return prev;
-                    if (existing.qty > 1) return { ...prev, [name]: { ...existing, qty: existing.qty - 1 } };
-                    const newCart = { ...prev }; delete newCart[name]; return newCart;
-                });
-            };
-
-            const totalAmount = Object.values(cart).reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
-
-            const handleAdminAccess = (target) => {
-                const pw = prompt("تکایە پاسوۆرد بنووسە:");
-                if (pw === "1998a") setView(target);
-                else if (pw !== null) alert("پاسوۆرد هەڵەیە!");
-            };
-
-            const getGeoLocation = async () => {
-                if (!navigator.geolocation) {
-                    throw new Error("وێبگەڕەکەت لۆکەیشن پشتگیری ناکات");
+                if (item.category === 'pizza') {
+                    if (size === 'S') finalPrice -= 2000;
+                    if (size === 'L') finalPrice += 3000;
+                    displayName = `${item.name} (${size})`;
                 }
 
-                const attempt1 = () => new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(
-                        (p) => resolve(`https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`),
-                        (err) => reject(err),
-                        { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
-                    );
+                const cartKey = `${item.id}-${size}`;
+                setCart(prev => {
+                    const existing = prev[cartKey];
+                    return { ...prev, [cartKey]: { ...item, name: displayName, price: finalPrice, qty: (existing?.qty || 0) + 1 } };
                 });
-
-                const attempt2 = () => new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(
-                        (p) => resolve(`https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`),
-                        (err) => reject(err),
-                        { enableHighAccuracy: false, timeout: 10000, maximumAge: 30000 }
-                    );
-                });
-
-                try {
-                    return await attempt1();
-                } catch (e) {
-                    if (e.code === 1) throw new Error("تکایە ڕێگە بدە ماڵپەڕەکە لۆکەیشن وەرگرێت");
-                    try {
-                        return await attempt2();
-                    } catch (e2) {
-                        throw new Error("لۆکەیشنەکەت نادۆزرێتەوە، تکایە ناونیشان بنووسە");
-                    }
-                }
             };
 
-            const handleSendOrder = async () => {
-                if (Object.keys(cart).length === 0) return alert("سەبەتەکەت بەتاڵە!");
-                
+            const removeFromCart = (key) => {
+                setCart(prev => {
+                    const newCart = { ...prev };
+                    if (newCart[key].qty > 1) newCart[key].qty -= 1;
+                    else delete newCart[key];
+                    return newCart;
+                });
+            };
+
+            const getGeoLocation = () => {
+                return new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(
+                        (p) => resolve(`https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`),
+                        (err) => { alert("تکایە لۆکەیشن چالاک بکە"); reject(err); },
+                        { enableHighAccuracy: true }
+                    );
+                });
+            };
+
+            const submitOrder = async () => {
                 setIsSending(true);
-                let locationUrl = null;
-
                 try {
-                    locationUrl = await getGeoLocation();
-                    setShowManualInput(false);
-                } catch (error) {
-                    if (!showManualInput) {
-                        alert(error.message + ". دەتوانی ناونیشانەکەت بە دەست بنووسیت.");
-                        setShowManualInput(true);
-                        setIsSending(false);
-                        return;
-                    } else if (!manualAddress.trim()) {
-                        alert("تکایە ناونیشان بنووسە");
-                        setIsSending(false);
-                        return;
-                    }
-                    locationUrl = "ناونیشانی دەستی: " + manualAddress;
-                }
-
-                const orderID = Math.floor(1000 + Math.random() * 9000);
-                const itemsStr = Object.values(cart).map(i => `${i.qty}x ${i.name}`).join(", ");
-                const prizeStr = prizesWon.length > 0 ? ` | 🎁 خەڵات: ${prizesWon.join(", ")}` : "";
-                const orderData = { 
-                    orderID, 
-                    items: itemsStr + prizeStr, 
-                    total: totalAmount.toLocaleString(), 
-                    location: locationUrl, 
-                    note: orderNote, 
-                    time: new Date().toLocaleString('ku-IQ') 
-                };
-
-                try {
-                    await set(ref(db, `orders/${orderID}`), orderData);
-                    localStorage.setItem('canSpinBoom', 'true');
+                    const loc = await getGeoLocation();
+                    const orderData = {
+                        orderID: Math.floor(1000 + Math.random() * 9000),
+                        items: Object.values(cart).map(i => `${i.qty}x ${i.name}`).join(", "),
+                        total: totalAmount,
+                        location: loc,
+                        note: orderNote || "تێبینی نییە",
+                        time: new Date().toLocaleTimeString('ku-IQ')
+                    };
+                    await push(ref(db, 'orders'), orderData);
                     setLastOrder(orderData);
                     setCart({});
-                    setOrderNote('');
-                    setManualAddress('');
-                    setShowManualInput(false);
-                    setIsSending(false);
-                } catch (e) { 
-                    alert("هەڵە ڕوویدا لە ناردنی داواکارییەکە"); 
-                    setIsSending(false); 
-                }
+                    setView('menu');
+                } catch (e) { console.error(e); }
+                finally { setIsSending(false); }
             };
 
             return html`
-                <div className="min-h-screen bg-[#0a0a0a] pb-24 relative overflow-x-hidden">
-                    <nav className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-zinc-800 flex items-center justify-around h-16">
-                        <button onClick=${() => setView('menu')} className=${`flex-1 flex flex-col items-center justify-center gap-1 transition-colors ${view === 'menu' ? 'text-[#ff3131]' : 'text-zinc-500'}`}>
-                            <${Icon} name="LayoutGrid" size=${20} />
-                            <span className="text-[10px] font-bold">مێنۆ</span>
-                        </button>
-                        <button onClick=${() => handleAdminAccess('admin')} className=${`flex-1 flex flex-col items-center justify-center gap-1 transition-colors ${view === 'admin' ? 'text-[#ff3131]' : 'text-zinc-500'}`}>
-                            <${Icon} name="Settings" size=${20} />
-                            <span className="text-[10px] font-bold">دەستکاری</span>
-                        </button>
-                    </nav>
+                <div className="min-h-screen">
+                    <header className="p-4 flex justify-between items-center border-b border-zinc-800 sticky top-0 bg-black/90 backdrop-blur-md z-50">
+                        <h1 className="font-black text-xl text-[#ff3131]">BOOM'S PIZZA</h1>
+                        <button onClick=${() => setView('menu')}><${Icon} name="Home" /></button>
+                    </header>
 
                     ${view === 'menu' ? html`
-                        <div>
-                            <header className="relative h-48 flex items-center justify-center overflow-hidden border-b-4 border-[#ff3131]">
-                                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1470&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover brightness-[0.3]" />
-                                <div className="relative z-10 text-center">
-                                    <h1 className="text-5xl font-black text-[#ffc107] drop-shadow-[0_2px_10px_rgba(0,0,0,1)] tracking-tighter">BOOM'S PIZZA</h1>
-                                    <p className="text-white font-bold mt-2 text-lg">چێژێکی بێ وێنە لەگەڵ بوم پیتزا</p>
+                        <div className="flex p-4 gap-4 overflow-x-auto no-scrollbar">
+                            ${categories.map(cat => html`
+                                <div onClick=${() => setActiveCategory(cat.id)} className="text-center flex-shrink-0">
+                                    <img src=${cat.img} className=${`w-16 h-16 rounded-2xl border-2 ${activeCategory === cat.id ? 'border-red-600' : 'border-zinc-800'}`} />
+                                    <p className="text-[10px] mt-1 font-bold">${cat.name}</p>
                                 </div>
-                            </header>
+                            `)}
+                        </div>
 
-                            ${canSpin && html`<button onClick=${() => setShowWheel(true)} className="fixed bottom-28 left-4 z-40 bg-[#ffc107] text-black px-4 py-2 rounded-full font-bold shadow-xl animate-pulse-gold border-2 border-white/20">🎰 چەرخی بەخت</button>`}
-                            
-                            ${categories.length === 0 ? html`
-                                <div className="p-20 text-center text-zinc-500">
-                                    <p className="mb-4">هیچ کاتیگۆرییەک نەدۆزرایەوە</p>
-                                    <p className="text-xs">تکایە لە بەشی بەڕێوەبردن زانیارییەکان زیاد بکە</p>
-                                </div>
-                            ` : html`
-                                <div className="flex overflow-x-auto p-4 gap-4 no-scrollbar bg-zinc-900/50">
-                                    ${categories.map(cat => html`
-                                        <button key=${cat.id} onClick=${() => setActiveCategory(cat.id)} className=${`flex flex-col items-center min-w-[80px] transition-transform active:scale-90 ${activeCategory === cat.id ? 'scale-110' : 'opacity-60'}`}>
-                                            <div className=${`w-16 h-16 rounded-full overflow-hidden border-2 mb-2 ${activeCategory === cat.id ? 'border-[#ff3131] shadow-[0_0_15px_rgba(255,49,49,0.5)]' : 'border-zinc-700'}`}>
-                                                <img src=${cat.img || 'https://via.placeholder.com/150'} className="w-full h-full object-cover" />
+                        <div className="p-4 space-y-4">
+                            ${filteredMenuItems.map(item => html`
+                                <div className="bg-zinc-900 p-3 rounded-3xl flex gap-4">
+                                    <img src=${item.img} className="w-24 h-24 rounded-2xl object-cover" />
+                                    <div className="flex-1 flex flex-col justify-between">
+                                        <h3 className="font-bold">${item.name}</h3>
+                                        <p className="text-red-500 font-black">${item.price} د.ع</p>
+                                        ${item.category === 'pizza' ? html`
+                                            <div className="flex gap-2">
+                                                ${['S', 'M', 'L'].map(sz => html`
+                                                    <button onClick=${() => addToCart(item, sz)} className="bg-zinc-800 px-3 py-1 rounded-lg text-xs"> ${sz} </button>
+                                                `)}
                                             </div>
-                                            <span className=${`text-xs font-bold ${activeCategory === cat.id ? 'text-[#ff3131]' : 'text-zinc-400'}`}>${cat.name}</span>
-                                        </button>
-                                    `)}
-                                </div>
-                            `}
-
-                            <div className="grid grid-cols-2 gap-4 p-4">
-                                ${filteredMenuItems.length === 0 ? html`
-                                    <div className="col-span-2 py-10 text-center text-zinc-600 text-sm">هیچ خواردنێک لەم کاتیگۆرییەدا نییە</div>
-                                ` : filteredMenuItems.map(item => {
-                                    const finalPrice = item.price - (item.discount || 0);
-                                    return html`
-                                        <div key=${item.id} className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 flex flex-col shadow-lg">
-                                            <div className="relative h-32 overflow-hidden">
-                                                <img src=${item.img || 'https://via.placeholder.com/150'} className="w-full h-full object-cover" />
-                                                ${item.discount > 0 && html`<span className="absolute top-2 right-2 bg-[#ff3131] text-white text-[10px] px-2 py-1 rounded-full font-bold">داشکان!</span>`}
-                                            </div>
-                                            <div className="p-3 text-center flex-grow">
-                                                <h3 className="font-bold text-sm text-white mb-1 line-clamp-1">${item.name}</h3>
-                                                <div className="flex flex-col items-center">
-                                                    ${item.discount > 0 ? html`
-                                                        <span className="text-zinc-500 line-through text-[10px]">${item.price.toLocaleString()}</span>
-                                                        <span className="text-[#ff3131] font-bold text-sm">${finalPrice.toLocaleString()} د.ع</span>
-                                                    ` : html`<span className="text-white font-bold text-sm">${item.price.toLocaleString()} د.ع</span>`}
-                                                </div>
-                                            </div>
-                                            <button onClick=${() => addToCart(item)} className="w-full bg-[#ff3131] hover:bg-red-700 text-white py-3 font-bold text-xs flex items-center justify-center gap-2 transition-colors">
-                                                <${Icon} name="Plus" size=${14} /> زیادکردن
-                                            </button>
-                                        </div>
-                                    `;
-                                })}
-                            </div>
-
-                            ${Object.keys(cart).length > 0 && html`
-                                <div className="p-4 mx-4 mb-8 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl">
-                                    <h3 className="text-[#ffc107] font-bold flex items-center gap-2 mb-4"><${Icon} name="ShoppingCart" size=${18} /> سەبەتەکەت</h3>
-                                    ${Object.values(cart).map(item => html`
-                                        <div key=${item.name} className="flex justify-between items-center text-sm bg-zinc-800/50 p-3 rounded-xl mb-3 border border-zinc-700">
-                                            <div>
-                                                <p className="font-bold text-white">${item.name}</p>
-                                                <p className="text-xs text-zinc-500">${(item.price * item.qty).toLocaleString()} د.ع</p>
-                                            </div>
-                                            <div className="flex items-center gap-3">
-                                                <button onClick=${() => removeFromCart(item.name)} className="p-1 text-red-500 bg-red-500/10 rounded-md"><${Icon} name="Minus" size=${16} /></button>
-                                                <span className="font-bold text-white">${item.qty}</span>
-                                                <button onClick=${() => addToCart({ name: item.name, price: item.price })} className="p-1 text-green-500 bg-green-500/10 rounded-md"><${Icon} name="Plus" size=${16} /></button>
-                                            </div>
-                                        </div>
-                                    `)}
-                                    ${prizesWon.length > 0 && html`<div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-xs text-yellow-500">🎁 خەڵاتەکانت: ${prizesWon.join(", ")}</div>`}
-                                    
-                                    <div className="space-y-3 mb-4">
-                                        <textarea className="w-full bg-zinc-800 border-none p-3 rounded-xl text-white text-sm outline-none focus:ring-1 focus:ring-[#ff3131]" rows=${2} placeholder="تێبینی خواردن..." value=${orderNote} onChange=${e => setOrderNote(e.target.value)} />
-                                        ${showManualInput && html`
-                                            <div className="p-3 bg-red-500/5 border border-red-500/20 rounded-xl">
-                                                <p className="text-[10px] text-red-400 mb-2 font-bold">⚠️ GPS کار ناکات، تکایە ناونیشانەکەت لێرە بنووسە:</p>
-                                                <textarea className="w-full bg-zinc-800 border-none p-3 rounded-xl text-white text-sm outline-none focus:ring-1 focus:ring-[#ff3131]" rows=${2} placeholder="ناونیشانی تەواو..." value=${manualAddress} onChange=${e => setManualAddress(e.target.value)} />
-                                            </div>
+                                        ` : html`
+                                            <button onClick=${() => addToCart(item)} className="bg-white text-black px-4 py-1 rounded-xl text-xs font-bold w-fit">زیادکردن +</button>
                                         `}
                                     </div>
-
-                                    <div className="my-4 flex justify-between items-center px-2">
-                                        <span className="text-zinc-400 font-bold">کۆی گشتی:</span>
-                                        <span className="text-2xl font-black text-white">${totalAmount.toLocaleString()} د.ع</span>
-                                    </div>
-                                    <button onClick=${handleSendOrder} disabled=${isSending} className="w-full bg-[#25D366] text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-3 shadow-lg active:scale-95 transition-transform">
-                                        ${isSending ? html`
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                                <span>چاوەڕوانبە...</span>
-                                            </div>
-                                        ` : '✅ داواکردن و بینینی وەسڵ'}
-                                    </button>
                                 </div>
-                            `}
+                            `)}
                         </div>
-                    ` : html`<${AdminPanel} categories=${categories} wheelPrizes=${wheelPrizes} />`}
 
-                    ${showWheel && html`<${LuckyWheel} prizes=${wheelPrizes} onWin=${(p) => { setPrizesWon(prev => [...prev, p]); localStorage.setItem('boomSpinCount', '1'); localStorage.setItem('canSpinBoom', 'false'); setShowWheel(false); }} onClose=${() => setShowWheel(false)} />`}
-                    ${lastOrder && html`<${DigitalReceipt} order=${lastOrder} onClose=${() => setLastOrder(null)} />`}
+                        ${totalAmount > 0 && html`
+                            <div className="fixed bottom-6 left-4 right-4 bg-red-600 p-4 rounded-3xl flex justify-between items-center shadow-2xl">
+                                <span className="font-black">${totalAmount} د.ع</span>
+                                <button onClick=${() => setView('cart')} className="bg-white text-black px-6 py-2 rounded-2xl font-bold">بینینی سەبەتە</button>
+                            </div>
+                        `}
+                    ` : html`
+                        <div className="p-6">
+                            <h2 className="text-2xl font-black mb-6">داواکارییەکانت</h2>
+                            <div className="space-y-4 mb-6">
+                                ${Object.entries(cart).map(([key, item]) => html`
+                                    <div className="flex justify-between items-center bg-zinc-900 p-4 rounded-2xl">
+                                        <span>${item.name}</span>
+                                        <div className="flex gap-4">
+                                            <button onClick=${() => removeFromCart(key)}>-</button>
+                                            <span>${item.qty}</span>
+                                            <button onClick=${() => addToCart(item, key.split('-')[1])}>+</button>
+                                        </div>
+                                    </div>
+                                `)}
+                            </div>
+                            <textarea value=${orderNote} onChange=${(e) => setOrderNote(e.target.value)} placeholder="تێبینی..." className="w-full bg-zinc-900 p-4 rounded-2xl mb-6 outline-none border border-zinc-800 focus:border-red-600"></textarea>
+                            <button onClick=${submitOrder} disabled=${isSending} className="w-full bg-red-600 py-4 rounded-2xl font-black text-lg">
+                                ${isSending ? 'تکایە چاوەڕێ بکە...' : 'ناردنی داواکاری (GPS)'}
+                            </button>
+                        </div>
+                    `}
                 </div>
             `;
         };
 
-        const container = document.getElementById('root');
-        const root = createRoot(container);
-        root.render(React.createElement(React.StrictMode, null, React.createElement(App)));
+        createRoot(document.getElementById('root')).render(html`<${App} />`);
     </script>
-<script type="module" src="/index.tsx"></script>
 </body>
 </html>
