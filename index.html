@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Unbounded', sans-serif; background-color: black; color: white; overflow-x: hidden; }
+        body { font-family: 'Unbounded', sans-serif; background-color: #000; color: #fff; margin: 0; padding: 0; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
@@ -15,26 +15,21 @@
     <div id="root"></div>
 
     <script type="module">
-        import React, { useState, useEffect, useMemo } from 'https://esm.sh/react@18.2.0';
+        import React, { useState } from 'https://esm.sh/react@18.2.0';
         import { createRoot } from 'https://esm.sh/react-dom@18.2.0/client';
         import htm from 'https://esm.sh/htm';
         import { initializeApp } from 'https://esm.sh/firebase@10.7.1/app';
-        import { getDatabase, ref, push, onValue } from 'https://esm.sh/firebase@10.7.1/database';
-        import * as LucideIcons from 'https://esm.sh/lucide-react@0.294.0';
+        import { getDatabase, ref, push } from 'https://esm.sh/firebase@10.7.1/database';
 
         const html = htm.bind(React.createElement);
 
-        // --- Firebase Configuration (Add your config here) ---
+        // --- لێرە لینکی فایەربەیسەکەی خۆت دابنێ ---
         const firebaseConfig = {
-            databaseURL: "YOUR_FIREBASE_URL" 
+            databaseURL: "YOUR_FIREBASE_DATABASE_URL" 
         };
+        
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-
-        const Icon = ({ name, ...props }) => {
-            const IconComponent = LucideIcons[name];
-            return IconComponent ? React.createElement(IconComponent, props) : null;
-        };
 
         const App = () => {
             const [view, setView] = useState('menu');
@@ -42,7 +37,6 @@
             const [activeCategory, setActiveCategory] = useState('pizza');
             const [orderNote, setOrderNote] = useState('');
             const [isSending, setIsSending] = useState(false);
-            const [lastOrder, setLastOrder] = useState(null);
 
             const categories = [
                 { id: 'pizza', name: 'پیتزا', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200' },
@@ -76,56 +70,39 @@
                 });
             };
 
-            const removeFromCart = (key) => {
-                setCart(prev => {
-                    const newCart = { ...prev };
-                    if (newCart[key].qty > 1) newCart[key].qty -= 1;
-                    else delete newCart[key];
-                    return newCart;
-                });
-            };
-
-            const getGeoLocation = () => {
-                return new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(
-                        (p) => resolve(`https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`),
-                        (err) => { alert("تکایە لۆکەیشن چالاک بکە"); reject(err); },
-                        { enableHighAccuracy: true }
-                    );
-                });
-            };
-
             const submitOrder = async () => {
                 setIsSending(true);
-                try {
-                    const loc = await getGeoLocation();
+                navigator.geolocation.getCurrentPosition(async (p) => {
+                    const loc = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
                     const orderData = {
-                        orderID: Math.floor(1000 + Math.random() * 9000),
                         items: Object.values(cart).map(i => `${i.qty}x ${i.name}`).join(", "),
                         total: totalAmount,
                         location: loc,
                         note: orderNote || "تێبینی نییە",
-                        time: new Date().toLocaleTimeString('ku-IQ')
+                        time: new Date().toLocaleTimeString('en-GB')
                     };
                     await push(ref(db, 'orders'), orderData);
-                    setLastOrder(orderData);
+                    alert("داواکارییەکەت نێردرا!");
                     setCart({});
                     setView('menu');
-                } catch (e) { console.error(e); }
-                finally { setIsSending(false); }
+                    setIsSending(false);
+                }, () => {
+                    alert("تکایە GPS چالاک بکە");
+                    setIsSending(false);
+                });
             };
 
             return html`
-                <div className="min-h-screen">
-                    <header className="p-4 flex justify-between items-center border-b border-zinc-800 sticky top-0 bg-black/90 backdrop-blur-md z-50">
-                        <h1 className="font-black text-xl text-[#ff3131]">BOOM'S PIZZA</h1>
-                        <button onClick=${() => setView('menu')}><${Icon} name="Home" /></button>
+                <div className="min-h-screen bg-black">
+                    <header className="p-4 border-b border-zinc-800 flex justify-between items-center sticky top-0 bg-black z-50">
+                        <h1 className="font-black text-xl text-red-600">BOOM'S PIZZA</h1>
+                        <button onClick=${() => setView('menu')} className="text-white">سەرەکی</button>
                     </header>
 
                     ${view === 'menu' ? html`
                         <div className="flex p-4 gap-4 overflow-x-auto no-scrollbar">
                             ${categories.map(cat => html`
-                                <div onClick=${() => setActiveCategory(cat.id)} className="text-center flex-shrink-0">
+                                <div key=${cat.id} onClick=${() => setActiveCategory(cat.id)} className="text-center">
                                     <img src=${cat.img} className=${`w-16 h-16 rounded-2xl border-2 ${activeCategory === cat.id ? 'border-red-600' : 'border-zinc-800'}`} />
                                     <p className="text-[10px] mt-1 font-bold">${cat.name}</p>
                                 </div>
@@ -134,19 +111,19 @@
 
                         <div className="p-4 space-y-4">
                             ${filteredMenuItems.map(item => html`
-                                <div className="bg-zinc-900 p-3 rounded-3xl flex gap-4">
+                                <div key=${item.id} className="bg-zinc-900 p-3 rounded-3xl flex gap-4 border border-zinc-800">
                                     <img src=${item.img} className="w-24 h-24 rounded-2xl object-cover" />
                                     <div className="flex-1 flex flex-col justify-between">
-                                        <h3 className="font-bold">${item.name}</h3>
-                                        <p className="text-red-500 font-black">${item.price} د.ع</p>
+                                        <h3 className="font-bold text-sm">${item.name}</h3>
+                                        <p className="text-red-500 font-black text-xs">${item.price} د.ع</p>
                                         ${item.category === 'pizza' ? html`
                                             <div className="flex gap-2">
                                                 ${['S', 'M', 'L'].map(sz => html`
-                                                    <button onClick=${() => addToCart(item, sz)} className="bg-zinc-800 px-3 py-1 rounded-lg text-xs"> ${sz} </button>
+                                                    <button onClick=${() => addToCart(item, sz)} className="bg-zinc-800 px-3 py-1 rounded-lg text-[10px] border border-zinc-700"> ${sz} </button>
                                                 `)}
                                             </div>
                                         ` : html`
-                                            <button onClick=${() => addToCart(item)} className="bg-white text-black px-4 py-1 rounded-xl text-xs font-bold w-fit">زیادکردن +</button>
+                                            <button onClick=${() => addToCart(item)} className="bg-white text-black px-4 py-1 rounded-xl text-[10px] font-bold w-fit">زیادکردن +</button>
                                         `}
                                     </div>
                                 </div>
@@ -156,27 +133,21 @@
                         ${totalAmount > 0 && html`
                             <div className="fixed bottom-6 left-4 right-4 bg-red-600 p-4 rounded-3xl flex justify-between items-center shadow-2xl">
                                 <span className="font-black">${totalAmount} د.ع</span>
-                                <button onClick=${() => setView('cart')} className="bg-white text-black px-6 py-2 rounded-2xl font-bold">بینینی سەبەتە</button>
+                                <button onClick=${() => setView('cart')} className="bg-white text-black px-6 py-2 rounded-2xl font-bold text-sm">سەبەتە</button>
                             </div>
                         `}
                     ` : html`
                         <div className="p-6">
-                            <h2 className="text-2xl font-black mb-6">داواکارییەکانت</h2>
-                            <div className="space-y-4 mb-6">
-                                ${Object.entries(cart).map(([key, item]) => html`
-                                    <div className="flex justify-between items-center bg-zinc-900 p-4 rounded-2xl">
-                                        <span>${item.name}</span>
-                                        <div className="flex gap-4">
-                                            <button onClick=${() => removeFromCart(key)}>-</button>
-                                            <span>${item.qty}</span>
-                                            <button onClick=${() => addToCart(item, key.split('-')[1])}>+</button>
-                                        </div>
-                                    </div>
-                                `)}
-                            </div>
-                            <textarea value=${orderNote} onChange=${(e) => setOrderNote(e.target.value)} placeholder="تێبینی..." className="w-full bg-zinc-900 p-4 rounded-2xl mb-6 outline-none border border-zinc-800 focus:border-red-600"></textarea>
-                            <button onClick=${submitOrder} disabled=${isSending} className="w-full bg-red-600 py-4 rounded-2xl font-black text-lg">
-                                ${isSending ? 'تکایە چاوەڕێ بکە...' : 'ناردنی داواکاری (GPS)'}
+                            <h2 className="text-xl font-black mb-6">سەبەتەکەت</h2>
+                            ${Object.entries(cart).map(([key, item]) => html`
+                                <div className="flex justify-between items-center bg-zinc-900 p-4 rounded-2xl mb-2">
+                                    <span className="text-xs">${item.name}</span>
+                                    <span className="font-bold text-xs">${item.qty} دانە</span>
+                                </div>
+                            `)}
+                            <textarea value=${orderNote} onChange=${(e) => setOrderNote(e.target.value)} placeholder="تێبینی..." className="w-full bg-zinc-900 p-4 rounded-2xl mt-4 h-24 outline-none border border-zinc-800 focus:border-red-600"></textarea>
+                            <button onClick=${submitOrder} disabled=${isSending} className="w-full bg-red-600 py-4 rounded-2xl font-black mt-6">
+                                ${isSending ? 'دەنێردرێت...' : 'ناردنی داواکاری'}
                             </button>
                         </div>
                     `}
