@@ -1,7 +1,0 @@
-{
-  "name": "Boom's Pizza",
-  "description": "A high-performance Pizza Ordering App with real-time tracking, a lucky wheel rewards system, and a digital receipt generator.",
-  "requestFramePermissions": [
-    "geolocation"
-  ]
-}
