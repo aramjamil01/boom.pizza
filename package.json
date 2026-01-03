@@ -1,5 +1,5 @@
 {
-  "name": "boom's-pizza-kurdish",
+  "name": "boom's-pizza",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,10 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "lucide-react": "0.344.0",
-    "htm": "3.1.1"
+    "react-dom": "^19.2.3",
+    "react": "^19.2.3",
+    "lucide-react": "^0.562.0",
+    "firebase": "^12.7.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

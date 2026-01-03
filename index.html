@@ -1,18 +1,16 @@
+
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Boom's Pizza | بوم پیتزا</title>
-    
-    <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#ff3131" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Boom Pizza" />
     <link rel="apple-touch-icon" href="https://i.postimg.cc/02R8rCjV/99999999.jpg" />
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;400;700&display=swap" rel="stylesheet">
     <style>
@@ -25,560 +23,91 @@
             padding: 0;
             -webkit-tap-highlight-color: transparent;
         }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; }
-        ::-webkit-scrollbar-thumb { background: #ff3131; border-radius: 10px; }
-        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff3131;
+            border-radius: 10px;
+        }
         @keyframes pulse-gold {
             0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
             50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(255, 193, 7, 0); }
         }
-        .animate-pulse-gold { animation: pulse-gold 2s infinite; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Premium Segmented Toggle for Menu Sizes */
-        .segmented-control {
-            background: #1a1a1a;
+        .animate-pulse-gold {
+            animation: pulse-gold 2s infinite;
+        }
+        @keyframes cart-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        .animate-cart-bounce {
+            animation: cart-bounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .lucky-wheel-canvas {
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+        }
+        /* Segmented Toggle Styles */
+        .size-toggle-container {
+            background: rgba(255, 255, 255, 0.05);
             padding: 4px;
-            border-radius: 14px;
+            border-radius: 16px;
             display: flex;
             position: relative;
-            border: 1px solid #333;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .segmented-item {
+        .size-option {
             flex: 1;
             text-align: center;
-            padding: 8px 0;
-            font-size: 13px;
-            font-weight: bold;
+            padding: 10px 0;
+            font-size: 14px;
+            font-weight: 900;
             z-index: 10;
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
         }
-        .segmented-item.active { color: white; }
-        .segmented-item.inactive { color: #666; }
-        .segmented-slider {
+        .size-option.active {
+            color: white;
+        }
+        .size-option.inactive {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        .size-slider {
             position: absolute;
             top: 4px;
             bottom: 4px;
             width: calc(33.33% - 4px);
             background: #ff3131;
-            border-radius: 10px;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(255, 49, 49, 0.4);
+            border-radius: 12px;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(255, 49, 49, 0.3);
         }
-
-        /* Premium Admin Toggle Switch */
-        .admin-switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
-        .admin-switch input { opacity: 0; width: 0; height: 0; }
-        .slider-round {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #333;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .slider-round:before {
-            position: absolute;
-            content: "";
-            height: 18px; width: 18px;
-            left: 3px; bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .slider-round { background-color: #ff3131; }
-        input:checked + .slider-round:before { transform: translateX(20px); }
     </style>
-    <script type="importmap">
-    {
-        "imports": {
-            "react": "https://esm.sh/react@18.2.0",
-            "react-dom": "https://esm.sh/react-dom@18.2.0",
-            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-            "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
-            "firebase/database": "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js",
-            "lucide-react": "https://esm.sh/lucide-react@0.344.0?external=react",
-            "htm": "https://esm.sh/htm@3.1.1"
-        }
-    }
-    </script>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "firebase/": "https://esm.sh/firebase@^12.7.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
 </head>
 <body>
     <div id="root"></div>
-
-    <script type="module">
-        import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-        import { createRoot } from 'react-dom/client';
-        import { initializeApp } from 'firebase/app';
-        import { getDatabase, ref, onValue, push, set, update, remove } from 'firebase/database';
-        import * as Lucide from 'lucide-react';
-        import htm from 'htm';
-
-        const html = htm.bind(React.createElement);
-
-        // --- Firebase Setup ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyDqoOjm4m1Fxp760mJPy0sv5_NjaJfkm7g",
-            authDomain: "boompizza-5d048.firebaseapp.com",
-            databaseURL: "https://boompizza-5d048-default-rtdb.firebaseio.com",
-            projectId: "boompizza-5d048",
-            storageBucket: "boompizza-5d048.firebasestorage.app",
-            messagingSenderId: "636068289590",
-            appId: "1:636068289590:web:41fe758906140c700ecc97"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        const Icon = ({ name, ...props }) => {
-            const LucideIcon = Lucide[name];
-            return LucideIcon ? html`<${LucideIcon} ...${props} />` : null;
-        };
-
-        const DigitalReceipt = ({ order, onClose }) => {
-            return html`
-                <div className="fixed inset-0 z-[7000] bg-black/95 flex items-center justify-center p-4 text-right">
-                    <div className="bg-white text-black w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl flex flex-col items-center p-6 relative">
-                        <div className="absolute top-0 left-0 w-full h-2 bg-[#ff3131]"></div>
-                        <div className="bg-green-100 text-green-600 p-3 rounded-full mb-4">
-                            <${Icon} name="CheckCircle" size=${32} />
-                        </div>
-                        <h2 className="text-2xl font-black mb-1">وەسڵی دیجیتاڵی</h2>
-                        <p className="text-gray-500 text-sm mb-6">سوپاس بۆ متمانەکەت!</p>
-                        <div className="w-full border-t border-dashed border-gray-300 py-4 space-y-3">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500 font-bold">کۆدی داواکاری:</span>
-                                <span className="font-bold">#${order.orderID}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500 font-bold">کات:</span>
-                                <span className="font-bold">${order.time}</span>
-                            </div>
-                            <div className="flex flex-col gap-1 mt-2 text-right">
-                                <span className="text-gray-500 text-sm font-bold">داواکارییەکان:</span>
-                                <span className="font-bold text-sm bg-gray-50 p-2 rounded-lg">${order.items}</span>
-                            </div>
-                            <div className="flex justify-between items-center pt-4 border-t border-gray-200 mt-4">
-                                <span className="text-lg font-bold">کۆی گشتی:</span>
-                                <span className="text-2xl font-black text-[#ff3131]">${order.total} د.ع</span>
-                            </div>
-                        </div>
-                        <div className="w-full mt-6 space-y-3 text-center">
-                            <p className="text-[10px] text-zinc-400 mb-2">بە وێنەی شاشە (Screenshot) ئەم وەسڵە لای خۆت بپارێزە</p>
-                            <button 
-                                onClick=${() => {
-                                    const msg = `🆔 # ${order.orderID}\n🍴 ${order.items}\n💰 ${order.total} د.ع\n📍 ${order.location}\n📝 ${order.note || "بەبێ تێبینی"}`;
-                                    window.location.href = `https://wa.me/9647504629237?text=${encodeURIComponent(msg)}`;
-                                }}
-                                className="w-full bg-[#25D366] text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2"
-                            >
-                                <${Icon} name="MessageCircle" size=${18} /> ناردنی کۆتایی بۆ واتسئەپ
-                            </button>
-                            <button onClick=${onClose} className="w-full bg-gray-100 text-gray-600 font-bold py-3 rounded-xl">گەڕانەوە بۆ مێنۆ</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        };
-
-        const LuckyWheel = ({ onWin, onClose, prizes }) => {
-            const [isSpinning, setIsSpinning] = useState(false);
-            const canvasRef = useRef(null);
-            const [rotation, setRotation] = useState(0);
-
-            const activePrizes = useMemo(() => prizes && prizes.length > 0 ? prizes : [
-                { label: "%5 داشکان", color: "#ff3131", prob: 100 }
-            ], [prizes]);
-
-            useEffect(() => {
-                const canvas = canvasRef.current;
-                if (!canvas) return;
-                const ctx = canvas.getContext('2d');
-                const arc = (2 * Math.PI) / activePrizes.length;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                activePrizes.forEach((p, i) => {
-                    ctx.beginPath();
-                    ctx.fillStyle = p.color || "#444";
-                    ctx.moveTo(175, 175);
-                    ctx.arc(175, 175, 170, i * arc, (i + 1) * arc);
-                    ctx.fill();
-                    ctx.save();
-                    ctx.translate(175, 175);
-                    ctx.rotate(i * arc + arc / 2);
-                    ctx.textAlign = "right"; ctx.fillStyle = "white";
-                    ctx.font = "bold 14px Vazirmatn";
-                    ctx.fillText(p.label, 150, 5);
-                    ctx.restore();
-                });
-            }, [activePrizes]);
-
-            const spin = () => {
-                if (isSpinning) return;
-                setIsSpinning(true);
-                const totalProb = activePrizes.reduce((acc, p) => acc + Number(p.prob), 0);
-                const rand = Math.random() * totalProb;
-                let cumulative = 0, winnerIndex = 0;
-                for (let i = 0; i < activePrizes.length; i++) {
-                    cumulative += Number(activePrizes[i].prob);
-                    if (rand <= cumulative) { winnerIndex = i; break; }
-                }
-                const degPerSlice = 360 / activePrizes.length;
-                const targetAngle = 270 - (winnerIndex * degPerSlice + degPerSlice / 2);
-                const newRotation = rotation + (10 * 360) + (targetAngle - (rotation % 360));
-                setRotation(newRotation);
-                setTimeout(() => { setIsSpinning(false); onWin(activePrizes[winnerIndex].label); }, 5000);
-            };
-
-            return html`
-                <div className="fixed inset-0 z-[6000] bg-black/90 flex flex-col items-center justify-center p-4">
-                    <button onClick=${onClose} className="absolute top-6 right-6 text-white text-3xl">✕</button>
-                    <div className="relative mb-8">
-                        <div className="absolute top-[-15px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[30px] border-t-red-500 z-10 drop-shadow-lg"></div>
-                        <canvas ref=${canvasRef} width="350" height="350" className="rounded-full border-[8px] border-[#333] transition-transform duration-[5000ms]" style=${{ transitionTimingFunction: 'cubic-bezier(0.15, 0, 0.15, 1)', transform: `rotate(${rotation}deg)` }} />
-                    </div>
-                    <button onClick=${spin} disabled=${isSpinning} className="px-12 py-4 rounded-full font-bold text-xl text-white bg-[#ff3131] shadow-lg shadow-red-600/20">
-                        ${isSpinning ? 'دەسوڕێتەوە...' : 'بسوڕێنە! 🎰'}
-                    </button>
-                </div>
-            `;
-        };
-
-        const AdminPanel = ({ categories, wheelPrizes }) => {
-            const [activeTab, setActiveTab] = useState('orders');
-            const [menuItems, setMenuItems] = useState([]);
-            const [orders, setOrders] = useState([]);
-            
-            const [editingItem, setEditingItem] = useState({ 
-                name: '', price: 0, discount: 0, img: '', category: categories[0]?.id || '',
-                hasSizes: false, priceOffsetS: -2000, priceOffsetL: 3000 
-            });
-            const [editingCategory, setEditingCategory] = useState({ id: '', name: '', img: '' });
-            const [editingPrize, setEditingPrize] = useState({ label: '', color: '#ff3131', prob: 20 });
-
-            useEffect(() => {
-                onValue(ref(db, 'menu_items'), (snapshot) => {
-                    const data = snapshot.val();
-                    setMenuItems(data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : []);
-                });
-                onValue(ref(db, 'orders'), (snapshot) => {
-                    const data = snapshot.val();
-                    setOrders(data ? Object.entries(data).map(([id, val]) => ({ ...val, id })).reverse() : []);
-                });
-            }, []);
-
-            const saveItem = async (e) => {
-                e.preventDefault();
-                if (!editingItem.name || !editingItem.price) return alert("تکایە خانەکان پڕبکەرەوە");
-                editingItem.id ? await update(ref(db, `menu_items/${editingItem.id}`), editingItem) : await push(ref(db, 'menu_items'), editingItem);
-                setEditingItem({ name: '', price: 0, discount: 0, img: '', category: categories[0]?.id || '', hasSizes: false, priceOffsetS: -2000, priceOffsetL: 3000 });
-            };
-
-            const handleImageUpload = (e, callback) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onloadend = () => callback(reader.result);
-                reader.readAsDataURL(file);
-            };
-
-            return html`
-                <div className="p-4 max-w-5xl mx-auto pb-24 text-right">
-                    <div className="grid grid-cols-4 gap-2 mb-8 bg-zinc-900 p-2 rounded-xl border border-zinc-800 shadow-xl">
-                        ${['orders', 'items', 'categories', 'wheel'].map(tab => html`
-                            <button key=${tab} onClick=${() => setActiveTab(tab)} className=${`py-2 rounded-lg text-xs font-bold transition-all ${activeTab === tab ? 'bg-[#ff3131] text-white shadow-lg' : 'text-zinc-500 hover:bg-zinc-800'}`}>
-                                ${tab === 'orders' ? 'داواکاری' : tab === 'items' ? 'خواردن' : tab === 'categories' ? 'کاتیگۆری' : '🎰 چەرخ'}
-                            </button>
-                        `)}
-                    </div>
-
-                    ${activeTab === 'orders' && html`
-                        <div className="space-y-4">
-                            <h2 className="text-xl font-bold text-[#ffc107] mb-4">📥 داواکارییە نوێیەکان</h2>
-                            ${orders.length === 0 ? html`<div className="text-center py-20 text-zinc-500 font-bold">هیچ داواکارییەک نییە</div>` :
-                            orders.map(o => html`
-                                <div key=${o.id} className="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl mb-4 shadow-md">
-                                    <div className="flex justify-between items-start mb-3">
-                                        <div className="text-xs text-zinc-500">#${o.orderID} • ${o.time}</div>
-                                        <button onClick=${() => remove(ref(db, `orders/${o.id}`))} className="text-green-500 hover:scale-110 transition-transform"><${Icon} name="CheckCircle" size=${22} /></button>
-                                    </div>
-                                    <div className="text-sm font-bold text-white mb-2">${o.items}</div>
-                                    <div className="text-lg font-black text-[#ffc107]">${o.total} د.ع</div>
-                                    <div className="text-xs text-zinc-400 mt-2">${o.note || "بەبێ تێبینی"}</div>
-                                    <a href=${o.location} target="_blank" className="mt-4 flex bg-blue-600/20 text-blue-400 border border-blue-600/30 py-2 rounded-lg items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest">
-                                        <${Icon} name="MapPin" size=${14} /> لۆکەیشنی کڕیار
-                                    </a>
-                                </div>
-                            `)}
-                        </div>
-                    `}
-
-                    ${activeTab === 'items' && html`
-                        <div className="space-y-8">
-                            <form onSubmit=${saveItem} className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-lg">
-                                <h3 className="font-black text-white text-lg flex items-center gap-2 border-b border-zinc-800 pb-3">
-                                   <${Icon} name="PlusCircle" className="text-[#ff3131]" /> ${editingItem.id ? 'دەستکاری خواردن' : 'زیادکردنی خواردن'}
-                                </h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] text-zinc-400 mr-2">ناوی خواردن:</label>
-                                        <input type="text" placeholder="بۆ نمونە: مارگەریتا" className="bg-zinc-800 border-none p-3 rounded-xl text-xs text-white placeholder:text-zinc-600" value=${editingItem.name} onChange=${e => setEditingItem({...editingItem, name: e.target.value})} />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] text-zinc-400 mr-2">نرخی سەرەکی (M):</label>
-                                        <input type="number" placeholder="IQD" className="bg-zinc-800 border-none p-3 rounded-xl text-xs text-white" value=${editingItem.price || ''} onChange=${e => setEditingItem({...editingItem, price: parseInt(e.target.value)})} />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] text-zinc-400 mr-2">بڕی داشکان:</label>
-                                        <input type="number" placeholder="IQD" className="bg-zinc-800 border-none p-3 rounded-xl text-xs text-white" value=${editingItem.discount || ''} onChange=${e => setEditingItem({...editingItem, discount: parseInt(e.target.value)})} />
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <label className="text-[10px] text-zinc-400 mr-2">کاتیگۆری:</label>
-                                        <select className="bg-zinc-800 border-none p-3 rounded-xl text-xs text-white" value=${editingItem.category} onChange=${e => setEditingItem({...editingItem, category: e.target.value})}>
-                                            <option value="">هەڵبژێرە</option>
-                                            ${categories.map(c => html`<option key=${c.id} value=${c.id}>${c.name}</option>`)}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                ${(editingItem.category === 'pizza') && html`
-                                    <div className="p-4 bg-zinc-800/30 rounded-2xl border border-zinc-700/50 space-y-4">
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex flex-col">
-                                                <span className="text-xs font-bold text-white">چالاککردنی قەبارەکان (S, M, L)</span>
-                                                <span className="text-[10px] text-zinc-500">ئەم بژاردەیە کارای دەکات لە مێنۆ</span>
-                                            </div>
-                                            <label className="admin-switch">
-                                                <input type="checkbox" checked=${editingItem.hasSizes} onChange=${e => setEditingItem({...editingItem, hasSizes: e.target.checked})} />
-                                                <span className="slider-round"></span>
-                                            </label>
-                                        </div>
-                                        ${editingItem.hasSizes && html`
-                                            <div className="grid grid-cols-2 gap-4 pt-2 border-t border-zinc-800">
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] text-zinc-400 block px-1">جیاوازی نرخی بچووک (S):</label>
-                                                    <input type="number" placeholder="-2000" className="w-full bg-zinc-900 border-none p-3 rounded-xl text-xs text-white" value=${editingItem.priceOffsetS} onChange=${e => setEditingItem({...editingItem, priceOffsetS: parseInt(e.target.value)})} />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-[10px] text-zinc-400 block px-1">جیاوازی نرخی گەورە (L):</label>
-                                                    <input type="number" placeholder="+3000" className="w-full bg-zinc-900 border-none p-3 rounded-xl text-xs text-white" value=${editingItem.priceOffsetL} onChange=${e => setEditingItem({...editingItem, priceOffsetL: parseInt(e.target.value)})} />
-                                                </div>
-                                            </div>
-                                        `}
-                                    </div>
-                                `}
-
-                                <div className="space-y-2">
-                                    <label className="text-[10px] text-zinc-500 block">وێنەی خواردن:</label>
-                                    <input type="file" accept="image/*" onChange=${e => handleImageUpload(e, (res) => setEditingItem({...editingItem, img: res}))} className="text-[10px] text-zinc-400" />
-                                </div>
-                                <button className="w-full bg-[#ff3131] hover:bg-red-600 text-white font-black py-4 rounded-xl text-sm shadow-lg shadow-red-900/20 transition-all">پاشەکەوتکردن</button>
-                            </form>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                ${menuItems.map(item => html`
-                                    <div key=${item.id} className="bg-zinc-900 border border-zinc-800 p-4 rounded-2xl flex items-center justify-between shadow-sm">
-                                        <div className="flex items-center gap-4">
-                                            <img src=${item.img || 'https://via.placeholder.com/150'} className="w-12 h-12 rounded-xl object-cover" />
-                                            <div>
-                                                <p className="text-xs font-black text-white">${item.name}</p>
-                                                <p className="text-[10px] text-zinc-500">${item.price.toLocaleString()} د.ع ${item.hasSizes ? ' (قەبارە چالاکە)' : ''}</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button onClick=${() => { setEditingItem(item); window.scrollTo(0,0); }} className="p-2 bg-blue-500/10 text-blue-500 rounded-lg"><${Icon} name="Edit" size=${16} /></button>
-                                            <button onClick=${() => remove(ref(db, `menu_items/${item.id}`))} className="p-2 bg-red-500/10 text-red-500 rounded-lg"><${Icon} name="Trash2" size=${16} /></button>
-                                        </div>
-                                    </div>
-                                `)}
-                            </div>
-                        </div>
-                    `}
-                    ${/* Rest of Admin Tabs (Categories, Wheel) go here... */}
-                </div>
-            `;
-        };
-
-        const MenuItemCard = ({ item, addToCart }) => {
-            const [selectedSize, setSelectedSize] = useState('M');
-
-            const currentPrice = useMemo(() => {
-                let base = item.price - (item.discount || 0);
-                if (!item.hasSizes) return base;
-                if (selectedSize === 'S') return base + (item.priceOffsetS || -2000);
-                if (selectedSize === 'L') return base + (item.priceOffsetL || 3000);
-                return base;
-            }, [selectedSize, item]);
-
-            const sliderPos = selectedSize === 'S' ? 'translateX(100%)' : selectedSize === 'M' ? 'translateX(0%)' : 'translateX(-100%)';
-
-            return html`
-                <div className="bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 flex flex-col shadow-lg">
-                    <div className="relative h-32 overflow-hidden">
-                        <img src=${item.img || 'https://via.placeholder.com/150'} className="w-full h-full object-cover" />
-                        ${item.discount > 0 && html`<span className="absolute top-2 right-2 bg-[#ff3131] text-white text-[10px] px-2 py-1 rounded-full font-bold">داشکان!</span>`}
-                    </div>
-                    <div className="p-3 text-center flex-grow">
-                        <h3 className="font-bold text-sm text-white mb-1 line-clamp-1">${item.name}</h3>
-                        <div className="mb-3">
-                            <span className="text-white font-black text-sm">${currentPrice.toLocaleString()} د.ع</span>
-                        </div>
-
-                        ${item.hasSizes && html`
-                            <div className="segmented-control mb-3">
-                                <div className="segmented-slider" style=${{ transform: sliderPos }}></div>
-                                <div onClick=${() => setSelectedSize('L')} className=${`segmented-item ${selectedSize === 'L' ? 'active' : 'inactive'}`}>L</div>
-                                <div onClick=${() => setSelectedSize('M')} className=${`segmented-item ${selectedSize === 'M' ? 'active' : 'inactive'}`}>M</div>
-                                <div onClick=${() => setSelectedSize('S')} className=${`segmented-item ${selectedSize === 'S' ? 'active' : 'inactive'}`}>S</div>
-                            </div>
-                        `}
-                    </div>
-                    <button onClick=${() => addToCart(item, item.hasSizes ? selectedSize : null, currentPrice)} className="w-full bg-[#ff3131] hover:bg-red-700 text-white py-3 font-bold text-xs flex items-center justify-center gap-2 transition-all active:scale-95">
-                        <${Icon} name="Plus" size=${14} /> زیادکردن
-                    </button>
-                </div>
-            `;
-        };
-
-        const App = () => {
-            const [view, setView] = useState('menu');
-            const [activeCategory, setActiveCategory] = useState('');
-            const [allMenuItems, setAllMenuItems] = useState([]);
-            const [categories, setCategories] = useState([]);
-            const [wheelPrizes, setWheelPrizes] = useState([]);
-            const [cart, setCart] = useState({});
-            const [showWheel, setShowWheel] = useState(false);
-            const [prizesWon, setPrizesWon] = useState([]);
-            const [orderNote, setOrderNote] = useState('');
-            const [manualAddress, setManualAddress] = useState('');
-            const [isSending, setIsSending] = useState(false);
-            const [lastOrder, setLastOrder] = useState(null);
-            const [showManualInput, setShowManualInput] = useState(false);
-
-            useEffect(() => {
-                onValue(ref(db, 'categories'), (snap) => {
-                    const data = snap.val();
-                    const list = data ? Object.entries(data).map(([id, val]) => ({ ...val, id })) : [];
-                    setCategories(list);
-                    if (list.length > 0 && !activeCategory) setActiveCategory(list[0].id);
-                });
-                onValue(ref(db, 'prizes'), snap => setWheelPrizes(snap.val() ? Object.entries(snap.val()).map(([id, val]) => ({ ...val, id })) : []));
-                onValue(ref(db, 'menu_items'), snap => setAllMenuItems(snap.val() ? Object.entries(snap.val()).map(([id, val]) => ({ ...val, id })) : []));
-            }, []);
-
-            const filteredItems = useMemo(() => allMenuItems.filter(i => i.category === activeCategory), [allMenuItems, activeCategory]);
-
-            const addToCart = (item, size, price) => {
-                const cartKey = size ? `${item.name} (${size})` : item.name;
-                setCart(prev => {
-                    const existing = prev[cartKey];
-                    return { ...prev, [cartKey]: { name: cartKey, price: price, qty: (existing?.qty || 0) + 1 } };
-                });
-            };
-
-            const removeFromCart = (key) => {
-                setCart(prev => {
-                    const existing = prev[key];
-                    if (!existing) return prev;
-                    if (existing.qty > 1) return { ...prev, [key]: { ...existing, qty: existing.qty - 1 } };
-                    const newCart = { ...prev }; delete newCart[key]; return newCart;
-                });
-            };
-
-            const handleSendOrder = async () => {
-                if (Object.keys(cart).length === 0) return alert("سەبەتەکەت بەتاڵە!");
-                setIsSending(true);
-                let locationUrl = null;
-                try {
-                    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 5000 }));
-                    locationUrl = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
-                } catch (e) {
-                    if(!manualAddress) { setShowManualInput(true); setIsSending(false); return; }
-                    locationUrl = "دەستی: " + manualAddress;
-                }
-
-                const orderID = Math.floor(1000 + Math.random() * 9000);
-                const orderData = {
-                    orderID,
-                    items: Object.values(cart).map(i => `${i.qty}x ${i.name}`).join(", ") + (prizesWon.length ? ` + 🎁 ${prizesWon.join(",")}` : ""),
-                    total: Object.values(cart).reduce((a, b) => a + (b.price * b.qty), 0).toLocaleString(),
-                    location: locationUrl, note: orderNote, time: new Date().toLocaleString('ku-IQ')
-                };
-                await set(ref(db, `orders/${orderID}`), orderData);
-                setLastOrder(orderData); setCart({}); setIsSending(false);
-            };
-
-            return html`
-                <div className="min-h-screen bg-[#0a0a0a] pb-24 text-right">
-                    <nav className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-zinc-800 flex items-center justify-around h-16">
-                        <button onClick=${() => setView('menu')} className=${`flex-1 flex flex-col items-center ${view === 'menu' ? 'text-[#ff3131]' : 'text-zinc-500'}`}>
-                            <${Icon} name="LayoutGrid" size=${20} /><span className="text-[10px] font-bold">مێنۆ</span>
-                        </button>
-                        <button onClick=${() => { const p = prompt("پاسوۆرد:"); if(p === "1998a") setView('admin'); }} className=${`flex-1 flex flex-col items-center ${view === 'admin' ? 'text-[#ff3131]' : 'text-zinc-500'}`}>
-                            <${Icon} name="Settings" size=${20} /><span className="text-[10px] font-bold">بەڕێوەبردن</span>
-                        </button>
-                    </nav>
-
-                    ${view === 'menu' ? html`
-                        <div>
-                            <header className="relative h-48 flex items-center justify-center border-b-4 border-[#ff3131]">
-                                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80" className="absolute inset-0 w-full h-full object-cover brightness-[0.3]" />
-                                <h1 className="relative text-5xl font-black text-[#ffc107] tracking-tighter drop-shadow-lg">BOOM'S PIZZA</h1>
-                            </header>
-
-                            <div className="flex overflow-x-auto p-4 gap-4 no-scrollbar bg-zinc-900/50">
-                                ${categories.map(cat => html`
-                                    <button key=${cat.id} onClick=${() => setActiveCategory(cat.id)} className=${`flex flex-col items-center min-w-[80px] transition-all ${activeCategory === cat.id ? 'scale-110 opacity-100' : 'opacity-60'}`}>
-                                        <div className=${`w-16 h-16 rounded-full overflow-hidden border-2 mb-2 ${activeCategory === cat.id ? 'border-[#ff3131]' : 'border-zinc-700'}`}>
-                                            <img src=${cat.img} className="w-full h-full object-cover" />
-                                        </div>
-                                        <span className="text-xs font-bold">${cat.name}</span>
-                                    </button>
-                                `)}
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 p-4">
-                                ${filteredItems.map(item => html`<${MenuItemCard} key=${item.id} item=${item} addToCart=${addToCart} />`)}
-                            </div>
-
-                            ${Object.keys(cart).length > 0 && html`
-                                <div className="p-4 mx-4 bg-zinc-900 rounded-2xl border border-zinc-800 shadow-2xl space-y-4">
-                                    <h3 className="text-[#ffc107] font-bold border-b border-zinc-800 pb-2">🛒 سەبەتەی کڕین</h3>
-                                    ${Object.values(cart).map(i => html`
-                                        <div className="flex justify-between items-center bg-zinc-800 p-3 rounded-xl border border-zinc-700">
-                                            <div className="text-xs font-bold">${i.name}<br/><span className="text-zinc-500 text-[10px]">${i.price.toLocaleString()} IQD</span></div>
-                                            <div className="flex items-center gap-3">
-                                                <button onClick=${() => removeFromCart(i.name)} className="text-red-500"><${Icon} name="Minus" size=${16} /></button>
-                                                <span className="font-bold">${i.qty}</span>
-                                                <button onClick=${() => addToCart({ name: i.name.split(' (')[0] }, i.name.includes('(') ? i.name.split('(')[1].replace(')', '') : null, i.price)} className="text-green-500"><${Icon} name="Plus" size=${16} /></button>
-                                            </div>
-                                        </div>
-                                    `)}
-                                    <textarea className="w-full bg-zinc-800 p-3 rounded-xl text-xs outline-none focus:ring-1 focus:ring-[#ff3131]" placeholder="تێبینی..." value=${orderNote} onChange=${e => setOrderNote(e.target.value)} />
-                                    ${showManualInput && html`<input className="w-full bg-zinc-800 p-3 rounded-xl text-xs border border-red-500" placeholder="ناونیشانی تەواو بنووسە..." value=${manualAddress} onChange=${e => setManualAddress(e.target.value)} />`}
-                                    <button onClick=${handleSendOrder} disabled=${isSending} className="w-full bg-[#25D366] py-4 rounded-xl font-black text-white shadow-lg active:scale-95 transition-all">
-                                        ${isSending ? 'چاوەڕوانبە...' : '✅ تەواوکردنی داواکاری'}
-                                    </button>
-                                </div>
-                            `}
-                        </div>
-                    ` : html`<${AdminPanel} categories=${categories} wheelPrizes=${wheelPrizes} />`}
-                    
-                    ${lastOrder && html`<${DigitalReceipt} order=${lastOrder} onClose=${() => setLastOrder(null)} />`}
-                    ${showWheel && html`<${LuckyWheel} prizes=${wheelPrizes} onWin=${(p) => { setPrizesWon([...prizesWon, p]); setShowWheel(false); }} onClose=${() => setShowWheel(false)} />`}
-                    <button onClick=${() => setShowWheel(true)} className="fixed bottom-24 left-4 bg-[#ffc107] text-black px-4 py-2 rounded-full font-bold animate-pulse-gold shadow-lg z-40">🎰 چەرخی بەخت</button>
-                </div>
-            `;
-        };
-
-        createRoot(document.getElementById('root')).render(React.createElement(App));
-    </script>
+    <script type="module" src="/index.tsx"></script>
 </body>
 </html>

@@ -1,7 +1,6 @@
-
 {
-  "name": "Boom's Pizza Kurdish",
-  "description": "A premium pizza ordering application localized in Kurdish with a lucky wheel, cart management, and admin dashboard.",
+  "name": "Boom's Pizza",
+  "description": "A high-performance Pizza Ordering App with real-time tracking, a lucky wheel rewards system, and a digital receipt generator.",
   "requestFramePermissions": [
     "geolocation"
   ]
